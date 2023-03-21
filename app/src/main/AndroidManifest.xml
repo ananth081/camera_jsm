@@ -7,6 +7,8 @@
     <dist:module dist:instant="true" /> <!-- Declare features -->
     <uses-feature android:name="android.hardware.camera" /> <!-- Declare permissions -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
         android:name=".MainApplication"
@@ -16,9 +18,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         tools:ignore="AllowBackup">
         <activity
+            android:name=".camera.JsmGalleryActivity"
+            android:theme="@style/Theme.AppCompat.Light"
+            android:exported="false" />
+        <activity
             android:name=".camera.GalleryActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar"
-            android:exported="false">
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />

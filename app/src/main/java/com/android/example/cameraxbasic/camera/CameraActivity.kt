@@ -1,5 +1,7 @@
 package com.android.example.cameraxbasic.camera
 
+import android.Manifest
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.ui.AppBarConfiguration
@@ -12,13 +14,16 @@ class CameraActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityCameraBinding
+    var permission = arrayOf("android.permission.READ_EXTERNAL_STORAGE")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityCameraBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.R){
+            requestPermissions(permission,80)
+        }
         setSupportActionBar(binding.toolbar)
 
 //        val navController = findNavController(R.id.nav_host_fragment_content_camera)

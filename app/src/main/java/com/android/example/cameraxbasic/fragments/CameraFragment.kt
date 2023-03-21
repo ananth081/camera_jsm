@@ -44,6 +44,7 @@ import com.android.example.cameraxbasic.KEY_EVENT_ACTION
 import com.android.example.cameraxbasic.KEY_EVENT_EXTRA
 import com.android.example.cameraxbasic.R
 import com.android.example.cameraxbasic.camera.GalleryActivity
+import com.android.example.cameraxbasic.camera.JsmGalleryActivity
 import com.android.example.cameraxbasic.databinding.CameraUiContainerBinding
 import com.android.example.cameraxbasic.databinding.FragmentCameraBinding
 import com.android.example.cameraxbasic.utils.ANIMATION_FAST_MILLIS
@@ -587,7 +588,10 @@ class CameraFragment : Fragment() {
             // Only navigate when the gallery has photos
             lifecycleScope.launch {
                 if (mediaStoreUtils.getImages().isNotEmpty()) {
-                    val intent = Intent(context, GalleryActivity::class.java)
+//                    val intent = Intent(context, GalleryActivity::class.java)
+//                    activity?.startActivity(intent)
+
+                    val intent = Intent(context, JsmGalleryActivity::class.java)
                     activity?.startActivity(intent)
 //                    Navigation.findNavController(requireActivity(), R.id.fragment_container)
 //                        .navigate(CameraFragmentDirections.actionCameraToGallery(
