@@ -22,9 +22,11 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.hardware.display.DisplayManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -53,6 +55,7 @@ import com.android.example.cameraxbasic.utils.MediaStoreUtils
 import com.android.example.cameraxbasic.utils.simulateClick
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import java.io.*
 import kotlinx.coroutines.launch
 import java.nio.ByteBuffer
 import java.text.SimpleDateFormat
@@ -500,7 +503,6 @@ class CameraFragment : Fragment() {
             }
             // Get a stable reference of the modifiable image capture use case
             imageCapture?.let { imageCapture ->
-
                 // Create time stamped name and MediaStore entry.
                 val name = SimpleDateFormat(FILENAME, Locale.US)
                     .format(System.currentTimeMillis())
@@ -553,7 +555,6 @@ class CameraFragment : Fragment() {
 
                 // We can only change the foreground Drawable using API level 23+ API
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
                     // Display flash animation to indicate that photo was captured
                     fragmentCameraBinding.root.postDelayed({
                         fragmentCameraBinding.root.foreground = ColorDrawable(Color.WHITE)
@@ -588,11 +589,11 @@ class CameraFragment : Fragment() {
             // Only navigate when the gallery has photos
             lifecycleScope.launch {
                 if (mediaStoreUtils.getImages().isNotEmpty()) {
-//                    val intent = Intent(context, GalleryActivity::class.java)
-//                    activity?.startActivity(intent)
-
-                    val intent = Intent(context, JsmGalleryActivity::class.java)
+                    val intent = Intent(context, GalleryActivity::class.java)
                     activity?.startActivity(intent)
+
+//                    val intent = Intent(context, JsmGalleryActivity::class.java)
+//                    activity?.startActivity(intent)
 //                    Navigation.findNavController(requireActivity(), R.id.fragment_container)
 //                        .navigate(CameraFragmentDirections.actionCameraToGallery(
 //                            mediaStoreUtils.mediaStoreCollection.toString()
@@ -603,7 +604,7 @@ class CameraFragment : Fragment() {
         }
 
         cameraUiContainerBinding?.cameraZoomText0?.setOnClickListener {
-            camera?.cameraControl?.setZoomRatio(0.01f)
+            camera?.cameraControl?.setZoomRatio(0.02f)
         }
 
         cameraUiContainerBinding?.cameraZoomText05?.setOnClickListener {
@@ -723,5 +724,80 @@ class CameraFragment : Fragment() {
         private const val PHOTO_TYPE = "image/jpeg"
         private const val RATIO_4_3_VALUE = 4.0 / 3.0
         private const val RATIO_16_9_VALUE = 16.0 / 9.0
+    }
+
+    fun storeFile(uri: Uri) {
+        //val fileName = getFileName(context, uri)
+        val cacheDir = context?.let { getDocumentCacheDir(it) }
+        val file = cacheDir?.let { generateFileForName("test", it) }
+        var destinationPath: String? = null
+        if (file != null) {
+            destinationPath = file.absolutePath
+            context?.let { copyFileToTempCache(it, uri, destinationPath) }
+        }
+    }
+
+    private fun copyFileToTempCache(context: Context, uri: Uri, destinationPath: String) {
+        var inputStream: InputStream? = null
+        var bos: BufferedOutputStream? = null
+        try {
+            inputStream = context.contentResolver.openInputStream(uri)
+            bos = BufferedOutputStream(FileOutputStream(destinationPath, false))
+            val buf = ByteArray(1024)
+            inputStream?.read(buf)
+            do {
+                bos.write(buf)
+            } while (inputStream?.read(buf) != -1)
+        } catch (e: IOException) {
+            Log.d(TAG, "copyFileToTempCache: "+e.message)
+        } finally {
+            try {
+                inputStream?.close()
+                bos?.close()
+            } catch (e: IOException) {
+                Log.d(TAG, "copyFileToTempCache: "+e.message)
+            }
+        }
+    }
+
+    private fun generateFileForName(name: String?, directory: File): File? {
+        var name: String? = name ?: return null
+
+        var file = File(directory, name!!)
+
+        if (file.exists()) {
+            var fileName: String = name
+            var extension = ""
+            val dotIndex = name.lastIndexOf('.')
+            if (dotIndex > 0) {
+                fileName = name.substring(0, dotIndex)
+                extension = name.substring(dotIndex)
+            }
+
+            var index = 0
+
+            while (file.exists()) {
+                index++
+                name = "$fileName($index)$extension"
+                file = File(directory, name)
+            }
+        }
+
+        try {
+            if (!file.createNewFile()) {
+                return null
+            }
+        } catch (e: IOException) {
+            return null
+        }
+        return file
+    }
+
+    private fun getDocumentCacheDir(context: Context): File {
+        val dir = File(context.cacheDir, "temp_file")
+        if (!dir.exists()) {
+            dir.mkdirs()
+        }
+        return dir
     }
 }

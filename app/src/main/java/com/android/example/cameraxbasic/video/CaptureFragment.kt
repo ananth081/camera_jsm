@@ -30,9 +30,15 @@ package com.android.example.cameraxbasic.video
 
 import android.annotation.SuppressLint
 import android.content.ContentValues
+import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
+import android.graphics.Bitmap
+import android.media.MediaMetadataRetriever
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -56,6 +62,7 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.example.cameraxbasic.R
+import com.android.example.cameraxbasic.camera.VideoActivity
 import com.android.example.cameraxbasic.databinding.FragmentCaptureBinding
 import com.android.example.cameraxbasic.video.extensions.getAspectRatio
 import com.android.example.cameraxbasic.video.extensions.getAspectRatioString
@@ -63,6 +70,7 @@ import com.android.example.cameraxbasic.video.extensions.getNameString
 import com.example.android.camera.utils.GenericListAdapter
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.*
 
 class CaptureFragment : Fragment() {
@@ -82,6 +90,7 @@ class CaptureFragment : Fragment() {
     private lateinit var videoCapture: androidx.camera.video.VideoCapture<Recorder>
     private var currentRecording: Recording? = null
     private lateinit var recordingState: VideoRecordEvent
+    private var outputUri: Uri? = null
 
     // Camera UI  states and inputs
     enum class UiState {
@@ -199,13 +208,48 @@ class CaptureFragment : Fragment() {
         if (event is VideoRecordEvent.Finalize) {
             // display the captured video
             lifecycleScope.launch {
+                captureViewBinding.cameraButton.setBackgroundResource(R.drawable.bg_circle)
+                captureViewBinding.cameraButton.visibility = View.VISIBLE
+                captureViewBinding.cameraButton.isEnabled = true
+
+
+                outputUri = event.outputResults.outputUri
+
+                context?.let { context ->
+                    outputUri?.let { uri ->
+                        val createVideoThumb = createVideoThumb(context, uri)
+                        createVideoThumb?.let {
+                            captureViewBinding.cameraButton.clipToOutline = true
+                            captureViewBinding.cameraButton.setImageBitmap(it)
+                        }
+                    }
+                }
+
+//                val intent = Intent(context, VideoActivity::class.java)
+//                intent.putExtra("video_uri", event.outputResults.outputUri)
+//                startActivity(intent)
+
 //                navController.navigate(
-//                    CaptureFragmentDirections.actionCaptureToVideoViewer(
+//                   CaptureFragmentDirections.actionCaptureToVideoViewer(
 //                        event.outputResults.outputUri
 //                    )
 //                )
             }
         }
+    }
+
+    fun createVideoThumb(context: Context, uri: Uri): Bitmap? {
+        try {
+            val mediaMetadataRetriever = MediaMetadataRetriever()
+            mediaMetadataRetriever.setDataSource(context, uri)
+            return mediaMetadataRetriever.frameAtTime
+        } catch (ex: Exception) {
+            Toast
+                .makeText(context, "Error retrieving bitmap", Toast.LENGTH_SHORT)
+                .show()
+        }
+        return null
+
     }
 
     /**
@@ -285,20 +329,29 @@ class CaptureFragment : Fragment() {
      */
     @SuppressLint("ClickableViewAccessibility", "MissingPermission")
     private fun initializeUI() {
+        if (outputUri == null){
+            captureViewBinding.cameraButton.setBackgroundResource(R.drawable.ic_photo)
+        }
+
         captureViewBinding.cameraButton.apply {
             setOnClickListener {
-                cameraIndex = (cameraIndex + 1) % cameraCapabilities.size
-                // camera device change is in effect instantly:
-                //   - reset quality selection
-                //   - restart preview
-                qualityIndex = DEFAULT_QUALITY_IDX
-                initializeQualitySectionsUI()
-                enableUI(false)
-                viewLifecycleOwner.lifecycleScope.launch {
-                    bindCaptureUsecase()
+                outputUri?.let {
+                    val intent = Intent(context, VideoActivity::class.java)
+                    intent.putExtra("video_uri", it)
+                    startActivity(intent)
                 }
+                /*   cameraIndex = (cameraIndex + 1) % cameraCapabilities.size
+                   // camera device change is in effect instantly:
+                   //   - reset quality selection
+                   //   - restart preview
+                   qualityIndex = DEFAULT_QUALITY_IDX
+                   initializeQualitySectionsUI()
+                   enableUI(false)
+                   viewLifecycleOwner.lifecycleScope.launch {
+                       bindCaptureUsecase()
+                   }*/
             }
-            isEnabled = false
+            //isEnabled = true
         }
 
         // audioEnabled by default is disabled.
@@ -392,7 +445,7 @@ class CaptureFragment : Fragment() {
 
         val stats = event.recordingStats
         val size = stats.numBytesRecorded / 1000
-        val time = java.util.concurrent.TimeUnit.NANOSECONDS.toSeconds(stats.recordedDurationNanos)
+        val time = TimeUnit.NANOSECONDS.toSeconds(stats.recordedDurationNanos)
         var text = "${state}: recorded ${size}KB, in ${time}second"
         if (event is VideoRecordEvent.Finalize)
             text = "${text}\nFile saved to: ${event.outputResults.outputUri}"

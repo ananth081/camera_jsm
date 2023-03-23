@@ -9,5 +9,4 @@
     android:background="@color/bkDarkPurple"
     android:keepScreenOn="true"
     app:defaultNavHost="true"
-    app:navGraph="@navigation/nav_graph_video"
     tools:context=".MainActivity" />

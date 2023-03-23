@@ -30,7 +30,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.MediaController
-import androidx.navigation.fragment.navArgs
 import android.util.TypedValue
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
@@ -44,12 +43,23 @@ import java.lang.RuntimeException
  *      Accept MediaStore URI and play it with VideoView (Also displaying file size and location)
  *      Note: Might be good to retrieve the encoded file mime type (not based on file type)
  */
-class VideoViewerFragment : androidx.fragment.app.Fragment() {
-    private val args: VideoViewerFragmentArgs by navArgs()
+class VideoViewerFragment() : androidx.fragment.app.Fragment() {
+    private var args: Bundle? = null
 
     // This property is only valid between onCreateView and onDestroyView.
     private var _binding: FragmentVideoViewerBinding? = null
     private val binding get() = _binding!!
+
+    companion object {
+        fun newInstance(uri: Uri?): VideoViewerFragment {
+            val args = Bundle()
+            args.putParcelable("video_uri", uri)
+            val fragment = VideoViewerFragment()
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,22 +68,25 @@ class VideoViewerFragment : androidx.fragment.app.Fragment() {
     ): View {
         _binding = FragmentVideoViewerBinding.inflate(inflater, container, false)
         // UI adjustment + hacking to display VideoView use tips / capture result
+      //  arguments?.getParcelable("video_uri") as Uri
         val tv = TypedValue()
         if (requireActivity().theme.resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
-            val actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, resources.displayMetrics)
-            binding.videoViewerTips.y  = binding.videoViewerTips.y - actionBarHeight
+            val actionBarHeight =
+                TypedValue.complexToDimensionPixelSize(tv.data, resources.displayMetrics)
+            binding.videoViewerTips.y = binding.videoViewerTips.y - actionBarHeight
         }
 
         return binding.root
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        val uri: Uri? = arguments?.getParcelable("video_uri")!!
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-            showVideo(args.uri)
+            showVideo(uri!!)
         } else {
             // force MediaScanner to re-scan the media file.
-            val path = getAbsolutePathFromUri(args.uri) ?: return
+            val path = getAbsolutePathFromUri(uri!!) ?: return
             MediaScannerConnection.scanFile(
                 context, arrayOf(path), null
             ) { _, uri ->
@@ -104,7 +117,7 @@ class VideoViewerFragment : androidx.fragment.app.Fragment() {
      *   - the captured video
      *   - the file size and location
      */
-    private fun showVideo(uri : Uri) {
+    private fun showVideo(uri: Uri) {
         val fileSize = getFileSizeFromUri(uri)
         if (fileSize == null || fileSize <= 0) {
             Log.e("VideoViewerFragment", "Failed to get recorded file size, could not be played!")
@@ -129,7 +142,7 @@ class VideoViewerFragment : androidx.fragment.app.Fragment() {
      * A helper function to get the captured file location.
      */
     private fun getAbsolutePathFromUri(contentUri: Uri): String? {
-        var cursor:Cursor? = null
+        var cursor: Cursor? = null
         return try {
             cursor = requireContext()
                 .contentResolver
@@ -141,10 +154,11 @@ class VideoViewerFragment : androidx.fragment.app.Fragment() {
             cursor.moveToFirst()
             cursor.getString(columnIndex)
         } catch (e: RuntimeException) {
-            Log.e("VideoViewerFragment", String.format(
-                "Failed in getting absolute path for Uri %s with Exception %s",
-                contentUri.toString(), e.toString()
-            )
+            Log.e(
+                "VideoViewerFragment", String.format(
+                    "Failed in getting absolute path for Uri %s with Exception %s",
+                    contentUri.toString(), e.toString()
+                )
             )
             null
         } finally {

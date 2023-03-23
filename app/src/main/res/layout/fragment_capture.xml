@@ -23,7 +23,7 @@
 
     <androidx.camera.view.PreviewView
         android:id="@+id/previewView"
-        android:background="@color/bkPurple"
+        android:background="#212121"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -41,6 +41,7 @@
         android:buttonTint="@color/ic_white"
         android:textColor="@color/txWhite"
         android:textSize="20sp"
+        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/horizontal_guideline"
         app:layout_constraintStart_toStartOf="@id/previewView" />
 
@@ -58,17 +59,19 @@
         android:background="?android:attr/activatedBackgroundIndicator"
         android:choiceMode="singleChoice"
         android:layout_centerVertical="false"
+        android:visibility="gone"
         app:layout_constraintStart_toEndOf="@+id/vertical_guideline"
         app:layout_constraintTop_toTopOf="@id/audio_selection"
         app:layout_constraintBottom_toTopOf="@id/stop_button"/>
 
     <ImageButton
         android:id="@+id/camera_button"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="13dp"
-        android:background="@drawable/ic_switch"
+        android:background="@drawable/bg_circle"
+        android:outlineProvider="background"
         android:contentDescription="@string/camera"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toTopOf="@+id/capture_status"
@@ -77,8 +80,8 @@
 
     <ImageButton
         android:id="@+id/capture_button"
-        android:layout_width="96dp"
-        android:layout_height="0dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:background="@drawable/ic_start"
         android:contentDescription="@string/capture"
         android:translationX="48dp"
@@ -92,8 +95,8 @@
         android:id="@+id/stop_button"
         android:background="@drawable/ic_stop"
         android:visibility="invisible"
-        android:layout_width="96dp"
-        android:layout_height="0dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_marginStart="16dp"
         android:contentDescription="@string/stop"
         android:translationX="48dp"
@@ -102,6 +105,8 @@
         app:layout_constraintTop_toTopOf="@+id/capture_button"
         app:layout_constraintBottom_toBottomOf="@+id/capture_button"
         tools:ignore="ImageContrastCheck" />
+
+
 
     <TextView
         android:id="@+id/capture_status"
@@ -112,6 +117,7 @@
         android:lines="2"
         android:maxLines="2"
         android:textColor="@color/txWhite"
+        android:visibility="gone"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/camera_button" />

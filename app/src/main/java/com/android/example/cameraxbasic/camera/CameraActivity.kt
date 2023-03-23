@@ -4,10 +4,12 @@ import android.Manifest
 import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentTransaction
 import androidx.navigation.ui.AppBarConfiguration
 import com.android.example.cameraxbasic.R
 import com.android.example.cameraxbasic.databinding.ActivityCameraBinding
 import com.android.example.cameraxbasic.fragments.CameraFragment
+import com.android.example.cameraxbasic.video.CaptureFragment
 import com.google.android.material.tabs.TabLayout
 
 class CameraActivity : AppCompatActivity() {
@@ -21,8 +23,8 @@ class CameraActivity : AppCompatActivity() {
 
         binding = ActivityCameraBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.R){
-            requestPermissions(permission,80)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            requestPermissions(permission, 80)
         }
         setSupportActionBar(binding.toolbar)
 
@@ -30,10 +32,8 @@ class CameraActivity : AppCompatActivity() {
 //        appBarConfiguration = AppBarConfiguration(navController.graph)
 //        setupActionBarWithNavController(navController, appBarConfiguration)
 
-        val fragment = CameraFragment()
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.fragment_container, fragment, "")
-        transaction.commitAllowingStateLoss()
+        showPhotoFragment(CameraFragment())
+        // val (videoFragment, transaction) = showVideoFragment(fragment)
 
         val tabLayout = binding.contentCamera.tabLayout
         tabLayout.addTab(tabLayout.newTab().setText("Photo"))
@@ -41,8 +41,11 @@ class CameraActivity : AppCompatActivity() {
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                transaction.replace(R.id.fragment_container, fragment, "")
-               // transaction.commitAllowingStateLoss()
+                if (0 == tab?.position) {
+                    showPhotoFragment(CameraFragment())
+                } else {
+                    showVideoFragment(CaptureFragment())
+                }
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
@@ -55,6 +58,22 @@ class CameraActivity : AppCompatActivity() {
 
         })
 
+    }
+
+    private fun showVideoFragment(fragment: CaptureFragment): Pair<CaptureFragment, FragmentTransaction> {
+        val videoFragment = CaptureFragment()
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.fragment_container, fragment, "")
+        transaction.commitAllowingStateLoss()
+        return Pair(videoFragment, transaction)
+    }
+
+    private fun showPhotoFragment(fragment: CameraFragment): Pair<CameraFragment, FragmentTransaction> {
+        val videoFragment = CameraFragment()
+        val transaction1 = supportFragmentManager.beginTransaction()
+        transaction1.replace(R.id.fragment_container, fragment, "")
+        transaction1.commitAllowingStateLoss()
+        return Pair(videoFragment, transaction1)
     }
 
 //    override fun onSupportNavigateUp(): Boolean {
