@@ -47,6 +47,7 @@ import com.android.example.cameraxbasic.KEY_EVENT_EXTRA
 import com.android.example.cameraxbasic.R
 import com.android.example.cameraxbasic.camera.GalleryActivity
 import com.android.example.cameraxbasic.camera.JsmGalleryActivity
+import com.android.example.cameraxbasic.databinding.CameraPreviewBinding
 import com.android.example.cameraxbasic.databinding.CameraUiContainerBinding
 import com.android.example.cameraxbasic.databinding.FragmentCameraBinding
 import com.android.example.cameraxbasic.utils.ANIMATION_FAST_MILLIS
@@ -78,6 +79,7 @@ typealias LumaListener = (luma: Double) -> Unit
 class CameraFragment : Fragment() {
 
     private var _fragmentCameraBinding: FragmentCameraBinding? = null
+    private var cameraPreview: CameraPreviewBinding? = null
 
     private val fragmentCameraBinding get() = _fragmentCameraBinding!!
 
@@ -109,7 +111,7 @@ class CameraFragment : Fragment() {
             when (intent.getIntExtra(KEY_EVENT_EXTRA, KeyEvent.KEYCODE_UNKNOWN)) {
                 // When the volume down button is pressed, simulate a shutter button click
                 KeyEvent.KEYCODE_VOLUME_DOWN -> {
-                    cameraUiContainerBinding?.cameraCaptureButton?.simulateClick()
+                    //cameraPreview?.cameraCaptureButton?.simulateClick()
                 }
             }
         }
@@ -144,7 +146,7 @@ class CameraFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        _fragmentCameraBinding = null
+        cameraPreview = null
         super.onDestroyView()
 
         // Shut down our background executor
@@ -160,13 +162,15 @@ class CameraFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _fragmentCameraBinding = FragmentCameraBinding.inflate(inflater, container, false)
-        return fragmentCameraBinding.root
+        cameraPreview = CameraPreviewBinding.inflate(inflater, container, false)
+      //  _fragmentCameraBinding = FragmentCameraBinding.inflate(inflater, container, false)
+      //  return fragmentCameraBinding.root
+        return cameraPreview!!.root
     }
 
     private fun setGalleryThumbnail(filename: String) {
         // Run the operations in the view's thread
-        cameraUiContainerBinding?.photoViewButton?.let { photoViewButton ->
+        cameraPreview?.photoViewButton?.let { photoViewButton ->
             photoViewButton.post {
                 // Remove thumbnail padding
                 photoViewButton.setPadding(resources.getDimension(R.dimen.stroke_small).toInt())
@@ -203,10 +207,10 @@ class CameraFragment : Fragment() {
         mediaStoreUtils = MediaStoreUtils(requireContext())
 
         // Wait for the views to be properly laid out
-        fragmentCameraBinding.viewFinder.post {
+        cameraPreview?.viewFinder?.post {
 
             // Keep track of the display in which this view is attached
-            displayId = fragmentCameraBinding.viewFinder.display.displayId
+            displayId = cameraPreview!!.viewFinder.display.displayId
 
             // Build UI controls
             updateCameraUi()
@@ -264,7 +268,7 @@ class CameraFragment : Fragment() {
         val screenAspectRatio = aspectRatio(metrics.width(), metrics.height())
         Log.d(TAG, "Preview aspect ratio: $screenAspectRatio")
 
-        val rotation = fragmentCameraBinding.viewFinder.display.rotation
+        val rotation = cameraPreview?.viewFinder!!.display.rotation
 
         // CameraProvider
         val cameraProvider = cameraProvider
@@ -326,7 +330,7 @@ class CameraFragment : Fragment() {
             )
 
             // Attach the viewfinder's surface provider to preview use case
-            preview?.setSurfaceProvider(fragmentCameraBinding.viewFinder.surfaceProvider)
+            preview?.setSurfaceProvider(cameraPreview?.viewFinder?.surfaceProvider)
             observeCameraState(camera?.cameraInfo!!)
         } catch (exc: Exception) {
             Log.e(TAG, "Use case binding failed", exc)
@@ -475,15 +479,15 @@ class CameraFragment : Fragment() {
     private fun updateCameraUi() {
 
         // Remove previous UI if any
-        cameraUiContainerBinding?.root?.let {
-            fragmentCameraBinding.root.removeView(it)
+        cameraPreview?.root?.let {
+            cameraPreview!!.root.removeView(it)
         }
 
-        cameraUiContainerBinding = CameraUiContainerBinding.inflate(
-            LayoutInflater.from(requireContext()),
-            fragmentCameraBinding.root,
-            true
-        )
+//        cameraUiContainerBinding = CameraUiContainerBinding.inflate(
+//            LayoutInflater.from(requireContext()),
+//            fragmentCameraBinding.root,
+//            true
+//        )
 
         // In the background, load latest photo taken (if any) for gallery thumbnail
         lifecycleScope.launch {
@@ -494,10 +498,10 @@ class CameraFragment : Fragment() {
         }
 
         // Listener for button used to capture photo
-        cameraUiContainerBinding?.cameraCaptureButton?.setOnClickListener {
+        cameraPreview?.cameraCaptureButton?.setOnClickListener {
             lifecycleScope.launch {
                 if (mediaStoreUtils.getImages().isNotEmpty()) {
-                    cameraUiContainerBinding?.saveText?.text =
+                    cameraPreview?.saveText?.text =
                         "Save(${mediaStoreUtils.getImages().size})"
                 }
             }
@@ -556,10 +560,10 @@ class CameraFragment : Fragment() {
                 // We can only change the foreground Drawable using API level 23+ API
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     // Display flash animation to indicate that photo was captured
-                    fragmentCameraBinding.root.postDelayed({
-                        fragmentCameraBinding.root.foreground = ColorDrawable(Color.WHITE)
-                        fragmentCameraBinding.root.postDelayed(
-                            { fragmentCameraBinding.root.foreground = null }, ANIMATION_FAST_MILLIS
+                    cameraPreview?.root?.postDelayed({
+                        cameraPreview!!.root.foreground = ColorDrawable(Color.WHITE)
+                        cameraPreview!!.root.postDelayed(
+                            { cameraPreview!!.root.foreground = null }, ANIMATION_FAST_MILLIS
                         )
                     }, ANIMATION_SLOW_MILLIS)
                 }
@@ -585,7 +589,7 @@ class CameraFragment : Fragment() {
 //        }
 
         // Listener for button used to view the most recent photo
-        cameraUiContainerBinding?.photoViewButton?.setOnClickListener {
+        cameraPreview?.photoViewButton?.setOnClickListener {
             // Only navigate when the gallery has photos
             lifecycleScope.launch {
                 if (mediaStoreUtils.getImages().isNotEmpty()) {
@@ -603,15 +607,15 @@ class CameraFragment : Fragment() {
             }
         }
 
-        cameraUiContainerBinding?.cameraZoomText0?.setOnClickListener {
+        cameraPreview?.cameraZoomText0?.setOnClickListener {
             camera?.cameraControl?.setZoomRatio(0.02f)
         }
 
-        cameraUiContainerBinding?.cameraZoomText05?.setOnClickListener {
+        cameraPreview?.cameraZoomText05?.setOnClickListener {
             camera?.cameraControl?.setLinearZoom(0.05f)
         }
 
-        cameraUiContainerBinding?.cameraZoomText1?.setOnClickListener {
+        cameraPreview?.cameraZoomText1?.setOnClickListener {
             camera?.cameraControl?.setLinearZoom(1f)
         }
     }

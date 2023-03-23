@@ -26,7 +26,7 @@ class CameraActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             requestPermissions(permission, 80)
         }
-        setSupportActionBar(binding.toolbar)
+       // setSupportActionBar(binding.toolbar)
 
 //        val navController = findNavController(R.id.nav_host_fragment_content_camera)
 //        appBarConfiguration = AppBarConfiguration(navController.graph)

@@ -35,4 +35,8 @@
     <color name="bkDarkPurple">#FF440044</color>
     <color name="bkLightPurple">#FF880088</color>
     <color name="bkPurple">#FFFF00FF</color>
+    <color name="redwood_color">#464C68</color>
+    <color name="home_Screen_module_title">#47423E</color>
+    <color name="transp">#80000000</color>
+
 </resources>
