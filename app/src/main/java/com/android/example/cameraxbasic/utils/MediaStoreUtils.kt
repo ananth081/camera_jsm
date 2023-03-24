@@ -22,7 +22,9 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.net.toUri
+import com.android.example.cameraxbasic.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -47,12 +49,23 @@ class MediaStoreUtils(private val context: Context) {
 
     private suspend fun getMediaStoreImageCursor(mediaStoreCollection: Uri): Cursor? {
         var cursor: Cursor?
+        val appName = context.resources.getString(R.string.app_name)
+        val DIRECTORY_NAME = "%Pictures/$appName%"
+        val selectionArgs = arrayOf(DIRECTORY_NAME)
+
         withContext(Dispatchers.IO) {
-            val projection = arrayOf(imageDataColumnIndex, imageIdColumnIndex)
             val sortOrder = "DATE_ADDED DESC"
+            val projection = arrayOf(imageDataColumnIndex, imageIdColumnIndex)
+//            val sortOrder = "DATE_ADDED DESC"
+//            cursor = context.contentResolver.query(
+//                mediaStoreCollection, projection, null, null, sortOrder
+//            )
             cursor = context.contentResolver.query(
-                mediaStoreCollection, projection, null, null, sortOrder
-            )
+                MediaStore.Files.getContentUri("external"),
+                projection,
+                MediaStore.Images.Media.DATA + " like ? ",
+                selectionArgs,
+                sortOrder);
         }
         return cursor
     }

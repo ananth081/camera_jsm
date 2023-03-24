@@ -80,15 +80,8 @@ class CameraFragment : Fragment() {
 
     private var _fragmentCameraBinding: FragmentCameraBinding? = null
     private var cameraPreview: CameraPreviewBinding? = null
-
-    private val fragmentCameraBinding get() = _fragmentCameraBinding!!
-
-    private var cameraUiContainerBinding: CameraUiContainerBinding? = null
-
     private lateinit var broadcastManager: LocalBroadcastManager
-
     private lateinit var mediaStoreUtils: MediaStoreUtils
-
     private var displayId: Int = -1
     private var lensFacing: Int = CameraSelector.LENS_FACING_BACK
     private var preview: Preview? = null

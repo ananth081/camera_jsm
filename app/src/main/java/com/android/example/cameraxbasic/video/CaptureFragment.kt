@@ -329,7 +329,7 @@ class CaptureFragment : Fragment() {
      */
     @SuppressLint("ClickableViewAccessibility", "MissingPermission")
     private fun initializeUI() {
-        if (outputUri == null){
+        if (outputUri == null) {
             captureViewBinding.cameraButton.setBackgroundResource(R.drawable.ic_photo)
         }
 
@@ -396,7 +396,7 @@ class CaptureFragment : Fragment() {
                     recording.stop()
                     currentRecording = null
                 }
-                captureViewBinding.captureButton.setImageResource(R.drawable.ic_start)
+                captureViewBinding.captureButton.setImageResource(R.drawable.ic_shutter_normal)
             }
             // ensure the stop button is initialized disabled & invisible
             visibility = View.INVISIBLE
@@ -488,7 +488,7 @@ class CaptureFragment : Fragment() {
         captureViewBinding.let {
             when (state) {
                 UiState.IDLE -> {
-                    it.captureButton.setImageResource(R.drawable.ic_start)
+                    it.captureButton.setImageResource(R.drawable.ic_shutter_normal)
                     it.stopButton.visibility = View.INVISIBLE
 
                     it.cameraButton.visibility = View.VISIBLE
@@ -506,7 +506,7 @@ class CaptureFragment : Fragment() {
                     it.stopButton.isEnabled = true
                 }
                 UiState.FINALIZED -> {
-                    it.captureButton.setImageResource(R.drawable.ic_start)
+                    it.captureButton.setImageResource(R.drawable.ic_shutter_normal)
                     it.stopButton.visibility = View.INVISIBLE
                 }
                 else -> {

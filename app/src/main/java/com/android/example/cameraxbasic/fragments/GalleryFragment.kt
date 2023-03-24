@@ -37,6 +37,8 @@ import com.android.example.cameraxbasic.utils.MediaStoreFile
 import com.android.example.cameraxbasic.utils.MediaStoreUtils
 import com.android.example.cameraxbasic.utils.padWithDisplayCutout
 import com.android.example.cameraxbasic.utils.showImmersive
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
@@ -84,6 +86,7 @@ class GalleryFragment internal constructor() : Fragment() {
                 .setMediaListAndNotify(mediaList)
             hasMediaItems.complete(mediaList.isNotEmpty())
         }
+
     }
 
     override fun onCreateView(
@@ -98,6 +101,7 @@ class GalleryFragment internal constructor() : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         lifecycleScope.launch {
             fragmentGalleryBinding.deleteButton.isEnabled = hasMediaItems.await()
             fragmentGalleryBinding.shareButton.isEnabled = hasMediaItems.await()
@@ -109,9 +113,26 @@ class GalleryFragment internal constructor() : Fragment() {
             adapter = MediaPagerAdapter(childFragmentManager, mediaList)
         }
 
-        TabLayoutMediator(fragmentGalleryBinding.tabLayout, fragmentGalleryBinding.photoViewPager) { tab, position ->
+        TabLayoutMediator(fragmentGalleryBinding.tabLayout, fragmentGalleryBinding.photoViewPager) {
+                tab, position ->
             //Some implementation
+            fragmentGalleryBinding.toolbarText.text = "${position}of${mediaList.size}"
         }.attach()
+
+        fragmentGalleryBinding.tabLayout.addOnTabSelectedListener(object: OnTabSelectedListener  {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                fragmentGalleryBinding.toolbarText.text = "${tab?.position?.plus(1)} of ${mediaList.size}"
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+
+            }
+
+        })
 
         // Make sure that the cutout "safe area" avoids the screen notch if any
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
