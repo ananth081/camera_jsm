@@ -1,6 +1,7 @@
 package com.android.example.cameraxbasic.camera
 
 import android.Manifest
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -75,6 +76,8 @@ class CameraActivity : AppCompatActivity() {
         transaction1.commitAllowingStateLoss()
         return Pair(videoFragment, transaction1)
     }
+
+
 
 //    override fun onSupportNavigateUp(): Boolean {
 //        val navController = findNavController(R.id.nav_host_fragment_content_camera)

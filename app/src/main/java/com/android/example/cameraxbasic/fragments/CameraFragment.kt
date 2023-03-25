@@ -17,6 +17,7 @@
 package com.android.example.cameraxbasic.fragments
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.*
 import android.content.res.Configuration
 import android.graphics.Color
@@ -33,6 +34,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.concurrent.futures.await
@@ -90,7 +93,7 @@ class CameraFragment : Fragment() {
     private var camera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
     private lateinit var windowManager: WindowManager
-
+    private var fromRetakeScreen: String? = null
     private val displayManager by lazy {
         requireContext().getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
     }
@@ -156,8 +159,8 @@ class CameraFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         cameraPreview = CameraPreviewBinding.inflate(inflater, container, false)
-      //  _fragmentCameraBinding = FragmentCameraBinding.inflate(inflater, container, false)
-      //  return fragmentCameraBinding.root
+        //  _fragmentCameraBinding = FragmentCameraBinding.inflate(inflater, container, false)
+        //  return fragmentCameraBinding.root
         return cameraPreview!!.root
     }
 
@@ -563,41 +566,43 @@ class CameraFragment : Fragment() {
             }
         }
 
-        // Setup for button used to switch cameras
-//        cameraUiContainerBinding?.cameraSwitchButton?.let {
-//
-//            // Disable the button until the camera is set up
-//            it.isEnabled = false
-//
-//            // Listener for button used to switch cameras. Only called if the button is enabled
-//            it.setOnClickListener {
-//                lensFacing = if (CameraSelector.LENS_FACING_FRONT == lensFacing) {
-//                    CameraSelector.LENS_FACING_BACK
-//                } else {
-//                    CameraSelector.LENS_FACING_FRONT
-//                }
-//                // Re-bind use cases to update selected camera
-//                bindCameraUseCases()
-//            }
-//        }
+        cameraPreview?.dualCamera?.let {
+            it.isEnabled = true
+            it.setOnClickListener {
+                lensFacing = if (CameraSelector.LENS_FACING_FRONT == lensFacing) {
+                    CameraSelector.LENS_FACING_BACK
+                } else {
+                    CameraSelector.LENS_FACING_FRONT
+                }
+                bindCameraUseCases()
+            }
+        }
+        cameraPreview?.flashLight?.let { flashLightImg ->
+            flashLightImg.isEnabled = true
+            var torchState = false
+            flashLightImg.setOnClickListener {
+                torchState = TorchState.ON == camera?.cameraInfo?.torchState?.value
+                if (torchState) {
+                    flashLightImg.setImageResource(R.drawable.flash_circle_1)
+                    camera?.cameraControl?.enableTorch(false)
+                } else {
+                    flashLightImg.setImageResource(R.drawable.flash_circle_on)
+                    camera?.cameraControl?.enableTorch(true)
+                }
+            }
+        }
 
-        // Listener for button used to view the most recent photo
         cameraPreview?.photoViewButton?.setOnClickListener {
-            // Only navigate when the gallery has photos
             lifecycleScope.launch {
                 if (mediaStoreUtils.getImages().isNotEmpty()) {
                     val intent = Intent(context, GalleryActivity::class.java)
-                    activity?.startActivity(intent)
-
-//                    val intent = Intent(context, JsmGalleryActivity::class.java)
-//                    activity?.startActivity(intent)
-//                    Navigation.findNavController(requireActivity(), R.id.fragment_container)
-//                        .navigate(CameraFragmentDirections.actionCameraToGallery(
-//                            mediaStoreUtils.mediaStoreCollection.toString()
-//                        )
-//                    )
+                    startForResult.launch(intent)
                 }
             }
+        }
+
+        cameraPreview?.cancel?.setOnClickListener {
+            activity?.finish()
         }
 
         cameraPreview?.cameraZoomText0?.setOnClickListener {
@@ -746,13 +751,13 @@ class CameraFragment : Fragment() {
                 bos.write(buf)
             } while (inputStream?.read(buf) != -1)
         } catch (e: IOException) {
-            Log.d(TAG, "copyFileToTempCache: "+e.message)
+            Log.d(TAG, "copyFileToTempCache: " + e.message)
         } finally {
             try {
                 inputStream?.close()
                 bos?.close()
             } catch (e: IOException) {
-                Log.d(TAG, "copyFileToTempCache: "+e.message)
+                Log.d(TAG, "copyFileToTempCache: " + e.message)
             }
         }
     }
@@ -797,4 +802,23 @@ class CameraFragment : Fragment() {
         }
         return dir
     }
+
+    private val startForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val intent = result.data
+                fromRetakeScreen =  intent?.extras?.getString("source")
+                Log.d(TAG, "====uri: "+intent?.extras?.getString("file_uri"))
+                hideRetakeUiControls()
+                // Handle the Intent
+            }
+        }
+
+
+    private fun hideRetakeUiControls(){
+        cameraPreview?.saveText?.visibility = View.GONE
+        cameraPreview?.photoViewButton?.visibility = View.GONE
+        cameraPreview?.saveText?.visibility = View.GONE
+    }
+
 }
