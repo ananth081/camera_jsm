@@ -16,15 +16,18 @@
 
 package com.android.example.cameraxbasic.fragments
 
+import android.app.Activity
 import android.content.Intent
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
+import android.graphics.drawable.ColorDrawable
 import android.media.MediaScannerConnection
 import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.webkit.MimeTypeMap
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
@@ -32,11 +35,14 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.android.example.cameraxbasic.R
+import com.android.example.cameraxbasic.camera.CameraActivity
 import com.android.example.cameraxbasic.databinding.FragmentGalleryBinding
 import com.android.example.cameraxbasic.utils.MediaStoreFile
 import com.android.example.cameraxbasic.utils.MediaStoreUtils
 import com.android.example.cameraxbasic.utils.padWithDisplayCutout
 import com.android.example.cameraxbasic.utils.showImmersive
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
@@ -56,18 +62,23 @@ class GalleryFragment internal constructor() : Fragment() {
     private var hasMediaItems = CompletableDeferred<Boolean>()
 
     /** Adapter class used to present a fragment containing one photo or video as a page */
-    inner class MediaPagerAdapter(fm: FragmentManager,
-                                  private var mediaList: MutableList<MediaStoreFile>) :
-                                      FragmentStateAdapter(fm, lifecycle) {
+    inner class MediaPagerAdapter(
+        fm: FragmentManager,
+        private var mediaList: MutableList<MediaStoreFile>
+    ) :
+        FragmentStateAdapter(fm, lifecycle) {
         override fun getItemCount(): Int = mediaList.size
         override fun createFragment(position: Int): Fragment =
             PhotoFragment.create(mediaList[position])
+
         override fun getItemId(position: Int): Long {
             return mediaList[position].id
         }
+
         override fun containsItem(itemId: Long): Boolean {
             return null != mediaList.firstOrNull { it.id == itemId }
         }
+
         fun setMediaListAndNotify(mediaList: MutableList<MediaStoreFile>) {
             this.mediaList = mediaList
             notifyDataSetChanged()
@@ -75,6 +86,7 @@ class GalleryFragment internal constructor() : Fragment() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        activity?.setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
 
         lifecycleScope.launch {
@@ -84,6 +96,7 @@ class GalleryFragment internal constructor() : Fragment() {
                 .setMediaListAndNotify(mediaList)
             hasMediaItems.complete(mediaList.isNotEmpty())
         }
+
     }
 
     override fun onCreateView(
@@ -92,12 +105,32 @@ class GalleryFragment internal constructor() : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _fragmentGalleryBinding = FragmentGalleryBinding.inflate(inflater, container, false)
+        inflater.context.setTheme(R.style.AppTheme)
         return fragmentGalleryBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        fragmentGalleryBinding.toolbar.inflateMenu(R.menu.main_menu)
+        _fragmentGalleryBinding?.toolbar?.background = ColorDrawable(resources.getColor(R.color.colorPrimary))
+        fragmentGalleryBinding.toolbar.overflowIcon?.colorFilter =  PorterDuffColorFilter(resources.getColor(R.color.ic_white), PorterDuff.Mode.SRC_ATOP)
+        fragmentGalleryBinding.toolbar.setOnMenuItemClickListener {
+            if (it.itemId == R.id.actionRetake) {
+                mediaList.getOrNull(fragmentGalleryBinding.photoViewPager.currentItem)
+                    ?.let { mediaStoreFile ->
+                        mediaStoreFile.file.delete()
+                        val intent = Intent()
+                        intent.putExtra("source", "retake_picture")
+                        intent.putExtra("file_uri", mediaStoreFile.uri)
+                        activity?.setResult(Activity.RESULT_OK, intent)
+                        activity?.finish()
+                    }
 
+            } else if (it.itemId == R.id.actionDelete) {
+                deleteSpecificImage()
+            }
+            true
+        }
         lifecycleScope.launch {
             fragmentGalleryBinding.deleteButton.isEnabled = hasMediaItems.await()
             fragmentGalleryBinding.shareButton.isEnabled = hasMediaItems.await()
@@ -109,9 +142,29 @@ class GalleryFragment internal constructor() : Fragment() {
             adapter = MediaPagerAdapter(childFragmentManager, mediaList)
         }
 
-        TabLayoutMediator(fragmentGalleryBinding.tabLayout, fragmentGalleryBinding.photoViewPager) { tab, position ->
+        TabLayoutMediator(
+            fragmentGalleryBinding.tabLayout,
+            fragmentGalleryBinding.photoViewPager
+        ) { tab, position ->
             //Some implementation
+            fragmentGalleryBinding.toolbarText.text = "${position}of${mediaList.size}"
         }.attach()
+
+        fragmentGalleryBinding.tabLayout.addOnTabSelectedListener(object : OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                fragmentGalleryBinding.toolbarText.text =
+                    "${tab?.position?.plus(1)} of ${mediaList.size}"
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+
+            }
+
+        })
 
         // Make sure that the cutout "safe area" avoids the screen notch if any
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -150,43 +203,49 @@ class GalleryFragment internal constructor() : Fragment() {
 
         // Handle delete button press
         fragmentGalleryBinding.deleteButton.setOnClickListener {
+            //delete was here
 
-            mediaList.getOrNull(fragmentGalleryBinding.photoViewPager.currentItem)
-                ?.let { mediaStoreFile ->
-                    val mediaFile = mediaStoreFile.file
+        }
 
-                    AlertDialog.Builder(view.context, android.R.style.Theme_Material_Dialog)
-                        .setTitle(getString(R.string.delete_title))
-                        .setMessage(getString(R.string.delete_dialog))
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .setPositiveButton(android.R.string.ok) { _, _ ->
+    }
 
-                            // Delete current photo
-                            mediaFile.delete()
+    private fun deleteSpecificImage() {
+        mediaList.getOrNull(fragmentGalleryBinding.photoViewPager.currentItem)
+            ?.let { mediaStoreFile ->
+                val mediaFile = mediaStoreFile.file
 
-                            // Send relevant broadcast to notify other apps of deletion
-                            MediaScannerConnection.scanFile(
-                                view.context, arrayOf(mediaFile.absolutePath), null, null
-                            )
+                AlertDialog.Builder(requireContext(), android.R.style.Theme_Material_Dialog)
+                    .setTitle(getString(R.string.delete_title))
+                    .setMessage(getString(R.string.delete_dialog))
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setPositiveButton(android.R.string.ok) { _, _ ->
 
-                            // Notify our view pager
-                            mediaList.removeAt(fragmentGalleryBinding.photoViewPager.currentItem)
-                            fragmentGalleryBinding.photoViewPager.adapter?.notifyDataSetChanged()
+                        // Delete current photo
+                        mediaFile.delete()
 
-                            // If all photos have been deleted, return to camera
-                            if (mediaList.isEmpty()) {
-                                Navigation.findNavController(
-                                    requireActivity(),
-                                    R.id.fragment_container
-                                ).navigateUp()
-                            }
+                        // Send relevant broadcast to notify other apps of deletion
+                        MediaScannerConnection.scanFile(
+                            requireContext(), arrayOf(mediaFile.absolutePath), null, null
+                        )
 
+                        // Notify our view pager
+                        mediaList.removeAt(fragmentGalleryBinding.photoViewPager.currentItem)
+                        fragmentGalleryBinding.photoViewPager.adapter?.notifyDataSetChanged()
+
+                        // If all photos have been deleted, return to camera
+                        if (mediaList.isEmpty()) {
+                            activity?.finish()
+//                            Navigation.findNavController(
+//                                requireActivity(),
+//                                R.id.fragment_container
+//                            ).navigateUp()
                         }
 
-                        .setNegativeButton(android.R.string.cancel, null)
-                        .create().showImmersive()
-                }
-        }
+                    }
+
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .create().showImmersive()
+            }
     }
 
     override fun onDestroyView() {

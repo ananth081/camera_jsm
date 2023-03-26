@@ -17,6 +17,7 @@
 package com.android.example.cameraxbasic.fragments
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.*
 import android.content.res.Configuration
 import android.graphics.Color
@@ -26,13 +27,14 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.provider.OpenableColumns
 import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
+import android.view.ScaleGestureDetector
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.concurrent.futures.await
@@ -40,24 +42,19 @@ import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import androidx.navigation.Navigation
 import androidx.window.WindowManager
 import com.android.example.cameraxbasic.KEY_EVENT_ACTION
 import com.android.example.cameraxbasic.KEY_EVENT_EXTRA
 import com.android.example.cameraxbasic.R
 import com.android.example.cameraxbasic.camera.GalleryActivity
-import com.android.example.cameraxbasic.camera.JsmGalleryActivity
 import com.android.example.cameraxbasic.databinding.CameraPreviewBinding
-import com.android.example.cameraxbasic.databinding.CameraUiContainerBinding
 import com.android.example.cameraxbasic.databinding.FragmentCameraBinding
 import com.android.example.cameraxbasic.utils.ANIMATION_FAST_MILLIS
 import com.android.example.cameraxbasic.utils.ANIMATION_SLOW_MILLIS
 import com.android.example.cameraxbasic.utils.MediaStoreUtils
-import com.android.example.cameraxbasic.utils.simulateClick
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import java.io.*
-import kotlinx.coroutines.launch
 import java.nio.ByteBuffer
 import java.text.SimpleDateFormat
 import java.util.*
@@ -66,6 +63,8 @@ import java.util.concurrent.Executors
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
+import kotlinx.coroutines.launch
+
 
 /** Helper type alias used for analysis use case callbacks */
 typealias LumaListener = (luma: Double) -> Unit
@@ -80,15 +79,8 @@ class CameraFragment : Fragment() {
 
     private var _fragmentCameraBinding: FragmentCameraBinding? = null
     private var cameraPreview: CameraPreviewBinding? = null
-
-    private val fragmentCameraBinding get() = _fragmentCameraBinding!!
-
-    private var cameraUiContainerBinding: CameraUiContainerBinding? = null
-
     private lateinit var broadcastManager: LocalBroadcastManager
-
     private lateinit var mediaStoreUtils: MediaStoreUtils
-
     private var displayId: Int = -1
     private var lensFacing: Int = CameraSelector.LENS_FACING_BACK
     private var preview: Preview? = null
@@ -97,7 +89,7 @@ class CameraFragment : Fragment() {
     private var camera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
     private lateinit var windowManager: WindowManager
-
+    private var fromRetakeScreen: String? = null
     private val displayManager by lazy {
         requireContext().getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
     }
@@ -163,8 +155,8 @@ class CameraFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         cameraPreview = CameraPreviewBinding.inflate(inflater, container, false)
-      //  _fragmentCameraBinding = FragmentCameraBinding.inflate(inflater, container, false)
-      //  return fragmentCameraBinding.root
+        //  _fragmentCameraBinding = FragmentCameraBinding.inflate(inflater, container, false)
+        //  return fragmentCameraBinding.root
         return cameraPreview!!.root
     }
 
@@ -542,7 +534,19 @@ class CameraFragment : Fragment() {
                             // We can only change the foreground Drawable using API level 23+ API
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                                 // Update the gallery thumbnail with latest picture taken
-                                setGalleryThumbnail(savedUri.toString())
+
+                                if ("retake_picture" == fromRetakeScreen) {
+                                    lifecycleScope.launch {
+                                        if (mediaStoreUtils.getImages().isNotEmpty()) {
+                                            val intent =
+                                                Intent(context, GalleryActivity::class.java)
+                                            startForResult.launch(intent)
+                                        }
+                                    }
+                                } else {
+                                    setGalleryThumbnail(savedUri.toString())
+                                }
+
                             }
 
                             // Implicit broadcasts will be ignored for devices running API level >= 24
@@ -570,54 +574,61 @@ class CameraFragment : Fragment() {
             }
         }
 
-        // Setup for button used to switch cameras
-//        cameraUiContainerBinding?.cameraSwitchButton?.let {
-//
-//            // Disable the button until the camera is set up
-//            it.isEnabled = false
-//
-//            // Listener for button used to switch cameras. Only called if the button is enabled
-//            it.setOnClickListener {
-//                lensFacing = if (CameraSelector.LENS_FACING_FRONT == lensFacing) {
-//                    CameraSelector.LENS_FACING_BACK
-//                } else {
-//                    CameraSelector.LENS_FACING_FRONT
-//                }
-//                // Re-bind use cases to update selected camera
-//                bindCameraUseCases()
-//            }
-//        }
-
-        // Listener for button used to view the most recent photo
-        cameraPreview?.photoViewButton?.setOnClickListener {
-            // Only navigate when the gallery has photos
-            lifecycleScope.launch {
-                if (mediaStoreUtils.getImages().isNotEmpty()) {
-                    val intent = Intent(context, GalleryActivity::class.java)
-                    activity?.startActivity(intent)
-
-//                    val intent = Intent(context, JsmGalleryActivity::class.java)
-//                    activity?.startActivity(intent)
-//                    Navigation.findNavController(requireActivity(), R.id.fragment_container)
-//                        .navigate(CameraFragmentDirections.actionCameraToGallery(
-//                            mediaStoreUtils.mediaStoreCollection.toString()
-//                        )
-//                    )
+        cameraPreview?.dualCamera?.let {
+            it.isEnabled = true
+            it.setOnClickListener {
+                lensFacing = if (CameraSelector.LENS_FACING_FRONT == lensFacing) {
+                    CameraSelector.LENS_FACING_BACK
+                } else {
+                    CameraSelector.LENS_FACING_FRONT
+                }
+                bindCameraUseCases()
+            }
+        }
+        cameraPreview?.flashLight?.let { flashLightImg ->
+            flashLightImg.isEnabled = true
+            var torchState = false
+            flashLightImg.setOnClickListener {
+                torchState = TorchState.ON == camera?.cameraInfo?.torchState?.value
+                if (torchState) {
+                    flashLightImg.setImageResource(R.drawable.flash_circle_1)
+                    camera?.cameraControl?.enableTorch(false)
+                } else {
+                    flashLightImg.setImageResource(R.drawable.flash_circle_on)
+                    camera?.cameraControl?.enableTorch(true)
                 }
             }
         }
 
-        cameraPreview?.cameraZoomText0?.setOnClickListener {
-            camera?.cameraControl?.setZoomRatio(0.02f)
+        cameraPreview?.photoViewButton?.setOnClickListener {
+            lifecycleScope.launch {
+                if (mediaStoreUtils.getImages().isNotEmpty()) {
+                    val intent = Intent(context, GalleryActivity::class.java)
+                    startForResult.launch(intent)
+                }
+            }
         }
 
-        cameraPreview?.cameraZoomText05?.setOnClickListener {
-            camera?.cameraControl?.setLinearZoom(0.05f)
+        cameraPreview?.cancel?.setOnClickListener {
+            activity?.finish()
         }
 
-        cameraPreview?.cameraZoomText1?.setOnClickListener {
-            camera?.cameraControl?.setLinearZoom(1f)
-        }
+        setScale()
+//        cameraPreview?.cameraZoomText0?.setOnClickListener {
+//            camera?.cameraControl?.setZoomRatio(0.02f)
+//        }
+//
+//        cameraPreview?.cameraZoomText05?.setOnClickListener {
+//            camera?.cameraControl?.setLinearZoom(0.05f)
+//        }
+//
+//        cameraPreview?.cameraZoomText1?.setOnClickListener {
+//            camera?.cameraControl?.setLinearZoom(1f)
+//        }
+    }
+
+    fun setCameraZoomLevels(zoomValue: Float) {
+        camera?.cameraControl?.setLinearZoom(zoomValue)
     }
 
     /** Enabled or disabled a button to switch cameras depending on the available cameras */
@@ -753,13 +764,13 @@ class CameraFragment : Fragment() {
                 bos.write(buf)
             } while (inputStream?.read(buf) != -1)
         } catch (e: IOException) {
-            Log.d(TAG, "copyFileToTempCache: "+e.message)
+            Log.d(TAG, "copyFileToTempCache: " + e.message)
         } finally {
             try {
                 inputStream?.close()
                 bos?.close()
             } catch (e: IOException) {
-                Log.d(TAG, "copyFileToTempCache: "+e.message)
+                Log.d(TAG, "copyFileToTempCache: " + e.message)
             }
         }
     }
@@ -803,5 +814,50 @@ class CameraFragment : Fragment() {
             dir.mkdirs()
         }
         return dir
+    }
+
+    private val startForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val intent = result.data
+                fromRetakeScreen = intent?.extras?.getString("source")
+                hideRetakeUiControls()
+                // Handle the Intent
+            }
+        }
+
+
+    private fun hideRetakeUiControls() {
+        cameraPreview?.saveText?.visibility = View.GONE
+        cameraPreview?.photoViewButton?.visibility = View.GONE
+        cameraPreview?.saveText?.visibility = View.GONE
+    }
+
+    fun setScale(){
+        val listener: ScaleGestureDetector.OnScaleGestureListener =
+            object : ScaleGestureDetector.OnScaleGestureListener {
+                override fun onScale(scaleGestureDetector: ScaleGestureDetector): Boolean {
+                    val f: ZoomState? = camera?.cameraInfo?.zoomState?.value
+                    Log.d("Zoom", f?.zoomRatio.toString())
+                    val scale: Float = scaleGestureDetector.scaleFactor
+                    camera?.cameraControl?.setZoomRatio(scale * f?.zoomRatio!!)
+                    return true
+                }
+
+                override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
+                    return true
+                }
+
+                override fun onScaleEnd(detector: ScaleGestureDetector) {
+                }
+
+            }
+        val scaleGestureDetector = ScaleGestureDetector(requireContext(), listener)
+
+        cameraPreview?.viewFinder?.setOnTouchListener { view, motionEvent ->
+            scaleGestureDetector.onTouchEvent(
+                motionEvent
+            )
+        }
     }
 }

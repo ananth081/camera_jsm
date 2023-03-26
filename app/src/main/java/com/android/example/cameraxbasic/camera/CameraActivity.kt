@@ -1,8 +1,10 @@
 package com.android.example.cameraxbasic.camera
 
 import android.Manifest
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
 import androidx.navigation.ui.AppBarConfiguration
@@ -58,12 +60,31 @@ class CameraActivity : AppCompatActivity() {
 
         })
 
+        binding.contentCamera.cameraZoomText0.setOnClickListener {
+            val fragment = supportFragmentManager.findFragmentByTag("CameraFragment")
+            if (fragment != null && fragment is CameraFragment) {
+                fragment.setCameraZoomLevels(0.0f)
+            }
+        }
+        binding.contentCamera.cameraZoomText05.setOnClickListener {
+            val fragment = supportFragmentManager.findFragmentByTag("CameraFragment")
+            if (fragment != null && fragment is CameraFragment) {
+                fragment.setCameraZoomLevels(0.7f)
+            }
+        }
+        binding.contentCamera.cameraZoomText1.setOnClickListener {
+            val fragment = supportFragmentManager.findFragmentByTag("CameraFragment")
+            if (fragment != null && fragment is CameraFragment) {
+                fragment.setCameraZoomLevels(1.0f)
+            }
+        }
+
     }
 
     private fun showVideoFragment(fragment: CaptureFragment): Pair<CaptureFragment, FragmentTransaction> {
         val videoFragment = CaptureFragment()
         val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.fragment_container, fragment, "")
+        transaction.replace(R.id.fragment_container, fragment, "CaptureFragment")
         transaction.commitAllowingStateLoss()
         return Pair(videoFragment, transaction)
     }
@@ -71,10 +92,12 @@ class CameraActivity : AppCompatActivity() {
     private fun showPhotoFragment(fragment: CameraFragment): Pair<CameraFragment, FragmentTransaction> {
         val videoFragment = CameraFragment()
         val transaction1 = supportFragmentManager.beginTransaction()
-        transaction1.replace(R.id.fragment_container, fragment, "")
+        transaction1.replace(R.id.fragment_container, fragment, "CameraFragment")
         transaction1.commitAllowingStateLoss()
         return Pair(videoFragment, transaction1)
     }
+
+
 
 //    override fun onSupportNavigateUp(): Boolean {
 //        val navController = findNavController(R.id.nav_host_fragment_content_camera)

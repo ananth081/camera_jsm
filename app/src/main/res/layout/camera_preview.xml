@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/transparent"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -21,7 +20,8 @@
             android:id="@+id/cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
             android:gravity="bottom"
             android:text="Cancel"
             android:textColor="@color/ic_white"
@@ -34,7 +34,7 @@
             android:layout_gravity="center_vertical|right"
             android:layout_marginEnd="15dp"
             android:layout_toStartOf="@+id/flashLight"
-            android:src="@drawable/switch_camera" />
+            android:src="@drawable/ic_switch_camera" />
 
         <ImageView
             android:id="@+id/flashLight"
@@ -48,20 +48,22 @@
 
     <LinearLayout
         android:id="@+id/cameraZoom"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:background="@color/transp"
         android:orientation="horizontal"
+        android:visibility="gone"
+        android:background="#00555555"
+        android:foreground="#00555555"
         app:layout_constraintBottom_toTopOf="@id/camera_control"
         app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="10dp"
         app:layout_constraintStart_toStartOf="parent">
 
         <TextView
             android:id="@+id/cameraZoomText0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/zoom_button_corners"
             android:gravity="center"
             android:padding="12dp"
             android:text="0x"
@@ -71,7 +73,6 @@
             android:id="@+id/cameraZoomText05"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/zoom_button_corners"
             android:gravity="center"
             android:padding="12dp"
             android:text="0.5x"
@@ -81,7 +82,6 @@
             android:id="@+id/cameraZoomText1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/zoom_button_corners"
             android:gravity="center"
             android:padding="12dp"
             android:text="1x"
@@ -91,12 +91,12 @@
     <androidx.camera.view.PreviewView
         android:id="@+id/view_finder"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="80dp"
-        android:layout_marginBottom="140dp"
+        android:layout_height="0dp"
         android:background="@color/ic_white"
+        app:layout_constraintBottom_toTopOf="@+id/cameraZoom"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cancel_layout" />
+        app:layout_constraintTop_toBottomOf="@+id/cancel_layout" />
 
     <RelativeLayout
         android:id="@+id/camera_control"
@@ -126,50 +126,29 @@
             android:layout_width="48dp"
             android:layout_height="50dp"
             android:layout_alignParentBottom="true"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="18dp"
+            android:layout_centerInParent="true"
             android:layout_toStartOf="@+id/saveText"
             android:layout_toEndOf="@+id/photo_view_button"
-            android:src="@drawable/ic_shutter_normal" />
+            android:src="@drawable/ic_shutter_normal"
+            android:translationX="9dp" />
 
         <TextView
             android:id="@+id/saveText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="47dp"
             android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="10dp"
-            android:text="Save   "
-            android:textColor="@color/ic_white"
-            android:textSize="18sp" />
-
-        <TextView
-            android:id="@+id/photo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="62dp"
-            android:layout_marginTop="0dp"
-            android:layout_marginEnd="15dp"
-            android:layout_toStartOf="@+id/video"
-            android:layout_alignParentTop="true"
-            android:text="Photo"
-            android:textColor="@color/ic_white"
-            android:textSize="18sp" />
-
-        <TextView
-            android:id="@+id/video"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_marginEnd="81dp"
-            android:layout_toStartOf="@+id/saveText"
-            android:text="Video"
-            android:textColor="@color/ic_white"
-            android:textSize="18sp" />
-
-
+            android:translationX="-25dp"
+            android:translationY="45dp"
+            android:gravity="center"
+            android:text="Save"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:textAllCaps="true"
+            android:background="@drawable/bg_save_text"
+            android:textColor="@color/txWhite"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toStartOf="parent" />
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

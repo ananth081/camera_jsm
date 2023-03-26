@@ -13,11 +13,13 @@
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
+  464C685
   -->
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#464C68</color>
+    <color name="colorPrimaryDark">#454545</color>
+    <color name="colorAccent">#464C68</color>
+
     <color name="transparent">#00000000</color>
     <color name="ic_white">#FFFFFFFF</color>
     <color name="light_blue_600">#FF039BE5</color>

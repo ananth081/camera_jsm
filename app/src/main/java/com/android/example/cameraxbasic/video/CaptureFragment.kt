@@ -44,6 +44,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.Preview
 import androidx.camera.core.VideoCapture
@@ -91,6 +92,7 @@ class CaptureFragment : Fragment() {
     private var currentRecording: Recording? = null
     private lateinit var recordingState: VideoRecordEvent
     private var outputUri: Uri? = null
+    private var camera: Camera? = null
 
     // Camera UI  states and inputs
     enum class UiState {
@@ -284,9 +286,9 @@ class CaptureFragment : Fragment() {
                         // just get the camera.cameraInfo to query capabilities
                         // we are not binding anything here.
                         if (provider.hasCamera(camSelector)) {
-                            val camera = provider.bindToLifecycle(requireActivity(), camSelector)
+                            camera = provider.bindToLifecycle(requireActivity(), camSelector)
                             QualitySelector
-                                .getSupportedQualities(camera.cameraInfo)
+                                .getSupportedQualities(camera!!.cameraInfo)
                                 .filter { quality ->
                                     listOf(Quality.UHD, Quality.FHD, Quality.HD, Quality.SD)
                                         .contains(quality)
@@ -329,7 +331,7 @@ class CaptureFragment : Fragment() {
      */
     @SuppressLint("ClickableViewAccessibility", "MissingPermission")
     private fun initializeUI() {
-        if (outputUri == null){
+        if (outputUri == null) {
             captureViewBinding.cameraButton.setBackgroundResource(R.drawable.ic_photo)
         }
 
@@ -396,7 +398,7 @@ class CaptureFragment : Fragment() {
                     recording.stop()
                     currentRecording = null
                 }
-                captureViewBinding.captureButton.setImageResource(R.drawable.ic_start)
+                captureViewBinding.captureButton.setImageResource(R.drawable.ic_shutter_normal)
             }
             // ensure the stop button is initialized disabled & invisible
             visibility = View.INVISIBLE
@@ -408,6 +410,22 @@ class CaptureFragment : Fragment() {
                 post { text = it }
             }
         }
+
+        captureViewBinding.cancel.setOnClickListener {
+            activity?.finish()
+        }
+        captureViewBinding.cameraZoomText0.setOnClickListener {
+            camera?.cameraControl?.setLinearZoom(0.02f)
+        }
+
+        captureViewBinding.cameraZoomText05.setOnClickListener {
+            camera?.cameraControl?.setZoomRatio(0.05f)
+        }
+
+        captureViewBinding.cameraZoomText1.setOnClickListener {
+            camera?.cameraControl?.setZoomRatio(1f)
+        }
+
         captureLiveStatus.value = getString(R.string.Idle)
     }
 
@@ -488,7 +506,7 @@ class CaptureFragment : Fragment() {
         captureViewBinding.let {
             when (state) {
                 UiState.IDLE -> {
-                    it.captureButton.setImageResource(R.drawable.ic_start)
+                    it.captureButton.setImageResource(R.drawable.ic_shutter_normal)
                     it.stopButton.visibility = View.INVISIBLE
 
                     it.cameraButton.visibility = View.VISIBLE
@@ -506,7 +524,7 @@ class CaptureFragment : Fragment() {
                     it.stopButton.isEnabled = true
                 }
                 UiState.FINALIZED -> {
-                    it.captureButton.setImageResource(R.drawable.ic_start)
+                    it.captureButton.setImageResource(R.drawable.ic_shutter_normal)
                     it.stopButton.visibility = View.INVISIBLE
                 }
                 else -> {
