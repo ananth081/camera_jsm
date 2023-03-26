@@ -17,8 +17,10 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <item name="colorPrimaryDark">@color/redwood_color</item>
+        <item name="colorPrimary">@color/redwood_color</item>
     </style>
 
 </resources>

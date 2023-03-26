@@ -14,15 +14,56 @@
         app:navGraph="@navigation/nav_graph_video"
         />
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayout"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/txBlack"
-        android:layoutDirection="inherit"
-        app:tabGravity="center"
-        app:tabIndicatorGravity="top"
-        app:tabIndicatorColor="#575353"
         android:layout_gravity="bottom"
-        android:layout_marginBottom="75dp"/>
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#00555555"
+            android:gravity="center">
+                <TextView
+                    android:id="@+id/cameraZoomText0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="12dp"
+                    android:text="0x"
+                    android:textColor="#212121"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/cameraZoomText05"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="12dp"
+                    android:textColor="#212121"
+                    android:text="0.5x"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/cameraZoomText1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="12dp"
+                    android:textColor="#212121"
+                    android:text="1x"
+                    android:textSize="16sp" />
+        </LinearLayout>
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/txBlack"
+            android:layoutDirection="inherit"
+            app:tabGravity="center"
+            app:tabIndicatorGravity="top"
+            app:tabIndicatorColor="#575353"
+            android:layout_marginBottom="75dp"/>
+    </LinearLayout>
+
 </FrameLayout>

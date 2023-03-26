@@ -17,11 +17,13 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="android:immersive">true</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">true</item>
+        <item name="colorPrimaryDark">@color/redwood_color</item>
+        <item name="colorPrimary">@color/redwood_color</item>
     </style>
 
     <style name="custom.Theme" parent="Theme.AppCompat">

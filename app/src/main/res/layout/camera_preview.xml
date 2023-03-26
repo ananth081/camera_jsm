@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@color/txBlack"
     android:layout_height="match_parent">
 
     <RelativeLayout
@@ -22,7 +20,8 @@
             android:id="@+id/cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
             android:gravity="bottom"
             android:text="Cancel"
             android:textColor="@color/ic_white"
@@ -35,7 +34,7 @@
             android:layout_gravity="center_vertical|right"
             android:layout_marginEnd="15dp"
             android:layout_toStartOf="@+id/flashLight"
-            android:src="@drawable/switch_camera" />
+            android:src="@drawable/ic_switch_camera" />
 
         <ImageView
             android:id="@+id/flashLight"
@@ -49,24 +48,24 @@
 
     <LinearLayout
         android:id="@+id/cameraZoom"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
-        android:background="#00AEA2A2"
+        android:visibility="gone"
+        android:background="#00555555"
+        android:foreground="#00555555"
         app:layout_constraintBottom_toTopOf="@id/camera_control"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="10dp"
         app:layout_constraintStart_toStartOf="parent">
 
         <TextView
             android:id="@+id/cameraZoomText0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/zoom_button_corners"
             android:gravity="center"
             android:padding="12dp"
-            android:textColor="#D3D0D0"
             android:text="0x"
             android:textSize="16sp" />
 
@@ -74,10 +73,8 @@
             android:id="@+id/cameraZoomText05"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/zoom_button_corners"
             android:gravity="center"
             android:padding="12dp"
-            android:textColor="#D3D0D0"
             android:text="0.5x"
             android:textSize="16sp" />
 
@@ -85,10 +82,8 @@
             android:id="@+id/cameraZoomText1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/zoom_button_corners"
             android:gravity="center"
             android:padding="12dp"
-            android:textColor="#D3D0D0"
             android:text="1x"
             android:textSize="16sp" />
     </LinearLayout>
@@ -96,13 +91,12 @@
     <androidx.camera.view.PreviewView
         android:id="@+id/view_finder"
         android:layout_width="match_parent"
-        android:layout_height="450dp"
-        android:layout_marginTop="40dp"
+        android:layout_height="0dp"
         android:background="@color/ic_white"
         app:layout_constraintBottom_toTopOf="@+id/cameraZoom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cancel_layout" />
+        app:layout_constraintTop_toBottomOf="@+id/cancel_layout" />
 
     <RelativeLayout
         android:id="@+id/camera_control"
@@ -136,7 +130,7 @@
             android:layout_toStartOf="@+id/saveText"
             android:layout_toEndOf="@+id/photo_view_button"
             android:src="@drawable/ic_shutter_normal"
-            android:translationX="15dp" />
+            android:translationX="9dp" />
 
         <TextView
             android:id="@+id/saveText"
@@ -148,8 +142,8 @@
             android:translationY="45dp"
             android:gravity="center"
             android:text="Save"
-            android:paddingStart="18dp"
-            android:paddingEnd="18dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
             android:textAllCaps="true"
             android:background="@drawable/bg_save_text"
             android:textColor="@color/txWhite"

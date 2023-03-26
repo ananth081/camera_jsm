@@ -4,5 +4,8 @@
     android:id="@+id/galleryFragmentContainer"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    style="@style/AppTheme"
     android:layout_height="match_parent"
-    tools:context=".camera.GalleryActivity" />
+    tools:context=".camera.GalleryActivity"
+    android:name="com.android.example.cameraxbasic.fragments.GalleryFragment"
+    tools:layout="@layout/activity_gallery" />

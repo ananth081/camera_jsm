@@ -18,6 +18,9 @@ package com.android.example.cameraxbasic.fragments
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
+import android.graphics.drawable.ColorDrawable
 import android.media.MediaScannerConnection
 import android.os.Build
 import android.os.Bundle
@@ -83,6 +86,7 @@ class GalleryFragment internal constructor() : Fragment() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        activity?.setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
 
         lifecycleScope.launch {
@@ -101,22 +105,20 @@ class GalleryFragment internal constructor() : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _fragmentGalleryBinding = FragmentGalleryBinding.inflate(inflater, container, false)
+        inflater.context.setTheme(R.style.AppTheme)
         return fragmentGalleryBinding.root
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         fragmentGalleryBinding.toolbar.inflateMenu(R.menu.main_menu)
+        _fragmentGalleryBinding?.toolbar?.background = ColorDrawable(resources.getColor(R.color.colorPrimary))
+        fragmentGalleryBinding.toolbar.overflowIcon?.colorFilter =  PorterDuffColorFilter(resources.getColor(R.color.ic_white), PorterDuff.Mode.SRC_ATOP)
         fragmentGalleryBinding.toolbar.setOnMenuItemClickListener {
             if (it.itemId == R.id.actionRetake) {
                 mediaList.getOrNull(fragmentGalleryBinding.photoViewPager.currentItem)
                     ?.let { mediaStoreFile ->
+                        mediaStoreFile.file.delete()
                         val intent = Intent()
                         intent.putExtra("source", "retake_picture")
                         intent.putExtra("file_uri", mediaStoreFile.uri)

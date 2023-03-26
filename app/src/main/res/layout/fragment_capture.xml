@@ -37,7 +37,8 @@
             android:id="@+id/cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
             android:gravity="bottom"
             android:text="Cancel"
             android:textColor="@color/ic_white"
@@ -50,7 +51,7 @@
             android:layout_gravity="center_vertical|right"
             android:layout_marginEnd="15dp"
             android:layout_toStartOf="@+id/flashLight"
-            android:src="@drawable/switch_camera" />
+            android:src="@drawable/ic_switch_camera" />
 
         <ImageView
             android:id="@+id/flashLight"

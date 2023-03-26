@@ -24,7 +24,7 @@ android {
     defaultConfig {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         applicationId "com.android.example.cameraxbasic"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 33
         versionCode 1
         versionName "1.0.0"
@@ -32,7 +32,7 @@ android {
 
     compileOptions {
         sourceCompatibility rootProject.ext.java_version
-        targetCompatibility rootProject.ext.java_version
+        targetCompatibility java_version
     }
 
     kotlinOptions {
@@ -49,6 +49,7 @@ android {
     buildFeatures {
         viewBinding true
     }
+    buildToolsVersion '33.0.1'
 }
 
 dependencies {
