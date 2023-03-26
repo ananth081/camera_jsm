@@ -63,16 +63,16 @@
 
     </RelativeLayout>
 
+
     <androidx.camera.view.PreviewView
         android:id="@+id/previewView"
         android:layout_width="match_parent"
-        android:layout_height="450dp"
+        android:layout_height="550dp"
         android:background="@color/ic_white"
         app:layout_constraintBottom_toTopOf="@+id/videoControlView"
-        app:layout_constraintDimensionRatio="V,9:16"
-        app:layout_constraintEnd_toEndOf="@id/videoControlView"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/cancel_layout" />
 
     <CheckBox
         android:id="@+id/audio_selection"
@@ -110,12 +110,13 @@
         android:id="@+id/cameraZoom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:background="#00AEA2A2"
         android:gravity="center"
         android:orientation="horizontal"
-        android:background="#00AEA2A2"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/videoControlView"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="30dp"
         app:layout_constraintStart_toStartOf="parent">
 
         <TextView
@@ -125,8 +126,8 @@
             android:background="@drawable/zoom_button_corners"
             android:gravity="center"
             android:padding="12dp"
-            android:textColor="#D3D0D0"
             android:text="0x"
+            android:textColor="#D3D0D0"
             android:textSize="16sp" />
 
         <TextView
@@ -136,8 +137,8 @@
             android:background="@drawable/zoom_button_corners"
             android:gravity="center"
             android:padding="12dp"
-            android:textColor="#D3D0D0"
             android:text="0.5x"
+            android:textColor="#D3D0D0"
             android:textSize="16sp" />
 
         <TextView
@@ -147,8 +148,8 @@
             android:background="@drawable/zoom_button_corners"
             android:gravity="center"
             android:padding="12dp"
-            android:textColor="#D3D0D0"
             android:text="1x"
+            android:textColor="#D3D0D0"
             android:textSize="16sp" />
     </LinearLayout>
 
@@ -156,6 +157,7 @@
         android:id="@+id/videoControlView"
         android:layout_width="match_parent"
         android:layout_height="100dp"
+        android:gravity="bottom"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -192,22 +194,23 @@
             android:translationY="-15dp"
             android:visibility="invisible"
             tools:ignore="ImageContrastCheck" />
+
         <TextView
             android:id="@+id/saveButtonText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
             android:layout_marginBottom="47dp"
-           android:layout_alignParentEnd="true"
-            android:translationX="-25dp"
-            android:translationY="55dp"
+            android:background="@drawable/bg_save_text"
             android:gravity="center"
-            android:text="Save"
             android:paddingStart="18dp"
             android:paddingEnd="18dp"
+            android:text="Save"
             android:textAllCaps="true"
-            android:background="@drawable/bg_save_text"
             android:textColor="@color/txWhite"
             android:textSize="16sp"
+            android:translationX="-25dp"
+            android:translationY="55dp"
             app:layout_constraintEnd_toStartOf="parent" />
     </RelativeLayout>
 
