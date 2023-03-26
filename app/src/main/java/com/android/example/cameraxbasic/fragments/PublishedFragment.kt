@@ -1,9 +1,9 @@
 package com.android.example.cameraxbasic.fragments
 
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Environment
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,9 +16,16 @@ import java.io.File
 class PublishedFragment : Fragment() {
     val TAG = "PublishedFragment"
     lateinit var binding: FragmentPublishedBinding
+    val typeDate = 100
+    val typeMedia = 101
 
     companion object {
         fun newInstance() = PublishedFragment()
+    }
+
+    enum class GalleryList {
+        DATE,
+        MEDIA
     }
 
     override fun onCreateView(
@@ -35,25 +42,46 @@ class PublishedFragment : Fragment() {
     }
 
     private fun readImageFileFromStorage() {
-        val filePath = File(Environment.getExternalStorageDirectory().path + File.separator + "Download" + File.separator)
+
+        // add images to Download and Download2 folder
+        val filePath =
+            File(Environment.getExternalStorageDirectory().path + File.separator + "Download" + File.separator)
 
         val imagePath: MutableList<File>? = null
         val fileList = filePath.listFiles()?.toList()
-        if(fileList!=null){
-            for(i in 0..fileList.size){
+        if (fileList != null) {
+            for (i in 0..fileList.size) {
                 imagePath?.add(fileList[i])
             }
         }
-//        for (i in 0..files.size) {
-//           // if (files[i].name.endsWith(".jpg")) {
-//                imagePath?.add(files[i])
-//          //  }
-//        }
+        val filePath2 =
+            File(Environment.getExternalStorageDirectory().path + File.separator + "Download2" + File.separator)
+        val fileList2 = filePath2.listFiles()?.toList()
 
-            binding.galleryImage.layoutManager = GridLayoutManager(requireContext(), 4)
-            val adapter = ImageRecyclerViewAdapter(fileList!!)
-            binding.galleryImage.adapter = adapter
+        val hashMap = HashMap<String, List<File>?>()
 
+
+        // val adapter = ImageRecyclerViewAdapter(fileList!!)
+        val dateList = listOf<String>("23 Oct", "24 Oct")
+
+        val adapter = ImageRecyclerViewAdapter(fileList!!, dateList)
+        val glm = GridLayoutManager(
+            context, 4
+        )
+        glm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                return if (adapter.getItemViewType(position) == typeDate) {
+                    4
+                } else 1
+            }
+        }
+        binding.galleryImage.layoutManager = glm
+        adapter.getGalleryView.add("26 March 2023")
+        adapter.getGalleryView.addAll(fileList)
+        adapter.getGalleryView.add("28 March 2023")
+        adapter.getGalleryView.addAll(fileList2!!)
+        // adapter.items = fileList
+        binding.galleryImage.adapter = adapter
 
 
 //        } else {
