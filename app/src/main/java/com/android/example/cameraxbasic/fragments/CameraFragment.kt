@@ -46,6 +46,7 @@ import androidx.window.WindowManager
 import com.android.example.cameraxbasic.KEY_EVENT_ACTION
 import com.android.example.cameraxbasic.KEY_EVENT_EXTRA
 import com.android.example.cameraxbasic.R
+import com.android.example.cameraxbasic.camera.CameraActivity
 import com.android.example.cameraxbasic.camera.GalleryActivity
 import com.android.example.cameraxbasic.databinding.CameraPreviewBinding
 import com.android.example.cameraxbasic.databinding.FragmentCameraBinding
@@ -833,14 +834,19 @@ class CameraFragment : Fragment() {
         cameraPreview?.saveText?.visibility = View.GONE
     }
 
-    fun setScale(){
+    private fun setScale(){
         val listener: ScaleGestureDetector.OnScaleGestureListener =
             object : ScaleGestureDetector.OnScaleGestureListener {
                 override fun onScale(scaleGestureDetector: ScaleGestureDetector): Boolean {
                     val f: ZoomState? = camera?.cameraInfo?.zoomState?.value
-                    Log.d("Zoom", f?.zoomRatio.toString())
                     val scale: Float = scaleGestureDetector.scaleFactor
-                    camera?.cameraControl?.setZoomRatio(scale * f?.zoomRatio!!)
+                    val zoomRatio = scale * f?.zoomRatio!!
+
+
+                    camera?.cameraControl?.setZoomRatio(zoomRatio)
+                    if (activity != null && activity is CameraActivity) {
+                        (activity as CameraActivity).updateZoomText(zoomRatio)
+                    }
                     return true
                 }
 

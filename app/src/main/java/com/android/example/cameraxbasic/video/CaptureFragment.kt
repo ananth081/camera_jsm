@@ -38,16 +38,13 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.ScaleGestureDetector
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.camera.core.Camera
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.Preview
-import androidx.camera.core.VideoCapture
+import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.video.*
 import androidx.concurrent.futures.await
@@ -63,6 +60,7 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.example.cameraxbasic.R
+import com.android.example.cameraxbasic.camera.CameraActivity
 import com.android.example.cameraxbasic.camera.VideoActivity
 import com.android.example.cameraxbasic.databinding.FragmentCaptureBinding
 import com.android.example.cameraxbasic.video.extensions.getAspectRatio
@@ -161,6 +159,22 @@ class CaptureFragment : Fragment() {
             resetUIandState("bindToLifecycle failed: $exc")
         }
         enableUI(true)
+        setScale()
+
+        captureViewBinding.flashLight.let { flashLightImg ->
+            flashLightImg.isEnabled = true
+            var torchState = false
+            flashLightImg.setOnClickListener {
+                torchState = TorchState.ON == getTorchState()
+                if (torchState) {
+                    flashLightImg.setImageResource(R.drawable.flash_circle_1)
+                    setTorchState(false)
+                } else {
+                    flashLightImg.setImageResource(R.drawable.flash_circle_on)
+                    setTorchState(true)
+                }
+            }
+        }
     }
 
     /**
@@ -356,6 +370,21 @@ class CaptureFragment : Fragment() {
             //isEnabled = true
         }
 
+        captureViewBinding.dualCamera?.let {
+            it.setOnClickListener {
+                cameraIndex = (cameraIndex + 1) % cameraCapabilities.size
+                // camera device change is in effect instantly:
+                //   - reset quality selection
+                //   - restart preview
+                qualityIndex = DEFAULT_QUALITY_IDX
+                initializeQualitySectionsUI()
+                enableUI(false)
+                viewLifecycleOwner.lifecycleScope.launch {
+                    bindCaptureUsecase()
+                }
+            }
+        }
+
         // audioEnabled by default is disabled.
         captureViewBinding.audioSelection.isChecked = audioEnabled
         captureViewBinding.audioSelection.setOnClickListener {
@@ -415,15 +444,18 @@ class CaptureFragment : Fragment() {
             activity?.finish()
         }
         captureViewBinding.cameraZoomText0.setOnClickListener {
-            camera?.cameraControl?.setLinearZoom(0.02f)
+            //camera?.cameraControl?.setLinearZoom(0.02f)
+            setLinearZoom(0.02f)
         }
 
         captureViewBinding.cameraZoomText05.setOnClickListener {
-            camera?.cameraControl?.setZoomRatio(0.05f)
+            //camera?.cameraControl?.setZoomRatio(0.05f)
+            setLinearZoom(0.05f)
         }
 
         captureViewBinding.cameraZoomText1.setOnClickListener {
-            camera?.cameraControl?.setZoomRatio(1f)
+            //camera?.cameraControl?.setZoomRatio(1f)
+            setLinearZoom(1.0f)
         }
 
         captureLiveStatus.value = getString(R.string.Idle)
@@ -628,5 +660,71 @@ class CaptureFragment : Fragment() {
         const val DEFAULT_QUALITY_IDX = 0
         val TAG: String = CaptureFragment::class.java.simpleName
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
+    }
+
+    private fun setScale() {
+        val listener: ScaleGestureDetector.OnScaleGestureListener =
+            object : ScaleGestureDetector.OnScaleGestureListener {
+                @SuppressLint("RestrictedApi")
+                override fun onScale(scaleGestureDetector: ScaleGestureDetector): Boolean {
+                    videoCapture.camera?.let {
+                        val f: ZoomState? = it.cameraInfo.zoomState.value
+                        val scale: Float = scaleGestureDetector.scaleFactor
+                        val zoomRatio = scale * f?.zoomRatio!!
+                        camera?.cameraControl?.setZoomRatio(zoomRatio)
+                        it.cameraControl.setZoomRatio(zoomRatio)
+                        if (activity != null && activity is CameraActivity) {
+                            (activity as CameraActivity).updateZoomText(zoomRatio)
+                        }
+                    }
+
+                    return true
+                }
+
+                override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
+                    return true
+                }
+
+                override fun onScaleEnd(detector: ScaleGestureDetector) {
+                }
+
+            }
+        val scaleGestureDetector = ScaleGestureDetector(requireContext(), listener)
+
+        captureViewBinding.previewView.setOnTouchListener { view, motionEvent ->
+            scaleGestureDetector.onTouchEvent(
+                motionEvent
+            )
+        }
+    }
+//
+//    @SuppressLint("RestrictedApi")
+//    fun setCameraZoomLevels(fl: Float) {
+//        videoCapture.camera?.let {
+//            camera?.cameraControl?.setZoomRatio(fl)
+//        }
+//    }
+
+    @SuppressLint("RestrictedApi")
+    fun setLinearZoom(fl: Float) {
+        videoCapture.camera?.let {
+            it.cameraControl.setLinearZoom(fl)
+        }
+    }
+
+    @SuppressLint("RestrictedApi")
+    fun getTorchState(): Int? {
+        var torchState: Int? = 0
+        videoCapture.camera?.let {
+            torchState = it.cameraInfo.torchState.value
+        }
+        return torchState
+    }
+
+    @SuppressLint("RestrictedApi")
+    fun setTorchState(state: Boolean) {
+        videoCapture.camera?.let {
+            it.cameraControl?.enableTorch(state)
+        }
     }
 }
