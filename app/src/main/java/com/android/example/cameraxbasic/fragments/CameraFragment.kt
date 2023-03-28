@@ -361,6 +361,7 @@ class CameraFragment : Fragment() {
 //                            "CameraState: Open",
 //                            Toast.LENGTH_SHORT
 //                        ).show()
+                        cameraPreview?.placeHolderLayout?.visibility = View.GONE
                     }
                     CameraState.Type.CLOSING -> {
                         // Close camera UI
@@ -565,10 +566,10 @@ class CameraFragment : Fragment() {
                 // We can only change the foreground Drawable using API level 23+ API
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     // Display flash animation to indicate that photo was captured
-                    cameraPreview?.root?.postDelayed({
-                        cameraPreview!!.root.foreground = ColorDrawable(Color.WHITE)
-                        cameraPreview!!.root.postDelayed(
-                            { cameraPreview!!.root.foreground = null }, ANIMATION_FAST_MILLIS
+                    cameraPreview?.viewFinder?.postDelayed({
+                        cameraPreview!!.viewFinder.foreground = ColorDrawable(Color.WHITE)
+                        cameraPreview!!.viewFinder.postDelayed(
+                            { cameraPreview!!.viewFinder.foreground = null }, ANIMATION_FAST_MILLIS
                         )
                     }, ANIMATION_SLOW_MILLIS)
                 }

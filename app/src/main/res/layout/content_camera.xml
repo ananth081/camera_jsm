@@ -11,60 +11,66 @@
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:navGraph="@navigation/nav_graph_video"
-        />
+        app:navGraph="@navigation/nav_graph_video" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:orientation="vertical">
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/zoom_button_corners"
             android:layout_gravity="center"
-            android:layout_marginBottom="12dp">
-                <TextView
-                    android:id="@+id/cameraZoomText0"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="15dp"
-                    android:text="0x"
-                    android:textColor="#FFFFFF"
-                    android:textSize="16sp" />
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/zoom_button_corners">
 
-                <TextView
-                    android:id="@+id/cameraZoomText05"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="15dp"
-                    android:textColor="#FFFFFF"
-                    android:text="1x"
-                    android:textSize="16sp" />
+            <TextView
+                android:id="@+id/cameraZoomText0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="15dp"
+                android:text="0x"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp" />
 
-                <TextView
-                    android:id="@+id/cameraZoomText1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="15dp"
-                    android:textColor="#FFFFFF"
-                    android:text="2x"
-                    android:textSize="16sp" />
+            <TextView
+                android:id="@+id/cameraZoomText05"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="15dp"
+                android:text="1x"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/cameraZoomText1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="15dp"
+                android:text="2x"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp" />
         </LinearLayout>
+
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="75dp"
             android:background="@color/txBlack"
+            app:tabTextColor="@color/txWhite"
             android:layoutDirection="inherit"
             app:tabGravity="center"
-            app:tabIndicatorGravity="top"
-            app:tabIndicatorColor="#575353"
-            android:layout_marginBottom="75dp"/>
+            app:tabIndicatorColor="#212121"
+            app:tabIndicator="@drawable/tab_item"
+            app:tabIndicatorGravity="top" >
+
+        </com.google.android.material.tabs.TabLayout>
     </LinearLayout>
 
 </FrameLayout>
