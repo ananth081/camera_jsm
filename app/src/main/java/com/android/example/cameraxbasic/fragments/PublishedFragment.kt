@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
+import com.android.example.cameraxbasic.R
 import com.android.example.cameraxbasic.adapter.ImageRecyclerViewAdapter
 import com.android.example.cameraxbasic.databinding.FragmentPublishedBinding
 import java.io.File
@@ -44,8 +45,10 @@ class PublishedFragment : Fragment() {
     private fun readImageFileFromStorage() {
 
         // add images to Download and Download2 folder
-        val filePath =
-            File(Environment.getExternalStorageDirectory().path + File.separator + "Download" + File.separator)
+        val appName = requireActivity().resources.getString(R.string.app_name)
+        val DIRECTORY_NAME = "%Pictures/$appName%"
+
+        val filePath = File(Environment.getExternalStorageDirectory().path + File.separator + DIRECTORY_NAME + File.separator)
 
         val imagePath: MutableList<File>? = null
         val fileList = filePath.listFiles()?.toList()
@@ -54,8 +57,7 @@ class PublishedFragment : Fragment() {
                 imagePath?.add(fileList[i])
             }
         }
-        val filePath2 =
-            File(Environment.getExternalStorageDirectory().path + File.separator + "Download2" + File.separator)
+        val filePath2 = File(Environment.getExternalStorageDirectory().path + File.separator + DIRECTORY_NAME + File.separator)
         val fileList2 = filePath2.listFiles()?.toList()
 
         val hashMap = HashMap<String, List<File>?>()

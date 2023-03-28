@@ -1,14 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout android:layout_gravity="" xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<FrameLayout
+    android:id="@+id/cameraControls"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".camera.CameraActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:navGraph="@navigation/nav_graph_video"
+        />
 
-    <include
-        android:id="@+id/contentCamera"
-        layout="@layout/content_camera" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical">
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/zoomTablayout"
+            android:layout_width="225dp"
+            android:layout_height="wrap_content"
+            app:tabGravity="center"
+            android:layout_gravity="center"
+            app:tabMaxWidth="200dp"
+            app:tabUnboundedRipple="false"
+            app:tabMode="fixed"
+            android:clipToPadding="false"
+            android:contentDescription="zoom"
+            android:background="@drawable/zoom_button_corners"
+            android:layout_marginBottom="12dp"
+            app:tabBackground="@drawable/zoom_button_bg"
+            app:tabSelectedTextColor="@color/yello"
+            app:tabIndicator="@null">
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:contentDescription="0.0x"
+                android:background="@drawable/zoom_button_bg"
+                android:text="0.0x"/>
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:contentDescription="1.0x"
+                android:background="@drawable/zoom_button_bg"
+                android:text="1.0x"/>
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="2.0x"
+                android:background="@drawable/zoom_button_bg"
+                android:text="2.0x"/>
+        </com.google.android.material.tabs.TabLayout>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <TextView
+            android:id="@+id/cameraZoomText0"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:padding="8dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/zoom_button_bg"
+            android:text="0x"
+            android:visibility="gone"
+            android:textColor="@color/yello"
+            android:textSize="14sp" />
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/txBlack"
+            android:layoutDirection="inherit"
+            app:tabGravity="center"
+            app:tabIndicatorGravity="top"
+            app:tabIndicatorColor="#575353"
+            android:contentDescription="controls"
+            android:layout_marginBottom="75dp"/>
+    </LinearLayout>
+
+</FrameLayout>

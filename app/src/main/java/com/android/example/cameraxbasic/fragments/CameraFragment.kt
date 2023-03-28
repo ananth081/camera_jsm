@@ -33,6 +33,8 @@ import android.view.LayoutInflater
 import android.view.ScaleGestureDetector
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.*
@@ -50,6 +52,7 @@ import com.android.example.cameraxbasic.camera.CameraActivity
 import com.android.example.cameraxbasic.camera.GalleryActivity
 import com.android.example.cameraxbasic.databinding.CameraPreviewBinding
 import com.android.example.cameraxbasic.databinding.FragmentCameraBinding
+import com.android.example.cameraxbasic.save.SaveDialog
 import com.android.example.cameraxbasic.utils.ANIMATION_FAST_MILLIS
 import com.android.example.cameraxbasic.utils.ANIMATION_SLOW_MILLIS
 import com.android.example.cameraxbasic.utils.MediaStoreUtils
@@ -498,6 +501,11 @@ class CameraFragment : Fragment() {
                         "Save(${mediaStoreUtils.getImages().size})"
                 }
             }
+
+            val anim: Animation = AnimationUtils.loadAnimation(requireContext(), R.anim.flash_screen);
+            anim.fillAfter = true
+            _fragmentCameraBinding?.viewFinder?.startAnimation(anim);
+
             // Get a stable reference of the modifiable image capture use case
             imageCapture?.let { imageCapture ->
                 // Create time stamped name and MediaStore entry.
@@ -565,10 +573,10 @@ class CameraFragment : Fragment() {
                 // We can only change the foreground Drawable using API level 23+ API
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     // Display flash animation to indicate that photo was captured
-                    cameraPreview?.root?.postDelayed({
-                        cameraPreview!!.root.foreground = ColorDrawable(Color.WHITE)
-                        cameraPreview!!.root.postDelayed(
-                            { cameraPreview!!.root.foreground = null }, ANIMATION_FAST_MILLIS
+                    cameraPreview?.viewFinder?.postDelayed({
+                        cameraPreview!!.viewFinder.foreground = ColorDrawable(Color.WHITE)
+                        cameraPreview!!.viewFinder.postDelayed(
+                            { cameraPreview!!.viewFinder.foreground = null }, ANIMATION_FAST_MILLIS
                         )
                     }, ANIMATION_SLOW_MILLIS)
                 }
@@ -584,6 +592,12 @@ class CameraFragment : Fragment() {
                     CameraSelector.LENS_FACING_FRONT
                 }
                 bindCameraUseCases()
+
+                if (lensFacing == CameraSelector.LENS_FACING_FRONT){
+                    cameraPreview?.flashLight?.isEnabled = false
+                }else if (lensFacing == CameraSelector.LENS_FACING_BACK){
+                    cameraPreview?.flashLight?.isEnabled = true
+                }
             }
         }
         cameraPreview?.flashLight?.let { flashLightImg ->
@@ -612,6 +626,11 @@ class CameraFragment : Fragment() {
 
         cameraPreview?.cancel?.setOnClickListener {
             activity?.finish()
+        }
+
+        cameraPreview?.saveText?.setOnClickListener {
+            val dialog = SaveDialog.newInstance()
+            dialog.show(childFragmentManager, SaveDialog::class.java.simpleName)
         }
 
         setScale()

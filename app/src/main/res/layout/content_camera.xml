@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
+<FrameLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <FrameLayout
         android:id="@+id/fragment_container"
@@ -19,41 +19,85 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:orientation="vertical">
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/zoomTablayout"
+            android:layout_width="225dp"
+            android:layout_height="wrap_content"
+            app:tabGravity="center"
+            android:layout_gravity="center"
+            android:contentDescription="zoom"
+            android:background="@drawable/zoom_button_corners"
+            android:layout_marginBottom="12dp"
+            app:tabBackground="@drawable/zoom_button_bg"
+            app:tabSelectedTextColor="@color/yello"
+            app:tabIndicator="@null">
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/zoomOne"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginEnd="12dp"
+                android:contentDescription="0.0x"
+                android:background="@drawable/zoom_button_bg"
+                android:text="0.0x"/>
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/zoomTwo"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="12dp"
+                android:contentDescription="1.0x"
+                android:background="@drawable/zoom_button_bg"
+                android:text="1.0x"/>
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/zoomThree"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:contentDescription="2.0x"
+                android:background="@drawable/zoom_button_bg"
+                android:text="2.0x"/>
+        </com.google.android.material.tabs.TabLayout>
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:background="@drawable/zoom_button_corners"
             android:layout_gravity="center"
+            android:gravity="center"
+            android:visibility="gone"
+            android:padding="6dp"
             android:layout_marginBottom="12dp">
                 <TextView
                     android:id="@+id/cameraZoomText0"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
                     android:gravity="center"
-                    android:padding="15dp"
+                    android:layout_marginEnd="6dp"
+                    android:padding="8dp"
+                    android:background="@drawable/zoom_button_bg"
                     android:text="0x"
-                    android:textColor="#FFFFFF"
-                    android:textSize="16sp" />
+                    android:textColor="@color/selector_zoom_button"
+                    android:textSize="14sp" />
 
                 <TextView
                     android:id="@+id/cameraZoomText05"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
                     android:gravity="center"
-                    android:padding="15dp"
-                    android:textColor="#FFFFFF"
+                    android:padding="8dp"
+                    android:layout_marginEnd="6dp"
+                    android:textColor="@color/selector_zoom_button"
+                    android:background="@drawable/zoom_button_bg"
                     android:text="1x"
-                    android:textSize="16sp" />
+                    android:textSize="14sp" />
 
                 <TextView
                     android:id="@+id/cameraZoomText1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
                     android:gravity="center"
-                    android:padding="15dp"
-                    android:textColor="#FFFFFF"
+                    android:padding="8dp"
+                    android:textColor="@color/selector_zoom_button"
+                    android:background="@drawable/zoom_button_bg"
                     android:text="2x"
-                    android:textSize="16sp" />
+                    android:textSize="14sp" />
         </LinearLayout>
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
@@ -64,6 +108,7 @@
             app:tabGravity="center"
             app:tabIndicatorGravity="top"
             app:tabIndicatorColor="#575353"
+            android:contentDescription="controls"
             android:layout_marginBottom="75dp"/>
     </LinearLayout>
 

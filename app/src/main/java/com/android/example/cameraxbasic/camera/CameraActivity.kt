@@ -4,6 +4,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
 import androidx.navigation.ui.AppBarConfiguration
@@ -11,8 +12,10 @@ import com.android.example.cameraxbasic.R
 import com.android.example.cameraxbasic.databinding.ActivityCameraBinding
 import com.android.example.cameraxbasic.fragments.CameraFragment
 import com.android.example.cameraxbasic.video.CaptureFragment
+import com.google.android.material.tabs.TabItem
 import com.google.android.material.tabs.TabLayout
-import kotlin.math.roundToInt
+import com.google.android.material.tabs.TabLayout.Tab
+
 
 class CameraActivity : AppCompatActivity() {
 
@@ -24,11 +27,12 @@ class CameraActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         binding = ActivityCameraBinding.inflate(layoutInflater)
+
         setContentView(binding.root)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             requestPermissions(permission, 80)
         }
-       // setSupportActionBar(binding.toolbar)
+        // setSupportActionBar(binding.toolbar)
 
 //        val navController = findNavController(R.id.nav_host_fragment_content_camera)
 //        appBarConfiguration = AppBarConfiguration(navController.graph)
@@ -37,7 +41,7 @@ class CameraActivity : AppCompatActivity() {
         showPhotoFragment(CameraFragment())
         // val (videoFragment, transaction) = showVideoFragment(fragment)
 
-        val tabLayout = binding.contentCamera.tabLayout
+        val tabLayout = binding.tabLayout
         tabLayout.addTab(tabLayout.newTab().setText("Photo"))
         tabLayout.addTab(tabLayout.newTab().setText("Video"))
 
@@ -59,38 +63,57 @@ class CameraActivity : AppCompatActivity() {
             }
 
         })
+        //val tabAt:Tab? = binding.tabLayout.getTabAt(0)
 
-        binding.contentCamera.cameraZoomText0.setOnClickListener {
-           // val fragment = supportFragmentManager.fragments
-            val cameraFragment = supportFragmentManager.findFragmentByTag("CameraFragment")
-            if (cameraFragment != null && cameraFragment is CameraFragment) {
-                cameraFragment.setCameraZoomLevels(0.0f)
+        binding.zoomTablayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: Tab?) {
+                when (tab?.position) {
+                    0 -> {
+                        val cameraFragment =
+                            supportFragmentManager.findFragmentByTag("CameraFragment")
+                        if (cameraFragment != null && cameraFragment is CameraFragment) {
+                            cameraFragment.setCameraZoomLevels(0.0f)
+                        }
+                        val videoFragment =
+                            supportFragmentManager.findFragmentByTag("CaptureFragment")
+                        if (videoFragment != null && videoFragment is CaptureFragment) {
+                            videoFragment.setLinearZoom(0.0f)
+                        }
+                    }
+                    1 -> {
+                        val fragment = supportFragmentManager.findFragmentByTag("CameraFragment")
+                        if (fragment != null && fragment is CameraFragment) {
+                            fragment.setCameraZoomLevels(0.7f)
+                        }
+                        val videoFragment =
+                            supportFragmentManager.findFragmentByTag("CaptureFragment")
+                        if (videoFragment != null && videoFragment is CaptureFragment) {
+                            videoFragment.setLinearZoom(0.7f)
+                        }
+                    }
+                    2 -> {
+                        val fragment = supportFragmentManager.findFragmentByTag("CameraFragment")
+                        if (fragment != null && fragment is CameraFragment) {
+                            fragment.setCameraZoomLevels(1.0f)
+                        }
+                        val videoFragment =
+                            supportFragmentManager.findFragmentByTag("CaptureFragment")
+                        if (videoFragment != null && videoFragment is CaptureFragment) {
+                            videoFragment.setLinearZoom(1.0f)
+                        }
+                    }
+                }
             }
-            val videoFragment = supportFragmentManager.findFragmentByTag("CaptureFragment")
-            if (videoFragment != null && videoFragment is CaptureFragment) {
-                videoFragment.setLinearZoom(0.0f)
+
+            override fun onTabUnselected(tab: Tab?) {
+
             }
-        }
-        binding.contentCamera.cameraZoomText05.setOnClickListener {
-            val fragment = supportFragmentManager.findFragmentByTag("CameraFragment")
-            if (fragment != null && fragment is CameraFragment) {
-                fragment.setCameraZoomLevels(0.7f)
+
+            override fun onTabReselected(tab: Tab?) {
+
             }
-            val videoFragment = supportFragmentManager.findFragmentByTag("CaptureFragment")
-            if (videoFragment != null && videoFragment is CaptureFragment) {
-                videoFragment.setLinearZoom(0.7f)
-            }
-        }
-        binding.contentCamera.cameraZoomText1.setOnClickListener {
-            val fragment = supportFragmentManager.findFragmentByTag("CameraFragment")
-            if (fragment != null && fragment is CameraFragment) {
-                fragment.setCameraZoomLevels(1.0f)
-            }
-            val videoFragment = supportFragmentManager.findFragmentByTag("CaptureFragment")
-            if (videoFragment != null && videoFragment is CaptureFragment) {
-                videoFragment.setLinearZoom(1.0f)
-            }
-        }
+
+        })
 
     }
 
@@ -114,17 +137,13 @@ class CameraActivity : AppCompatActivity() {
         Log.d(CameraActivity::class.java.simpleName, "onScale: zoomRatio==$zoomRatio")
         val format = String.format("%.1f", zoomRatio)
         if ("0.9" == format || "1.0" == format) {
-            binding.contentCamera.cameraZoomText05.visibility = View.VISIBLE
-            binding.contentCamera.cameraZoomText1.visibility = View.VISIBLE
-            binding.contentCamera.cameraZoomText0.text = "0x"
-            binding.contentCamera.cameraZoomText05.text =  "1x"
-            binding.contentCamera.cameraZoomText1.text =  "2x"
-        }else {
-            binding.contentCamera.cameraZoomText05.visibility = View.GONE
-            binding.contentCamera.cameraZoomText1.visibility = View.GONE
-            binding.contentCamera.cameraZoomText0.text = "${format}x"
+            binding.zoomTablayout.visibility = View.VISIBLE
+            binding.cameraZoomText0.visibility = View.GONE
+        } else {
+            binding.zoomTablayout.visibility = View.GONE
+            binding.cameraZoomText0.visibility = View.VISIBLE
+            binding.cameraZoomText0.text = "${format}x"
         }
-
     }
 
 //    override fun onSupportNavigateUp(): Boolean {

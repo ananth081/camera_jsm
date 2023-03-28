@@ -207,6 +207,10 @@ class GalleryFragment internal constructor() : Fragment() {
 
         }
 
+        fragmentGalleryBinding.galleryBackButton.setOnClickListener {
+            activity?.finish()
+        }
+
     }
 
     private fun deleteSpecificImage() {
