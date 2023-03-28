@@ -113,6 +113,7 @@ class CaptureFragment : Fragment() {
      *   (VideoCapture can work on its own). The function should always execute on
      *   the main thread.
      */
+    @SuppressLint("RestrictedApi")
     private suspend fun bindCaptureUsecase() {
         val cameraProvider = ProcessCameraProvider.getInstance(requireContext()).await()
 
@@ -147,12 +148,14 @@ class CaptureFragment : Fragment() {
 
         try {
             cameraProvider.unbindAll()
-            cameraProvider.bindToLifecycle(
+            val camera = cameraProvider.bindToLifecycle(
                 viewLifecycleOwner,
                 cameraSelector,
                 videoCapture,
                 preview
             )
+            val cameraInfo = videoCapture.camera?.cameraInfo
+            cameraInfo?.let { observeCameraState(it) }
         } catch (exc: Exception) {
             // we are on main thread, let's reset the controls on the UI.
             Log.e(TAG, "Use case binding failed", exc)
@@ -725,6 +728,125 @@ class CaptureFragment : Fragment() {
     fun setTorchState(state: Boolean) {
         videoCapture.camera?.let {
             it.cameraControl?.enableTorch(state)
+        }
+    }
+
+    private fun observeCameraState(cameraInfo: CameraInfo) {
+        cameraInfo.cameraState.observe(viewLifecycleOwner) { cameraState ->
+            run {
+                when (cameraState.type) {
+                    CameraState.Type.PENDING_OPEN -> {
+                        // Ask the user to close other camera apps
+//                        Toast.makeText(
+//                            context,
+//                            "CameraState: Pending Open",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+                    }
+                    CameraState.Type.OPENING -> {
+                        // Show the Camera UI
+//                        Toast.makeText(
+//                            context,
+//                            "CameraState: Opening",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+                    }
+                    CameraState.Type.OPEN -> {
+                        // Setup Camera resources and begin processing
+//                        Toast.makeText(
+//                            context,
+//                            "CameraState: Open",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+                        captureViewBinding.placeHolderLayout.postDelayed({
+                            captureViewBinding?.placeHolderLayout?.visibility = View.GONE
+                        },300)
+
+                    }
+                    CameraState.Type.CLOSING -> {
+                        // Close camera UI
+//                        Toast.makeText(
+//                            context,
+//                            "CameraState: Closing",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+                    }
+                    CameraState.Type.CLOSED -> {
+                        // Free camera resources
+//                        Toast.makeText(
+//                            context,
+//                            "CameraState: Closed",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+                    }
+                }
+            }
+
+            cameraState.error?.let { error ->
+                when (error.code) {
+                    // Open errors
+                    CameraState.ERROR_STREAM_CONFIG -> {
+                        // Make sure to setup the use cases properly
+//                        Toast.makeText(
+//                            context,
+//                            "Stream config error",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+                    }
+                    // Opening errors
+                    CameraState.ERROR_CAMERA_IN_USE -> {
+                        // Close the camera or ask user to close another camera app that's using the
+                        // camera
+//                        Toast.makeText(
+//                            context,
+//                            "Camera in use",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+                    }
+                    CameraState.ERROR_MAX_CAMERAS_IN_USE -> {
+                        // Close another open camera in the app, or ask the user to close another
+                        // camera app that's using the camera
+//                        Toast.makeText(
+//                            context,
+//                            "Max cameras in use",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+                    }
+                    CameraState.ERROR_OTHER_RECOVERABLE_ERROR -> {
+//                        Toast.makeText(
+//                            context,
+//                            "Other recoverable error",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+                    }
+                    // Closing errors
+                    CameraState.ERROR_CAMERA_DISABLED -> {
+                        // Ask the user to enable the device's cameras
+//                        Toast.makeText(
+//                            context,
+//                            "Camera disabled",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+                    }
+                    CameraState.ERROR_CAMERA_FATAL_ERROR -> {
+                        // Ask the user to reboot the device to restore camera function
+//                        Toast.makeText(
+//                            context,
+//                            "Fatal error",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+                    }
+                    // Closed errors
+                    CameraState.ERROR_DO_NOT_DISTURB_MODE_ENABLED -> {
+                        // Ask the user to disable the "Do Not Disturb" mode, then reopen the camera
+//                        Toast.makeText(
+//                            context,
+//                            "Do not disturb mode enabled",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+                    }
+                }
+            }
         }
     }
 }

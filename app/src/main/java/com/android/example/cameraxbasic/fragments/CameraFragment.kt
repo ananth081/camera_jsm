@@ -364,6 +364,7 @@ class CameraFragment : Fragment() {
 //                            "CameraState: Open",
 //                            Toast.LENGTH_SHORT
 //                        ).show()
+                        cameraPreview?.placeHolderLayout?.visibility = View.GONE
                     }
                     CameraState.Type.CLOSING -> {
                         // Close camera UI
