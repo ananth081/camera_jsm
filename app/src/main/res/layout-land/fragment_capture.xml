@@ -23,42 +23,37 @@
 
     <RelativeLayout
         android:id="@+id/cancel_layout"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_width="80dp"
+        android:layout_height="match_parent"
         android:background="@color/txBlack"
-        android:gravity="bottom"
-        android:orientation="horizontal"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="8dp"
-            android:gravity="bottom"
+            android:layout_marginStart="12dp"
             android:text="Cancel"
             android:textColor="@color/ic_white"
-            android:textSize="18sp" />
+            android:layout_above="@+id/dualCamera"
+            android:layout_marginBottom="50dp"
+            android:textSize="16sp" />
 
         <ImageView
             android:id="@+id/dualCamera"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|right"
-            android:layout_marginEnd="15dp"
-            android:layout_toStartOf="@+id/flashLight"
+            android:layout_centerInParent="true"
             android:src="@drawable/ic_switch_camera" />
 
         <ImageView
             android:id="@+id/flashLight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="12dp"
+            android:layout_below="@id/dualCamera"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="50dp"
             android:src="@drawable/flash_circle_1" />
 
     </RelativeLayout>
@@ -67,12 +62,12 @@
     <androidx.camera.view.PreviewView
         android:id="@+id/previewView"
         android:layout_width="match_parent"
-        android:layout_height="550dp"
+        android:layout_marginEnd="80dp"
+        android:layout_marginStart="80dp"
+        android:layout_height="match_parent"
         android:background="@color/ic_white"
-        app:layout_constraintBottom_toTopOf="@+id/videoControlView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cancel_layout" />
+        app:layout_constraintStart_toStartOf="@id/cancel_layout"
+        app:layout_constraintEnd_toStartOf="@id/videoControlView" />
 
     <CheckBox
         android:id="@+id/audio_selection"
@@ -108,63 +103,61 @@
 
     <RelativeLayout
         android:id="@+id/videoControlView"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:gravity="bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <ImageButton
             android:id="@+id/camera_button"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="18dp"
+            android:layout_marginEnd="18dp"
+            android:layout_above="@id/capture_button"
+            android:layout_centerInParent="true"
             android:background="@drawable/bg_circle"
             android:contentDescription="@string/camera"
-            android:outlineProvider="background"
-            android:translationX="18dp"
-            android:translationY="38dp"
             tools:ignore="ImageContrastCheck" />
 
         <ImageButton
             android:id="@+id/capture_button"
             android:layout_width="48dp"
-            android:layout_height="50dp"
+            android:layout_height="48dp"
             android:layout_centerInParent="true"
+            android:layout_marginTop="45dp"
+            android:layout_marginBottom="45dp"
+            android:background="@drawable/ic_shutter_normal"
             android:contentDescription="@string/capture"
-            android:src="@drawable/ic_shutter_normal"
-            android:translationY="14dp"
             tools:ignore="ImageContrastCheck" />
 
         <ImageButton
             android:id="@+id/stop_button"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_alignParentBottom="true"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:background="@drawable/ic_stop"
+            android:layout_alignBottom="@+id/camera_button"
+            android:layout_marginStart="14dp"
+            android:layout_marginEnd="14dp"
             android:contentDescription="@string/stop"
             android:scaleType="fitCenter"
-            android:translationX="100dp"
-            android:translationY="-15dp"
             android:visibility="invisible"
             tools:ignore="ImageContrastCheck" />
 
         <TextView
             android:id="@+id/saveText"
             android:layout_width="wrap_content"
-            android:layout_height="31dp"
-            android:layout_marginBottom="47dp"
-            android:layout_alignParentEnd="true"
-            android:translationX="-20dp"
-            android:translationY="43dp"
-            android:gravity="center"
-            android:text="Save"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:textAllCaps="true"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/capture_button"
+            android:layout_centerInParent="true"
             android:background="@drawable/bg_save_text"
+            android:layout_marginStart="8dp"
+            android:padding="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="Save"
+            android:textAllCaps="true"
             android:textColor="@color/txWhite"
-            android:textSize="16sp"
-            app:layout_constraintEnd_toStartOf="parent" />
+            android:textSize="10sp" />
     </RelativeLayout>
 
     <TextView
@@ -196,6 +189,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView

@@ -142,7 +142,7 @@ class CameraActivity : AppCompatActivity() {
         } else {
             binding.zoomTablayout.visibility = View.GONE
             binding.cameraZoomText0.visibility = View.VISIBLE
-            binding.cameraZoomText0.text = "${format}x"
+            binding.cameraZoomText0.text = format+""+"x"
         }
     }
 

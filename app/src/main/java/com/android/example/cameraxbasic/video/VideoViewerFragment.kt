@@ -100,8 +100,9 @@ class VideoViewerFragment() : androidx.fragment.app.Fragment() {
         }
 
         // Handle back button press
-        binding.backButton.setOnClickListener {
-            Navigation.findNavController(requireActivity(), R.id.fragment_container).navigateUp()
+        binding.videoBackButton.setOnClickListener {
+//            Navigation.findNavController(requireActivity(), R.id.fragment_container).navigateUp()
+            activity?.finish()
         }
     }
 

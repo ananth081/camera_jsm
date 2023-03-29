@@ -446,20 +446,6 @@ class CaptureFragment : Fragment() {
         captureViewBinding.cancel.setOnClickListener {
             activity?.finish()
         }
-        captureViewBinding.cameraZoomText0.setOnClickListener {
-            //camera?.cameraControl?.setLinearZoom(0.02f)
-            setLinearZoom(0.02f)
-        }
-
-        captureViewBinding.cameraZoomText05.setOnClickListener {
-            //camera?.cameraControl?.setZoomRatio(0.05f)
-            setLinearZoom(0.05f)
-        }
-
-        captureViewBinding.cameraZoomText1.setOnClickListener {
-            //camera?.cameraControl?.setZoomRatio(1f)
-            setLinearZoom(1.0f)
-        }
 
         captureLiveStatus.value = getString(R.string.Idle)
     }
@@ -552,6 +538,7 @@ class CaptureFragment : Fragment() {
                     it.cameraButton.visibility = View.INVISIBLE
                     it.audioSelection.visibility = View.INVISIBLE
                     it.qualitySelection.visibility = View.INVISIBLE
+                    it.saveText.visibility = View.GONE
 
                     it.captureButton.setImageResource(R.drawable.ic_pause)
                     it.captureButton.isEnabled = true
@@ -560,6 +547,7 @@ class CaptureFragment : Fragment() {
                 }
                 UiState.FINALIZED -> {
                     it.captureButton.setImageResource(R.drawable.ic_shutter_normal)
+                    it.saveText.visibility = View.VISIBLE
                     it.stopButton.visibility = View.INVISIBLE
                 }
                 else -> {
