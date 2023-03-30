@@ -61,7 +61,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toRightOf="parent">
 
-        <ImageView
+        <androidx.cardview.widget.CardView
             android:id="@+id/photo_view_button"
             android:layout_width="44dp"
             android:layout_height="44dp"
@@ -70,8 +70,16 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="45dp"
-            android:contentDescription="photo view button"
-            android:src="@drawable/ic_photo" />
+            app:cardCornerRadius="40dp">
+
+            <ImageView
+                android:id="@+id/photo_view"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_photo" />
+
+        </androidx.cardview.widget.CardView>
 
         <ImageView
             android:id="@+id/camera_capture_button"

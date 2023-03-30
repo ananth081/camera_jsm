@@ -14,7 +14,7 @@
         android:layout_marginEnd="20dp"
         android:layout_marginTop="12dp"
         android:contentDescription="@string/app_name"
-        android:text="Do you want to publish this media now, or dies it need to be reviewed"
+        android:text="Do you want to publish this media now, or does it need to be reviewed"
         android:scaleType="center" />
 
     <com.google.android.material.radiobutton.MaterialRadioButton

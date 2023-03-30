@@ -51,6 +51,12 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="AlertDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:background">@color/ic_white</item>
+    </style>
+
+
+
 
 
 </resources>

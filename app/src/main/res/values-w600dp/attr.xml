@@ -1,0 +1,4 @@
+<resources>
+    <bool name="isTablet">true</bool>
+    <bool name="isw600dp">true</bool>
+</resources>

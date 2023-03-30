@@ -69,6 +69,31 @@ class PublishedFragment : Fragment() {
         val dateList = listOf<String>("23 Oct", "24 Oct")
 
         adapter = ImageRecyclerViewAdapter(/*fileList!!, dateList*/)
+        if(resources.getBoolean(R.bool.isTablet)){
+            val glm = GridLayoutManager(
+                context, 7
+            )
+            glm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    return if (adapter?.getItemViewType(position) == typeDate) {
+                      7
+                    } else 1
+                }
+            }
+            binding.galleryImage.layoutManager = glm
+        }else{
+            val glm = GridLayoutManager(
+                context, 4
+            )
+            glm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    return if (adapter?.getItemViewType(position) == typeDate) {
+                        4
+                    } else 1
+                }
+            }
+            binding.galleryImage.layoutManager = glm
+        }
         val glm = GridLayoutManager(
             context, 4
         )
@@ -79,7 +104,7 @@ class PublishedFragment : Fragment() {
                 } else 1
             }
         }
-        binding.galleryImage.layoutManager = glm
+        //binding.galleryImage.layoutManager = glm
         adapter?.getGalleryView?.add("March 26, 2023")
         adapter?.getGalleryView?.addAll(fileList!!)
         adapter?.getGalleryView?.add("March 28, 2023")

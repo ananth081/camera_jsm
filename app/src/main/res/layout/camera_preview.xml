@@ -133,22 +133,6 @@
 
         </androidx.cardview.widget.CardView>
 
-       <!-- <androidx.cardview.widget.CardView
-            android:id="@+id/view2"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_centerHorizontal="true"
-            android:elevation="12dp"
-            app:cardCornerRadius="40dp">
-
-            <ImageView
-                android:id="@+id/imageView1"
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/YOUR_IMAGE" />
-        </androidx.cardview.widget.CardView>
--->
         <ImageView
             android:id="@+id/camera_capture_button"
             android:layout_width="48dp"

@@ -1,10 +1,7 @@
 package com.android.example.cameraxbasic.save
 
 import android.app.Dialog
-import android.content.Context
 import android.content.DialogInterface
-import android.opengl.ETC1.getHeight
-import android.opengl.ETC1.getWidth
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,14 +9,27 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import com.android.example.cameraxbasic.R
+import com.android.example.cameraxbasic.databinding.SaveDialogItemBinding
 
 class SaveDialog : DialogFragment() {
+    lateinit var binding: SaveDialogItemBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
     }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = SaveDialogItemBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
     companion object {
-        fun newInstance(): SaveDialog{
+        fun newInstance(): SaveDialog {
             val args = Bundle()
             val fragment = SaveDialog()
             fragment.arguments = args
@@ -28,15 +38,19 @@ class SaveDialog : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val alertOption = arrayOf("Publish Now", "Needs review")
         return activity?.let {
-            val builder = AlertDialog.Builder(it)
+            val builder = AlertDialog.Builder(it,R.style.AlertDialogTheme)
             // Get the layout inflater
             val inflater = requireActivity().layoutInflater;
 
             // Inflate and set the layout for the dialog
             // Pass null as the parent view because its going in the dialog layout
-            builder.setView(inflater.inflate(R.layout.save_dialog_item, null))
-                // Add action buttons
+           // builder.setView(inflater.inflate(R.layout.save_dialog_item, null))
+            builder.setTitle("Do you want to publish this media now, or does it need to be reviewed")
+
+
+            // Add action buttons
 //                .setPositiveButton("Cancel"
 //                ) { dialog, id ->
 //                    // sign in the user ...
@@ -44,6 +58,26 @@ class SaveDialog : DialogFragment() {
 //                .setNegativeButton("Save") { dialog, id ->
 //                    getDialog()?.cancel()
 //                }
+
+            builder.setSingleChoiceItems(
+                alertOption,
+                0
+            ) { dialogInterface: DialogInterface, i: Int ->
+                if (i == 0) {
+                    binding.needsReviewRadioBt.isChecked = false
+                } else {
+                    binding.publishRadioBt.isChecked = false
+                }
+
+            }
+
+            builder.setPositiveButton(
+                "Cancel"
+            ) { dialog, id ->
+                getDialog()?.cancel()
+            }.setNegativeButton("Save") { dialog, id ->
+                getDialog()?.cancel()
+            }
             builder.create()
         } ?: throw IllegalStateException("Activity cannot be null")
     }
