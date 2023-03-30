@@ -38,16 +38,13 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.ScaleGestureDetector
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.camera.core.Camera
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.Preview
-import androidx.camera.core.VideoCapture
+import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.video.*
 import androidx.concurrent.futures.await
@@ -63,6 +60,7 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.example.cameraxbasic.R
+import com.android.example.cameraxbasic.camera.CameraActivity
 import com.android.example.cameraxbasic.camera.VideoActivity
 import com.android.example.cameraxbasic.databinding.FragmentCaptureBinding
 import com.android.example.cameraxbasic.video.extensions.getAspectRatio
@@ -115,6 +113,7 @@ class CaptureFragment : Fragment() {
      *   (VideoCapture can work on its own). The function should always execute on
      *   the main thread.
      */
+    @SuppressLint("RestrictedApi")
     private suspend fun bindCaptureUsecase() {
         val cameraProvider = ProcessCameraProvider.getInstance(requireContext()).await()
 
@@ -149,18 +148,36 @@ class CaptureFragment : Fragment() {
 
         try {
             cameraProvider.unbindAll()
-            cameraProvider.bindToLifecycle(
+            val camera = cameraProvider.bindToLifecycle(
                 viewLifecycleOwner,
                 cameraSelector,
                 videoCapture,
                 preview
             )
+            val cameraInfo = videoCapture.camera?.cameraInfo
+            cameraInfo?.let { observeCameraState(it) }
         } catch (exc: Exception) {
             // we are on main thread, let's reset the controls on the UI.
             Log.e(TAG, "Use case binding failed", exc)
             resetUIandState("bindToLifecycle failed: $exc")
         }
         enableUI(true)
+        setScale()
+
+        captureViewBinding.flashLight.let { flashLightImg ->
+            flashLightImg.isEnabled = true
+            var torchState = false
+            flashLightImg.setOnClickListener {
+                torchState = TorchState.ON == getTorchState()
+                if (torchState) {
+                    flashLightImg.setImageResource(R.drawable.flash_circle_1)
+                    setTorchState(false)
+                } else {
+                    flashLightImg.setImageResource(R.drawable.flash_circle_on)
+                    setTorchState(true)
+                }
+            }
+        }
     }
 
     /**
@@ -356,6 +373,21 @@ class CaptureFragment : Fragment() {
             //isEnabled = true
         }
 
+        captureViewBinding.dualCamera?.let {
+            it.setOnClickListener {
+                cameraIndex = (cameraIndex + 1) % cameraCapabilities.size
+                // camera device change is in effect instantly:
+                //   - reset quality selection
+                //   - restart preview
+                qualityIndex = DEFAULT_QUALITY_IDX
+                initializeQualitySectionsUI()
+                enableUI(false)
+                viewLifecycleOwner.lifecycleScope.launch {
+                    bindCaptureUsecase()
+                }
+            }
+        }
+
         // audioEnabled by default is disabled.
         captureViewBinding.audioSelection.isChecked = audioEnabled
         captureViewBinding.audioSelection.setOnClickListener {
@@ -413,17 +445,6 @@ class CaptureFragment : Fragment() {
 
         captureViewBinding.cancel.setOnClickListener {
             activity?.finish()
-        }
-        captureViewBinding.cameraZoomText0.setOnClickListener {
-            camera?.cameraControl?.setLinearZoom(0.02f)
-        }
-
-        captureViewBinding.cameraZoomText05.setOnClickListener {
-            camera?.cameraControl?.setZoomRatio(0.05f)
-        }
-
-        captureViewBinding.cameraZoomText1.setOnClickListener {
-            camera?.cameraControl?.setZoomRatio(1f)
         }
 
         captureLiveStatus.value = getString(R.string.Idle)
@@ -517,6 +538,7 @@ class CaptureFragment : Fragment() {
                     it.cameraButton.visibility = View.INVISIBLE
                     it.audioSelection.visibility = View.INVISIBLE
                     it.qualitySelection.visibility = View.INVISIBLE
+                    it.saveText.visibility = View.GONE
 
                     it.captureButton.setImageResource(R.drawable.ic_pause)
                     it.captureButton.isEnabled = true
@@ -525,6 +547,7 @@ class CaptureFragment : Fragment() {
                 }
                 UiState.FINALIZED -> {
                     it.captureButton.setImageResource(R.drawable.ic_shutter_normal)
+                    it.saveText.visibility = View.VISIBLE
                     it.stopButton.visibility = View.INVISIBLE
                 }
                 else -> {
@@ -628,5 +651,190 @@ class CaptureFragment : Fragment() {
         const val DEFAULT_QUALITY_IDX = 0
         val TAG: String = CaptureFragment::class.java.simpleName
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
+    }
+
+    private fun setScale() {
+        val listener: ScaleGestureDetector.OnScaleGestureListener =
+            object : ScaleGestureDetector.OnScaleGestureListener {
+                @SuppressLint("RestrictedApi")
+                override fun onScale(scaleGestureDetector: ScaleGestureDetector): Boolean {
+                    videoCapture.camera?.let {
+                        val f: ZoomState? = it.cameraInfo.zoomState.value
+                        val scale: Float = scaleGestureDetector.scaleFactor
+                        val zoomRatio = scale * f?.zoomRatio!!
+                        camera?.cameraControl?.setZoomRatio(zoomRatio)
+                        it.cameraControl.setZoomRatio(zoomRatio)
+                        if (activity != null && activity is CameraActivity) {
+                            (activity as CameraActivity).updateZoomText(zoomRatio)
+                        }
+                    }
+
+                    return true
+                }
+
+                override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
+                    return true
+                }
+
+                override fun onScaleEnd(detector: ScaleGestureDetector) {
+                }
+
+            }
+        val scaleGestureDetector = ScaleGestureDetector(requireContext(), listener)
+
+        captureViewBinding.previewView.setOnTouchListener { view, motionEvent ->
+            scaleGestureDetector.onTouchEvent(
+                motionEvent
+            )
+        }
+    }
+//
+//    @SuppressLint("RestrictedApi")
+//    fun setCameraZoomLevels(fl: Float) {
+//        videoCapture.camera?.let {
+//            camera?.cameraControl?.setZoomRatio(fl)
+//        }
+//    }
+
+    @SuppressLint("RestrictedApi")
+    fun setLinearZoom(fl: Float) {
+        videoCapture.camera?.let {
+            it.cameraControl.setLinearZoom(fl)
+        }
+    }
+
+    @SuppressLint("RestrictedApi")
+    fun getTorchState(): Int? {
+        var torchState: Int? = 0
+        videoCapture.camera?.let {
+            torchState = it.cameraInfo.torchState.value
+        }
+        return torchState
+    }
+
+    @SuppressLint("RestrictedApi")
+    fun setTorchState(state: Boolean) {
+        videoCapture.camera?.let {
+            it.cameraControl?.enableTorch(state)
+        }
+    }
+
+    private fun observeCameraState(cameraInfo: CameraInfo) {
+        cameraInfo.cameraState.observe(viewLifecycleOwner) { cameraState ->
+            run {
+                when (cameraState.type) {
+                    CameraState.Type.PENDING_OPEN -> {
+                        // Ask the user to close other camera apps
+//                        Toast.makeText(
+//                            context,
+//                            "CameraState: Pending Open",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+                    }
+                    CameraState.Type.OPENING -> {
+                        // Show the Camera UI
+//                        Toast.makeText(
+//                            context,
+//                            "CameraState: Opening",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+                    }
+                    CameraState.Type.OPEN -> {
+                        // Setup Camera resources and begin processing
+//                        Toast.makeText(
+//                            context,
+//                            "CameraState: Open",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+                        captureViewBinding.placeHolderLayout.postDelayed({
+                            captureViewBinding?.placeHolderLayout?.visibility = View.GONE
+                        },300)
+
+                    }
+                    CameraState.Type.CLOSING -> {
+                        // Close camera UI
+//                        Toast.makeText(
+//                            context,
+//                            "CameraState: Closing",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+                    }
+                    CameraState.Type.CLOSED -> {
+                        // Free camera resources
+//                        Toast.makeText(
+//                            context,
+//                            "CameraState: Closed",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+                    }
+                }
+            }
+
+            cameraState.error?.let { error ->
+                when (error.code) {
+                    // Open errors
+                    CameraState.ERROR_STREAM_CONFIG -> {
+                        // Make sure to setup the use cases properly
+//                        Toast.makeText(
+//                            context,
+//                            "Stream config error",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+                    }
+                    // Opening errors
+                    CameraState.ERROR_CAMERA_IN_USE -> {
+                        // Close the camera or ask user to close another camera app that's using the
+                        // camera
+//                        Toast.makeText(
+//                            context,
+//                            "Camera in use",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+                    }
+                    CameraState.ERROR_MAX_CAMERAS_IN_USE -> {
+                        // Close another open camera in the app, or ask the user to close another
+                        // camera app that's using the camera
+//                        Toast.makeText(
+//                            context,
+//                            "Max cameras in use",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+                    }
+                    CameraState.ERROR_OTHER_RECOVERABLE_ERROR -> {
+//                        Toast.makeText(
+//                            context,
+//                            "Other recoverable error",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+                    }
+                    // Closing errors
+                    CameraState.ERROR_CAMERA_DISABLED -> {
+                        // Ask the user to enable the device's cameras
+//                        Toast.makeText(
+//                            context,
+//                            "Camera disabled",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+                    }
+                    CameraState.ERROR_CAMERA_FATAL_ERROR -> {
+                        // Ask the user to reboot the device to restore camera function
+//                        Toast.makeText(
+//                            context,
+//                            "Fatal error",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+                    }
+                    // Closed errors
+                    CameraState.ERROR_DO_NOT_DISTURB_MODE_ENABLED -> {
+                        // Ask the user to disable the "Do Not Disturb" mode, then reopen the camera
+//                        Toast.makeText(
+//                            context,
+//                            "Do not disturb mode enabled",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+                    }
+                }
+            }
+        }
     }
 }

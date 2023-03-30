@@ -50,14 +50,14 @@
         android:id="@+id/cameraZoom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:background="#00555555"
-        android:foreground="#00555555"
         android:gravity="center"
         android:orientation="horizontal"
         android:visibility="gone"
+        android:background="#00555555"
+        android:foreground="#00555555"
         app:layout_constraintBottom_toTopOf="@id/camera_control"
         app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="10dp"
         app:layout_constraintStart_toStartOf="parent">
 
         <TextView
@@ -84,6 +84,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="12dp"
+            android:background="@drawable/zoom_button_bg"
             android:text="1x"
             android:textSize="16sp" />
     </LinearLayout>
@@ -162,20 +163,36 @@
         <TextView
             android:id="@+id/saveText"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
+            android:layout_height="40dp"
             android:layout_marginBottom="47dp"
-            android:background="@drawable/bg_save_text"
+            android:layout_alignParentEnd="true"
+            android:translationX="-22dp"
+            android:translationY="34dp"
             android:gravity="center"
+            android:text="Save"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
-            android:text="Save"
             android:textAllCaps="true"
+            android:background="@drawable/bg_save_text"
             android:textColor="@color/txWhite"
             android:textSize="16sp"
-            android:translationX="-25dp"
-            android:translationY="45dp"
             app:layout_constraintEnd_toStartOf="parent" />
     </RelativeLayout>
 
+    <FrameLayout android:id="@+id/place_holder_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/txBlack"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/place_holder_image"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:src="@drawable/outline_camera_alt_24" />
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
