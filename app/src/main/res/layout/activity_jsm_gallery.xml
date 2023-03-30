@@ -1,33 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:orientation="vertical"
     android:layout_height="match_parent"
+    android:background="@color/ic_white"
+    android:orientation="vertical"
     tools:context=".camera.JsmGalleryActivity">
 
-   <com.google.android.material.appbar.AppBarLayout
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content"
-       android:theme="@style/Theme.CameraXBasic.AppBarOverlay">
+    <!--   <com.google.android.material.appbar.AppBarLayout-->
+    <!--       android:layout_width="match_parent"-->
+    <!--       android:layout_height="wrap_content"-->
+    <!--       android:theme="@style/Theme.CameraXBasic.AppBarOverlay">-->
 
 
+    <!--   </com.google.android.material.appbar.AppBarLayout>-->
 
-   </com.google.android.material.appbar.AppBarLayout>
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/custom.Theme"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:titleTextColor="@color/ic_white">
 
-   <com.google.android.material.tabs.TabLayout
-       android:id="@+id/tab_layout"
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content" />
+        <ImageView
+            android:id="@+id/menu"
+            android:layout_gravity="end"
+            android:layout_marginEnd="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_menu" />
 
-   <androidx.viewpager2.widget.ViewPager2
-       android:id="@+id/view_pager"
-       android:layout_width="match_parent"
-       android:layout_height="match_parent">
-   </androidx.viewpager2.widget.ViewPager2>
+    </androidx.appcompat.widget.Toolbar>
 
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
+        android:contentDescription="test"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabTextColor="@color/txBlack" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></androidx.viewpager2.widget.ViewPager2>
 
 
 </LinearLayout>

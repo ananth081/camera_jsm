@@ -16,6 +16,7 @@
 
 package com.android.example.cameraxbasic.fragments
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -49,7 +50,8 @@ class PhotoFragment internal constructor() : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val args = arguments ?: return
         val resource = args.getString(FILE_NAME_KEY)?.let { File(it) } ?: R.drawable.ic_photo
-        Glide.with(view).load(resource).into(galleryImageItemBinding.galleryImage)
+       // Glide.with(view).load(resource).into(galleryImageItemBinding.galleryImage)
+        galleryImageItemBinding.galleryImage.setImageURI(Uri.parse(resource.toString()))
     }
 
     companion object {

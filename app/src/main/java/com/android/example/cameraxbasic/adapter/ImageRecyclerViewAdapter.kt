@@ -12,12 +12,16 @@ import com.android.example.cameraxbasic.databinding.ItemDateBinding
 import com.android.example.cameraxbasic.databinding.ItemImageBinding
 import java.io.File
 
-class ImageRecyclerViewAdapter(val imageList: List<File>, val dateList: List<String>) :
+class ImageRecyclerViewAdapter(/*val imageList: List<File>, val dateList: List<String>*/) :
     RecyclerView.Adapter<ImageRecyclerViewAdapter.ImageViewHolder>() {
 
      val typeDate = 100
      val typeMedia = 101
-    var getGalleryView: MutableSet<Any> = emptySet<Any>().toMutableSet()
+    var getGalleryView: MutableList<Any> = emptyList<Any>().toMutableList()
+    set(value) {
+        field = value
+        notifyDataSetChanged()
+    }
 
     var items = listOf<Any>()
         set(value) {
@@ -56,7 +60,7 @@ class ImageRecyclerViewAdapter(val imageList: List<File>, val dateList: List<Str
     private fun bindMediaView(
         holder: ImageRecyclerViewAdapter.ImageViewHolder,
         position: Int,
-        files: MutableSet<Any>
+        files: MutableList<Any>
     ) {
         val mediaBinding = holder.itemBinding
         mediaBinding.galleryImage.setImageURI(Uri.parse(files.elementAt(position).toString()))
@@ -65,7 +69,7 @@ class ImageRecyclerViewAdapter(val imageList: List<File>, val dateList: List<Str
     private fun bindDateView(
         holder: ImageRecyclerViewAdapter.ImageViewHolder,
         position: Int,
-        files: MutableSet<Any>
+        files: MutableList<Any>
     ) {
         val dateBinding = holder.dateBinding
         dateBinding.date.text = files.elementAt(position).toString()
@@ -73,7 +77,6 @@ class ImageRecyclerViewAdapter(val imageList: List<File>, val dateList: List<Str
 
 
     override fun getItemCount(): Int {
-        Log.d("PRS","getItemCount"+getGalleryView.size)
         return getGalleryView.size
     }
 

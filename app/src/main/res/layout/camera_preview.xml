@@ -50,14 +50,14 @@
         android:id="@+id/cameraZoom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:background="#00555555"
+        android:foreground="#00555555"
         android:gravity="center"
         android:orientation="horizontal"
         android:visibility="gone"
-        android:background="#00555555"
-        android:foreground="#00555555"
         app:layout_constraintBottom_toTopOf="@id/camera_control"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="10dp"
         app:layout_constraintStart_toStartOf="parent">
 
         <TextView
@@ -111,16 +111,43 @@
         app:layout_constraintEnd_toEndOf="parent">
 
 
-        <ImageView
+        <androidx.cardview.widget.CardView
             android:id="@+id/photo_view_button"
-            android:layout_width="48dp"
-            android:layout_height="match_parent"
+            android:layout_width="50dp"
+            android:layout_height="70dp"
+            android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
             android:layout_marginStart="12dp"
             android:layout_marginTop="25dp"
-            android:src="@drawable/ic_photo" />
+            app:cardCornerRadius="40dp">
 
+            <ImageView
+                android:id="@+id/photo_view"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_photo" />
+
+        </androidx.cardview.widget.CardView>
+
+       <!-- <androidx.cardview.widget.CardView
+            android:id="@+id/view2"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_centerHorizontal="true"
+            android:elevation="12dp"
+            app:cardCornerRadius="40dp">
+
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/YOUR_IMAGE" />
+        </androidx.cardview.widget.CardView>
+-->
         <ImageView
             android:id="@+id/camera_capture_button"
             android:layout_width="48dp"
@@ -136,18 +163,18 @@
             android:id="@+id/saveText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="47dp"
             android:layout_alignParentEnd="true"
-            android:translationX="-25dp"
-            android:translationY="45dp"
+            android:layout_marginBottom="47dp"
+            android:background="@drawable/bg_save_text"
             android:gravity="center"
-            android:text="Save"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
+            android:text="Save"
             android:textAllCaps="true"
-            android:background="@drawable/bg_save_text"
             android:textColor="@color/txWhite"
             android:textSize="16sp"
+            android:translationX="-25dp"
+            android:translationY="45dp"
             app:layout_constraintEnd_toStartOf="parent" />
     </RelativeLayout>
 

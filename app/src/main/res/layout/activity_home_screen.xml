@@ -23,12 +23,14 @@
             android:clickable="true"
             android:layout_gravity="center"
             android:layout_marginTop="12dp"
+            android:contentDescription="camera"
             android:src="@drawable/camera_vector" />
 
         <ImageView
             android:id="@+id/image_menuItem2"
             android:layout_width="wrap_content"
             android:layout_height="100dp"
+            android:contentDescription="Media"
             android:clickable="true"
             android:layout_gravity="center"
             android:src="@drawable/ic_media_list" />

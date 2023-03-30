@@ -31,6 +31,26 @@
         <item name="colorPrimary">@color/redwood_color</item>
     </style>
 
+    <style name="gallery.Theme" parent="Theme.AppCompat.Light">
+        <item name="colorPrimaryDark">@color/redwood_color</item>
+        <item name="colorPrimary">@color/redwood_color</item>
+    </style>
+
+    <style name="FullScreenDialogStyle">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowActionBar">true</item>
+    </style>
+
+    <style name="FontRoboto">
+        <item name="android:fontFamily">@font/robotomedium</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="FontRobotoMedium">
+        <item name="android:fontFamily">@font/robotomedium</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
 
 
 </resources>

@@ -162,16 +162,17 @@ class CameraFragment : Fragment() {
 
     private fun setGalleryThumbnail(filename: String) {
         // Run the operations in the view's thread
-        cameraPreview?.photoViewButton?.let { photoViewButton ->
+        cameraPreview?.photoView?.let { photoViewButton ->
             photoViewButton.post {
                 // Remove thumbnail padding
                 photoViewButton.setPadding(resources.getDimension(R.dimen.stroke_small).toInt())
 
                 // Load thumbnail into circular button using Glide
-                Glide.with(photoViewButton)
-                    .load(filename)
-                    .apply(RequestOptions.circleCropTransform())
-                    .into(photoViewButton)
+                photoViewButton.setImageURI(Uri.parse(filename))
+//                Glide.with(photoViewButton)
+//                    .load(filename)
+//                    .apply(RequestOptions.circleCropTransform())
+//                    .into(photoViewButton)
             }
         }
     }
