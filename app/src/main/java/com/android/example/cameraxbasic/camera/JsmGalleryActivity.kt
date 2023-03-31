@@ -56,7 +56,7 @@ class JsmGalleryActivity : AppCompatActivity(),GalleryViewDailogFragment.selecte
         mViewPager.adapter = adapter
 
         TabLayoutMediator(binding.tabLayout, viewPager) { tab, position ->
-            tab.text = if (position == 0) "Published" else "Needs Review"
+            tab.text = if (position == 0) "Published" else "Needs Review (4)"
         }.attach()
 
     }
