@@ -62,10 +62,9 @@ class JsmGalleryActivity : AppCompatActivity(),GalleryViewDailogFragment.selecte
     }
 
     override fun getSelectedView(selectedView: String) {
-
-        var fragment = adapter?.fragments?.get(0)
+        val fragment = adapter?.fragments?.get(0)
         (fragment as PublishedFragment).onMediaViewSelected(selectedView)
-       // adapter?.refreshFragment(0,PublishedFragment())
+        adapter?.refreshFragment(0,PublishedFragment())
 
     }
 
