@@ -15,6 +15,7 @@ import com.android.example.cameraxbasic.adapter.ImageRecyclerViewAdapter
 import com.android.example.cameraxbasic.camera.JsmGalleryActivity
 import com.android.example.cameraxbasic.databinding.FragmentPublishedBinding
 import java.io.File
+import kotlin.math.roundToInt
 
 class PublishedFragment : Fragment() {
     val TAG = "PublishedFragment"
@@ -69,14 +70,31 @@ class PublishedFragment : Fragment() {
         val dateList = listOf<String>("23 Oct", "24 Oct")
 
         adapter = ImageRecyclerViewAdapter(/*fileList!!, dateList*/)
-        if(resources.getBoolean(R.bool.isTablet)){
+        val displayMetrics = resources.displayMetrics
+        val screenWidth = displayMetrics.widthPixels / displayMetrics.density
+        val noOfColumns = (screenWidth / 100 + 0.5).roundToInt() - 1
+        val glm = GridLayoutManager(
+            context, noOfColumns
+        )
+        glm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                return if (adapter?.getItemViewType(position) == typeDate) {
+                    noOfColumns
+                } else 1
+            }
+        }
+        binding.galleryImage.layoutManager = glm
+        /*if(resources.getBoolean(R.bool.isTablet)){
+
+
+            Log.d("PRS","Column"+noOfColumns )
             val glm = GridLayoutManager(
-                context, 7
+                context, noOfColumns
             )
             glm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
                 override fun getSpanSize(position: Int): Int {
                     return if (adapter?.getItemViewType(position) == typeDate) {
-                      7
+                        noOfColumns
                     } else 1
                 }
             }
@@ -103,7 +121,7 @@ class PublishedFragment : Fragment() {
                     4
                 } else 1
             }
-        }
+        }*/
         //binding.galleryImage.layoutManager = glm
         adapter?.getGalleryView?.add("March 26, 2023")
         adapter?.getGalleryView?.addAll(fileList!!)
@@ -114,6 +132,7 @@ class PublishedFragment : Fragment() {
     }
 
     fun onMediaViewSelected(viewSelected:String){
+        Log.d("PRS","onMediaViewSelected")
         val filePath = File(Environment.getExternalStorageDirectory().path + File.separator + DIRECTORY_NAME)
         fileList = filePath.listFiles()?.toList()
         when(viewSelected){
