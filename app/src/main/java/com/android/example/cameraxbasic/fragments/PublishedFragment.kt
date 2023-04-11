@@ -54,11 +54,12 @@ class PublishedFragment : Fragment() {
             File(Environment.getExternalStorageDirectory().path + File.separator + DIRECTORY_NAME)
         val imagePath: MutableList<File>? = null
          fileList = filePath.listFiles()?.toList()
-        if (fileList != null) {
-            for (i in 0..fileList!!.size) {
-                imagePath?.add(fileList!![i])
+        if(filePath.length()>0) {
+            if (fileList != null) {
+                for (i in 0..fileList!!.size) {
+                    imagePath?.add(fileList!![i])
+                }
             }
-        }
 //        val filePath2 =
 //            File(Environment.getExternalStorageDirectory().path + File.separator + "Download2" + File.separator)
 //        val fileList2 = filePath2.listFiles()?.toList()
@@ -66,25 +67,25 @@ class PublishedFragment : Fragment() {
 //        val hashMap = HashMap<String, List<File>?>()
 
 
-        // val adapter = ImageRecyclerViewAdapter(fileList!!)
-        val dateList = listOf<String>("23 Oct", "24 Oct")
+            // val adapter = ImageRecyclerViewAdapter(fileList!!)
+            val dateList = listOf<String>("23 Oct", "24 Oct")
 
-        adapter = ImageRecyclerViewAdapter(/*fileList!!, dateList*/)
-        val displayMetrics = resources.displayMetrics
-        val screenWidth = displayMetrics.widthPixels / displayMetrics.density
-        val noOfColumns = (screenWidth / 100 + 0.5).roundToInt() - 1
-        val glm = GridLayoutManager(
-            context, noOfColumns
-        )
-        glm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-            override fun getSpanSize(position: Int): Int {
-                return if (adapter?.getItemViewType(position) == typeDate) {
-                    noOfColumns
-                } else 1
+            adapter = ImageRecyclerViewAdapter(/*fileList!!, dateList*/)
+            val displayMetrics = resources.displayMetrics
+            val screenWidth = displayMetrics.widthPixels / displayMetrics.density
+            val noOfColumns = (screenWidth / 100 + 0.8).roundToInt() - 1
+            val glm = GridLayoutManager(
+                context, noOfColumns
+            )
+            glm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    return if (adapter?.getItemViewType(position) == typeDate) {
+                        noOfColumns
+                    } else 1
+                }
             }
-        }
-        binding.galleryImage.layoutManager = glm
-        /*if(resources.getBoolean(R.bool.isTablet)){
+            binding.galleryImage.layoutManager = glm
+            /*if(resources.getBoolean(R.bool.isTablet)){
 
 
             Log.d("PRS","Column"+noOfColumns )
@@ -122,12 +123,13 @@ class PublishedFragment : Fragment() {
                 } else 1
             }
         }*/
-        //binding.galleryImage.layoutManager = glm
-        adapter?.getGalleryView?.add("March 26, 2023")
-        adapter?.getGalleryView?.addAll(fileList!!)
-        adapter?.getGalleryView?.add("March 28, 2023")
-        adapter?.getGalleryView?.addAll(fileList!!)
-        binding.galleryImage.adapter = adapter
+            //binding.galleryImage.layoutManager = glm
+            adapter?.getGalleryView?.add("March 26, 2023")
+            adapter?.getGalleryView?.addAll(fileList!!)
+            adapter?.getGalleryView?.add("March 28, 2023")
+            adapter?.getGalleryView?.addAll(fileList!!)
+            binding.galleryImage.adapter = adapter
+        }
 
     }
 
@@ -135,32 +137,33 @@ class PublishedFragment : Fragment() {
         Log.d("PRS","onMediaViewSelected")
         val filePath = File(Environment.getExternalStorageDirectory().path + File.separator + DIRECTORY_NAME)
         fileList = filePath.listFiles()?.toList()
-        when(viewSelected){
-            "Day" ->{
-                adapter?.getGalleryView?.clear()
-                adapter?.getGalleryView?.add("March 26, 2023")
-                adapter?.getGalleryView?.addAll(fileList!!)
-                adapter?.getGalleryView?.add("March 28, 2023")
-                adapter?.getGalleryView?.addAll(fileList!!)
-                adapter?.notifyDataSetChanged()
-            }
-            "Week"->{
-                adapter?.getGalleryView?.clear()
-                adapter?.getGalleryView?.add("Mar 14 - 21, 2022")
-                adapter?.getGalleryView?.addAll(fileList!!)
-                adapter?.getGalleryView?.add("Mar 22 - 29, 2022")
-                adapter?.getGalleryView?.addAll(fileList!!)
-                adapter?.notifyDataSetChanged()
-            }
-            "Month"->{
-                adapter?.getGalleryView?.clear()
-                adapter?.getGalleryView?.add("Feburary 2023")
-                adapter?.getGalleryView?.addAll(fileList!!)
-                adapter?.getGalleryView?.add("March 2023")
-                adapter?.getGalleryView?.addAll(fileList!!)
-                adapter?.notifyDataSetChanged()
+        if(fileList?.size!!>0) {
+            when (viewSelected) {
+                "Day" -> {
+                    adapter?.getGalleryView?.clear()
+                    adapter?.getGalleryView?.add("March 26, 2023")
+                    adapter?.getGalleryView?.addAll(fileList!!)
+                    adapter?.getGalleryView?.add("March 28, 2023")
+                    adapter?.getGalleryView?.addAll(fileList!!)
+                    adapter?.notifyDataSetChanged()
+                }
+                "Week" -> {
+                    adapter?.getGalleryView?.clear()
+                    adapter?.getGalleryView?.add("Mar 14 - 21, 2022")
+                    adapter?.getGalleryView?.addAll(fileList!!)
+                    adapter?.getGalleryView?.add("Mar 22 - 29, 2022")
+                    adapter?.getGalleryView?.addAll(fileList!!)
+                    adapter?.notifyDataSetChanged()
+                }
+                "Month" -> {
+                    adapter?.getGalleryView?.clear()
+                    adapter?.getGalleryView?.add("Feburary 2023")
+                    adapter?.getGalleryView?.addAll(fileList!!)
+                    adapter?.getGalleryView?.add("March 2023")
+                    adapter?.getGalleryView?.addAll(fileList!!)
+                    adapter?.notifyDataSetChanged()
+                }
             }
         }
-
     }
 }
