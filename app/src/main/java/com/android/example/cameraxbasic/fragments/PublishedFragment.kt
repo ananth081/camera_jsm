@@ -54,7 +54,7 @@ class PublishedFragment : Fragment() {
             File(Environment.getExternalStorageDirectory().path + File.separator + DIRECTORY_NAME)
         val imagePath: MutableList<File>? = null
          fileList = filePath.listFiles()?.toList()
-        if(filePath.length()>0) {
+        if(fileList?.size!!>0) {
             if (fileList != null) {
                 for (i in 0..fileList!!.size) {
                     imagePath?.add(fileList!![i])
