@@ -16,9 +16,11 @@
 
 package com.android.example.cameraxbasic.fragments
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.*
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -35,15 +37,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.concurrent.futures.await
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.navigation.Navigation
 import androidx.window.WindowManager
 import com.android.example.cameraxbasic.KEY_EVENT_ACTION
 import com.android.example.cameraxbasic.KEY_EVENT_EXTRA
@@ -79,6 +85,9 @@ typealias LumaListener = (luma: Double) -> Unit
  * - Photo taking
  * - Image analysis
  */
+private var PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
+private var WRITE_PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+
 class CameraFragment : Fragment() {
 
     private var _fragmentCameraBinding: FragmentCameraBinding? = null
@@ -139,6 +148,23 @@ class CameraFragment : Fragment() {
 //                CameraFragmentDirections.actionCameraToPermissions()
 //            )
 //        }
+        // if (!PermissionsFragment.hasPermissions(requireContext())) {
+         if( ContextCompat.checkSelfPermission(requireContext(),Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
+             ActivityCompat.requestPermissions(
+                 requireActivity(),
+                 PERMISSIONS_REQUIRED,
+                 100
+             )
+         }
+        if( ContextCompat.checkSelfPermission(requireContext(),Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED || ContextCompat.checkSelfPermission(requireContext(),Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                WRITE_PERMISSIONS_REQUIRED,
+                101
+            )
+        }
+       // }
+
     }
 
     override fun onDestroyView() {
@@ -655,12 +681,16 @@ class CameraFragment : Fragment() {
 
     /** Enabled or disabled a button to switch cameras depending on the available cameras */
     private fun updateCameraSwitchButton() {
-//        try {
-//            cameraUiContainerBinding?.cameraSwitchButton?.isEnabled =
-//                hasBackCamera() && hasFrontCamera()
-//        } catch (exception: CameraInfoUnavailableException) {
-//            cameraUiContainerBinding?.cameraSwitchButton?.isEnabled = false
-//        }
+        try {
+            cameraPreview?.dualCamera?.isEnabled =
+                hasBackCamera() && hasFrontCamera()
+            if(!(hasBackCamera() && hasFrontCamera())){
+                cameraPreview?.dualCamera?.visibility = View.GONE
+            }
+        } catch (exception: CameraInfoUnavailableException) {
+            cameraPreview?.dualCamera?.isEnabled = false
+
+        }
     }
 
     /** Returns true if the device has an available back camera. False otherwise */

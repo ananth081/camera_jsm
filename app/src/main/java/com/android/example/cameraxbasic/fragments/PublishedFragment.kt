@@ -52,28 +52,13 @@ class PublishedFragment : Fragment() {
 
         val filePath =
             File(Environment.getExternalStorageDirectory().path + File.separator + DIRECTORY_NAME)
-        val imagePath: MutableList<File>? = null
          fileList = filePath.listFiles()?.toList()
         if(fileList?.size!!>0) {
-            if (fileList != null) {
-                for (i in 0..fileList!!.size) {
-                    imagePath?.add(fileList!![i])
-                }
-            }
-//        val filePath2 =
-//            File(Environment.getExternalStorageDirectory().path + File.separator + "Download2" + File.separator)
-//        val fileList2 = filePath2.listFiles()?.toList()
-//
-//        val hashMap = HashMap<String, List<File>?>()
 
-
-            // val adapter = ImageRecyclerViewAdapter(fileList!!)
-            val dateList = listOf<String>("23 Oct", "24 Oct")
-
-            adapter = ImageRecyclerViewAdapter(/*fileList!!, dateList*/)
+            adapter = ImageRecyclerViewAdapter()
             val displayMetrics = resources.displayMetrics
             val screenWidth = displayMetrics.widthPixels / displayMetrics.density
-            val noOfColumns = (screenWidth / 100 + 0.8).roundToInt() - 1
+            val noOfColumns = (screenWidth / 100 + 0.9).roundToInt() - 1
             val glm = GridLayoutManager(
                 context, noOfColumns
             )
@@ -85,44 +70,7 @@ class PublishedFragment : Fragment() {
                 }
             }
             binding.galleryImage.layoutManager = glm
-            /*if(resources.getBoolean(R.bool.isTablet)){
 
-
-            Log.d("PRS","Column"+noOfColumns )
-            val glm = GridLayoutManager(
-                context, noOfColumns
-            )
-            glm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-                override fun getSpanSize(position: Int): Int {
-                    return if (adapter?.getItemViewType(position) == typeDate) {
-                        noOfColumns
-                    } else 1
-                }
-            }
-            binding.galleryImage.layoutManager = glm
-        }else{
-            val glm = GridLayoutManager(
-                context, 4
-            )
-            glm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-                override fun getSpanSize(position: Int): Int {
-                    return if (adapter?.getItemViewType(position) == typeDate) {
-                        4
-                    } else 1
-                }
-            }
-            binding.galleryImage.layoutManager = glm
-        }
-        val glm = GridLayoutManager(
-            context, 4
-        )
-        glm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-            override fun getSpanSize(position: Int): Int {
-                return if (adapter?.getItemViewType(position) == typeDate) {
-                    4
-                } else 1
-            }
-        }*/
             //binding.galleryImage.layoutManager = glm
             adapter?.getGalleryView?.add("March 26, 2023")
             adapter?.getGalleryView?.addAll(fileList!!)
@@ -134,7 +82,6 @@ class PublishedFragment : Fragment() {
     }
 
     fun onMediaViewSelected(viewSelected:String){
-        Log.d("PRS","onMediaViewSelected")
         val filePath = File(Environment.getExternalStorageDirectory().path + File.separator + DIRECTORY_NAME)
         fileList = filePath.listFiles()?.toList()
         if(fileList?.size!!>0) {

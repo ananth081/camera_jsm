@@ -12,7 +12,7 @@ import com.android.example.cameraxbasic.databinding.ItemDateBinding
 import com.android.example.cameraxbasic.databinding.ItemImageBinding
 import java.io.File
 
-class ImageRecyclerViewAdapter(/*val imageList: List<File>, val dateList: List<String>*/) :
+class ImageRecyclerViewAdapter() :
     RecyclerView.Adapter<ImageRecyclerViewAdapter.ImageViewHolder>() {
 
      val typeDate = 100
