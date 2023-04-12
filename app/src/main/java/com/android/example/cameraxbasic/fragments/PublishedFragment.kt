@@ -70,8 +70,6 @@ class PublishedFragment : Fragment() {
                 }
             }
             binding.galleryImage.layoutManager = glm
-
-            //binding.galleryImage.layoutManager = glm
             adapter?.getGalleryView?.add("March 26, 2023")
             adapter?.getGalleryView?.addAll(fileList!!)
             adapter?.getGalleryView?.add("March 28, 2023")

@@ -15,19 +15,9 @@ import java.io.File
 class ImageRecyclerViewAdapter() :
     RecyclerView.Adapter<ImageRecyclerViewAdapter.ImageViewHolder>() {
 
-     val typeDate = 100
-     val typeMedia = 101
+    val typeDate = 100
+    val typeMedia = 101
     var getGalleryView: MutableList<Any> = emptyList<Any>().toMutableList()
-    set(value) {
-        field = value
-        notifyDataSetChanged()
-    }
-
-    var items = listOf<Any>()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
     override fun getItemViewType(position: Int): Int {
         val listItem = getGalleryView.elementAt(position)
         return when (listItem) {
@@ -85,7 +75,6 @@ class ImageRecyclerViewAdapter() :
         val dateBinding: ItemDateBinding,
         val itemView: View
     ) : RecyclerView.ViewHolder(itemView) {
-
 
 
     }
