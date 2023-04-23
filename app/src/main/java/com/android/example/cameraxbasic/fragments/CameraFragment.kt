@@ -61,6 +61,8 @@ import com.android.example.cameraxbasic.save.SaveDialog
 import com.android.example.cameraxbasic.utils.ANIMATION_FAST_MILLIS
 import com.android.example.cameraxbasic.utils.ANIMATION_SLOW_MILLIS
 import com.android.example.cameraxbasic.utils.MediaStoreUtils
+import com.android.example.cameraxbasic.video.CaptureFragment
+import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.launch
 import java.io.*
 import java.nio.ByteBuffer
@@ -87,7 +89,7 @@ private var WRITE_PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.WRITE_EXTER
 
 class CameraFragment : Fragment() {
 
-    private var _fragmentCameraBinding: FragmentCameraBinding? = null
+    //private var _fragmentCameraBinding: FragmentCameraBinding? = null
     private var cameraPreview: CameraPreviewBinding? = null
     private lateinit var mediaStoreUtils: MediaStoreUtils
     private var displayId: Int = -1
@@ -133,21 +135,32 @@ class CameraFragment : Fragment() {
 //            )
 //        }
         // if (!PermissionsFragment.hasPermissions(requireContext())) {
-         if( ContextCompat.checkSelfPermission(requireContext(),Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
-             ActivityCompat.requestPermissions(
-                 requireActivity(),
-                 PERMISSIONS_REQUIRED,
-                 100
-             )
-         }
-        if( ContextCompat.checkSelfPermission(requireContext(),Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED || ContextCompat.checkSelfPermission(requireContext(),Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_DENIED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                PERMISSIONS_REQUIRED,
+                100
+            )
+        }
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_DENIED || ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_DENIED
+        ) {
             ActivityCompat.requestPermissions(
                 requireActivity(),
                 WRITE_PERMISSIONS_REQUIRED,
                 101
             )
         }
-       // }
+        // }
 
     }
 
@@ -217,6 +230,46 @@ class CameraFragment : Fragment() {
             }
         }
 
+        resources.getColor(R.color.ic_white).let { cameraPreview?.photoBtn?.setBackgroundColor(it) }
+
+//        val tabLayout = cameraPreview?.switchCameraLayout
+//        tabLayout?.addTab(tabLayout.newTab().setText("Photo"))
+//        tabLayout?.addTab(tabLayout.newTab().setText("Video"))
+//        cameraPreview?.photoBtn?.setOnClickListener {
+//            //(activity as CameraActivity).showPhotoFragment(CameraFragment())
+//            resources.getColor(R.color.black_overlay).let { cameraPreview?.videoBtn?.setBackgroundColor(it) }
+//            cameraPreview?.videoBtn?.setTextColor(resources.getColor(R.color.ic_white))
+//        }
+
+//        cameraPreview?.videoBtn?.setOnClickListener {
+//            resources.getColor(R.color.ic_white).let { cameraPreview?.videoBtn?.setBackgroundColor(it) }
+//           // (activity as CameraActivity).showVideoFragment(CaptureFragment())
+//            resources.getColor(R.color.black_overlay).let { cameraPreview?.photoBtn?.setBackgroundColor(it) }
+//            cameraPreview?.photoBtn?.setTextColor(resources.getColor(R.color.ic_white))
+//        }
+
+//        val tabLayout = cameraPreview.c
+//            tabLayout.addTab(tabLayout.newTab().setText("Photo"))
+//        tabLayout.addTab(tabLayout.newTab().setText("Video"))
+//
+//        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+//            override fun onTabSelected(tab: TabLayout.Tab?) {
+//                if (0 == tab?.position) {
+//                    showPhotoFragment(CameraFragment())
+//                } else {
+//                    showVideoFragment(CaptureFragment())
+//                }
+//            }
+//
+//            override fun onTabUnselected(tab: TabLayout.Tab?) {
+//
+//            }
+//
+//            override fun onTabReselected(tab: TabLayout.Tab?) {
+//
+//            }
+//
+//        })
 
     }
 
@@ -398,7 +451,7 @@ class CameraFragment : Fragment() {
             val anim: Animation =
                 AnimationUtils.loadAnimation(requireContext(), R.anim.flash_screen);
             anim.fillAfter = true
-            _fragmentCameraBinding?.viewFinder?.startAnimation(anim);
+            cameraPreview?.viewFinder?.startAnimation(anim);
 
             // Get a stable reference of the modifiable image capture use case
             imageCapture?.let { imageCapture ->
@@ -553,7 +606,7 @@ class CameraFragment : Fragment() {
         try {
             cameraPreview?.dualCamera?.isEnabled =
                 hasBackCamera() && hasFrontCamera()
-            if(!(hasBackCamera() && hasFrontCamera())){
+            if (!(hasBackCamera() && hasFrontCamera())) {
                 cameraPreview?.dualCamera?.visibility = View.GONE
             }
         } catch (exception: CameraInfoUnavailableException) {

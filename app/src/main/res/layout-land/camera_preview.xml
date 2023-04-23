@@ -17,11 +17,11 @@
             android:id="@+id/cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_above="@+id/dualCamera"
             android:layout_marginStart="12dp"
+            android:layout_marginBottom="50dp"
             android:text="Cancel"
             android:textColor="@color/ic_white"
-            android:layout_above="@+id/dualCamera"
-            android:layout_marginBottom="50dp"
             android:textSize="16sp" />
 
         <ImageView
@@ -42,15 +42,88 @@
 
     </RelativeLayout>
 
-
     <androidx.camera.view.PreviewView
         android:id="@+id/view_finder"
         android:layout_width="0dp"
-        android:layout_marginStart="80dp"
         android:layout_height="match_parent"
+        android:layout_marginStart="80dp"
         android:background="@color/ic_white"
-        app:layout_constraintStart_toStartOf="@id/cancel_layout"
-        app:layout_constraintEnd_toStartOf="@id/camera_control" />
+        app:layout_constraintEnd_toStartOf="@id/camera_control"
+        app:layout_constraintStart_toStartOf="@id/cancel_layout" />
+
+    <LinearLayout
+        android:id="@+id/zoomControls"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="70dp"
+        android:background="@drawable/zoom_button_corners"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/view_finder"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/zoom_button_bg"
+            android:gravity="center"
+            android:text="0x"
+            android:textSize="16sp" />
+
+        <Button
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/zoom_button_bg"
+            android:gravity="center"
+            android:text="1x"
+            android:textSize="16sp" />
+
+        <Button
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/zoom_button_bg"
+            android:gravity="center"
+            android:text="2x"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="@id/zoomControls"
+        app:layout_constraintEnd_toEndOf="@id/view_finder"
+        android:background="@color/txBlack"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:id="@+id/videoText"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginEnd="10dp"
+            android:gravity="center"
+            android:rotation="270"
+            android:layout_weight="1"
+            app:background="@drawable/button_round_corners_filled"
+            android:text="Video"
+            android:textColor="@color/txWhite"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/photoTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="1"
+            android:rotation="270"
+            android:gravity="center"
+            app:background="@drawable/button_round_corners_filled"
+            android:text="Photo"
+            android:textColor="@color/txWhite"
+            android:textSize="12sp" />
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/camera_control"
@@ -68,7 +141,6 @@
             android:layout_above="@id/camera_capture_button"
             android:layout_centerInParent="true"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginBottom="45dp"
             app:cardCornerRadius="40dp">
 
@@ -87,7 +159,6 @@
             android:layout_height="44dp"
             android:layout_centerInParent="true"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
             android:contentDescription="capture button"
             android:src="@drawable/ic_shutter_normal" />
 
@@ -97,25 +168,25 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/camera_capture_button"
             android:layout_centerInParent="true"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="45dp"
             android:background="@drawable/bg_save_text"
-            android:layout_marginStart="8dp"
             android:padding="8dp"
-            android:layout_marginEnd="8dp"
             android:text="Save"
             android:textAllCaps="true"
             android:textColor="@color/txWhite"
             android:textSize="10sp" />
     </RelativeLayout>
 
-    <FrameLayout android:id="@+id/place_holder_layout"
+    <FrameLayout
+        android:id="@+id/place_holder_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/txBlack"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:visibility="visible"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView

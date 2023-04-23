@@ -41,28 +41,32 @@ class CameraActivity : AppCompatActivity() {
         showPhotoFragment(CameraFragment())
         // val (videoFragment, transaction) = showVideoFragment(fragment)
 
-        val tabLayout = binding.tabLayout
-        tabLayout.addTab(tabLayout.newTab().setText("Photo"))
-        tabLayout.addTab(tabLayout.newTab().setText("Video"))
+        ///tab click starting
+//        val tabLayout = binding.tabLayout
+//        tabLayout.addTab(tabLayout.newTab().setText("Photo"))
+//        tabLayout.addTab(tabLayout.newTab().setText("Video"))
+//
+//        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+//            override fun onTabSelected(tab: TabLayout.Tab?) {
+//                if (0 == tab?.position) {
+//                    showPhotoFragment(CameraFragment())
+//                } else {
+//                    showVideoFragment(CaptureFragment())
+//                }
+//            }
+//
+//            override fun onTabUnselected(tab: TabLayout.Tab?) {
+//
+//            }
+//
+//            override fun onTabReselected(tab: TabLayout.Tab?) {
+//
+//            }
+//
+//        })
+        ///tab click
 
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                if (0 == tab?.position) {
-                    showPhotoFragment(CameraFragment())
-                } else {
-                    showVideoFragment(CaptureFragment())
-                }
-            }
 
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-
-            }
-
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-
-            }
-
-        })
         //val tabAt:Tab? = binding.tabLayout.getTabAt(0)
 
         binding.zoomTablayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -117,7 +121,7 @@ class CameraActivity : AppCompatActivity() {
 
     }
 
-    private fun showVideoFragment(fragment: CaptureFragment): Pair<CaptureFragment, FragmentTransaction> {
+    fun showVideoFragment(fragment: CaptureFragment): Pair<CaptureFragment, FragmentTransaction> {
         val videoFragment = CaptureFragment()
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.fragment_container, fragment, "CaptureFragment")
@@ -125,7 +129,7 @@ class CameraActivity : AppCompatActivity() {
         return Pair(videoFragment, transaction)
     }
 
-    private fun showPhotoFragment(fragment: CameraFragment): Pair<CameraFragment, FragmentTransaction> {
+    fun showPhotoFragment(fragment: CameraFragment): Pair<CameraFragment, FragmentTransaction> {
         val videoFragment = CameraFragment()
         val transaction1 = supportFragmentManager.beginTransaction()
         transaction1.replace(R.id.fragment_container, fragment, "CameraFragment")
