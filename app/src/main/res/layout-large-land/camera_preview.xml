@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <RelativeLayout
         android:id="@+id/cancel_layout"
-        android:layout_width="80dp"
-        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
         android:background="@color/txBlack"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -17,51 +16,53 @@
             android:id="@+id/cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/dualCamera"
-            android:layout_marginStart="12dp"
-            android:layout_marginBottom="50dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:gravity="bottom"
             android:text="Cancel"
             android:textColor="@color/ic_white"
-            android:textSize="16sp" />
+            android:textSize="18sp" />
 
         <ImageView
             android:id="@+id/dualCamera"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_gravity="center_vertical|right"
+            android:layout_marginEnd="15dp"
+            android:layout_toStartOf="@+id/flashLight"
             android:src="@drawable/ic_switch_camera" />
 
         <ImageView
             android:id="@+id/flashLight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/dualCamera"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="12dp"
             android:src="@drawable/flash_circle_1" />
+
 
     </RelativeLayout>
 
     <androidx.camera.view.PreviewView
         android:id="@+id/view_finder"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="80dp"
         android:background="@color/ic_white"
-        app:layout_constraintEnd_toStartOf="@id/camera_control"
-        app:layout_constraintStart_toStartOf="@id/cancel_layout" />
+        app:layout_constraintBottom_toTopOf="@+id/switchCameraLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cancel_layout" />
 
     <LinearLayout
         android:id="@+id/zoomControls"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical"
         android:padding="12dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/view_finder"
-        android:translationX="-100dp"
-        app:layout_constraintTop_toTopOf="@id/switchCameraLayout">
+        android:translationX="70dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="parent">
 
         <Button
             android:id="@+id/cameraZoomText0"
@@ -99,50 +100,42 @@
 
     <LinearLayout
         android:id="@+id/switchCameraLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="@id/zoomControls"
-        app:layout_constraintEnd_toEndOf="@id/view_finder"
-        android:background="@color/txBlack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="center"
-        app:layout_constraintTop_toTopOf="parent">
+        android:orientation="horizontal"
+        android:translationY="-20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <Button
-            android:id="@+id/videoTxt"
+            android:id="@+id/photoBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:rotation="270"
-            android:background="@color/black_overlay"
-            android:layout_marginBottom="24dp"
-            android:clickable="true"
-            android:text="Video"
-            android:textColor="@color/txWhite"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/photoTxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
             android:background="@drawable/bg_photo_text"
-            android:layout_marginTop="25dp"
-            android:rotation="270"
             android:clickable="true"
             android:text="Photo"
             android:textColor="@color/txWhite"
             android:textSize="14sp"
             android:textStyle="bold" />
 
-
+        <Button
+            android:id="@+id/videoBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:clickable="true"
+            android:text="Video"
+            android:textColor="@color/txWhite"
+            android:textSize="14sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/camera_control"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:background="@color/txBlack"
         android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toRightOf="parent">

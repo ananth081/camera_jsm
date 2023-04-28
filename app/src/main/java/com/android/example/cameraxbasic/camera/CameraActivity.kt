@@ -121,12 +121,11 @@ class CameraActivity : AppCompatActivity() {
 
     }
 
-    fun showVideoFragment(fragment: CaptureFragment): Pair<CaptureFragment, FragmentTransaction> {
+    fun showVideoFragment(){
         val videoFragment = CaptureFragment()
         val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.fragment_container, fragment, "CaptureFragment")
+        transaction.replace(R.id.fragment_container, videoFragment, "CaptureFragment")
         transaction.commitAllowingStateLoss()
-        return Pair(videoFragment, transaction)
     }
 
     fun showPhotoFragment(fragment: CameraFragment): Pair<CameraFragment, FragmentTransaction> {

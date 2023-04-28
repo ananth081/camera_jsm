@@ -21,10 +21,10 @@
         android:right="5dp"
         android:top="5dp">
         <shape
-            android:shape="oval">
+            android:shape="rectangle">
             <size android:height="8dp" />
             <corners android:radius="20dp" />
-            <solid android:color="#5E1B1A1A"/>
+            <solid android:color="#5E81807D"/>
         </shape>
     </item>
 </selector>

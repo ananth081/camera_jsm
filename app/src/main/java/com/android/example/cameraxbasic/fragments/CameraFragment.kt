@@ -35,6 +35,8 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
+import android.view.View.OnClickListener
+import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -46,6 +48,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.concurrent.futures.await
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -230,22 +233,37 @@ class CameraFragment : Fragment() {
             }
         }
 
-        resources.getColor(R.color.ic_white).let { cameraPreview?.photoBtn?.setBackgroundColor(it) }
+        cameraPreview?.photoBtn?.setOnTouchListener { v, event ->
+            cameraPreview?.photoBtn?.background =
+                ResourcesCompat.getDrawable(resources, R.drawable.bg_photo_text, context?.theme)
+            cameraPreview?.photoBtn?.setTextColor(resources.getColor(R.color.ic_white))
+            cameraPreview?.videoBtn?.setBackgroundColor(resources.getColor(R.color.black_overlay))
+            cameraPreview?.videoBtn?.setTextColor(resources.getColor(R.color.ic_white))
+            true
+        }
 
-//        val tabLayout = cameraPreview?.switchCameraLayout
-//        tabLayout?.addTab(tabLayout.newTab().setText("Photo"))
-//        tabLayout?.addTab(tabLayout.newTab().setText("Video"))
-//        cameraPreview?.photoBtn?.setOnClickListener {
-//            //(activity as CameraActivity).showPhotoFragment(CameraFragment())
-//            resources.getColor(R.color.black_overlay).let { cameraPreview?.videoBtn?.setBackgroundColor(it) }
-//            cameraPreview?.videoBtn?.setTextColor(resources.getColor(R.color.ic_white))
-//        }
+        cameraPreview?.videoBtn?.setOnTouchListener { v, event ->
+            cameraPreview?.photoBtn?.setBackgroundColor(resources.getColor(R.color.black_overlay))
+            cameraPreview?.photoBtn?.setTextColor(resources.getColor(R.color.ic_white))
+            cameraPreview?.videoBtn?.background =
+                ResourcesCompat.getDrawable(resources, R.drawable.bg_photo_text, context?.theme)
+            cameraPreview?.videoBtn?.setTextColor(resources.getColor(R.color.ic_white))
+            true
+        }
+
+
+        cameraPreview?.photoBtn?.setOnClickListener {
+            (activity as CameraActivity).showPhotoFragment(this@CameraFragment)
+        }
+        cameraPreview?.videoBtn?.setOnClickListener {
+            (activity as CameraActivity).showVideoFragment()
+        }
 
 //        cameraPreview?.videoBtn?.setOnClickListener {
-//            resources.getColor(R.color.ic_white).let { cameraPreview?.videoBtn?.setBackgroundColor(it) }
-//           // (activity as CameraActivity).showVideoFragment(CaptureFragment())
-//            resources.getColor(R.color.black_overlay).let { cameraPreview?.photoBtn?.setBackgroundColor(it) }
+//            cameraPreview?.photoBtn?.setBackgroundColor(resources.getColor(R.color.black_overlay))
 //            cameraPreview?.photoBtn?.setTextColor(resources.getColor(R.color.ic_white))
+//            cameraPreview?.videoBtn?.background = ResourcesCompat.getDrawable(resources, R.drawable.bg_photo_text, context?.theme)
+//            cameraPreview?.videoBtn?.setTextColor(resources.getColor(R.color.ic_white))
 //        }
 
 //        val tabLayout = cameraPreview.c
