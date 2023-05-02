@@ -29,6 +29,7 @@
         android:gravity="bottom"
         android:orientation="horizontal"
         android:paddingTop="12dp"
+        android:visibility="gone"
         android:paddingBottom="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -45,15 +46,6 @@
             android:textSize="18sp" />
 
         <ImageView
-            android:id="@+id/dualCamera"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|right"
-            android:layout_marginEnd="15dp"
-            android:layout_toStartOf="@+id/flashLight"
-            android:src="@drawable/ic_switch_camera" />
-
-        <ImageView
             android:id="@+id/flashLight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -63,16 +55,15 @@
 
     </RelativeLayout>
 
-
     <androidx.camera.view.PreviewView
         android:id="@+id/previewView"
         android:layout_width="match_parent"
-        android:layout_height="550dp"
+        android:layout_height="0dp"
         android:background="@color/ic_white"
-        app:layout_constraintBottom_toTopOf="@+id/videoControlView"
+        app:layout_constraintTop_toBottomOf="@+id/cancel_layout"
+        app:layout_constraintBottom_toTopOf="@+id/switchCameraLayout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cancel_layout" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <CheckBox
         android:id="@+id/audio_selection"
@@ -94,6 +85,96 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.50" />
 
+    <LinearLayout
+        android:id="@+id/zoomControls"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:translationX="45dp"
+        android:background="@drawable/zoom_button_corners"
+        app:layout_constraintBottom_toTopOf="@+id/switchCameraLayout"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cancel_layout">
+
+        <Button
+            android:id="@+id/cameraZoomText0"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="#00555555"
+            android:layout_marginBottom="5dp"
+            android:gravity="center"
+            android:foreground="#00555555"
+            android:text="2x"
+            android:padding="2dp"
+            android:textColor="@color/txWhite"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/cameraZoomText05"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/zoom_button_bg"
+            android:foreground="#00555555"
+            android:gravity="center"
+            android:text="1x"
+            android:padding="2dp"
+            android:textColor="@color/txBlack"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/cameraZoomText1"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="#00555555"
+            android:foreground="#00555555"
+            android:gravity="center"
+            android:visibility="gone"
+            android:padding="12dp"
+            android:text="2.0x"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/switchCameraLayout"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:orientation="horizontal"
+        android:gravity="center|top"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <Button
+            android:id="@+id/photoBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:clickable="true"
+            android:text="Photo"
+            android:textColor="@color/txWhite"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/videoBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_photo_text"
+            android:clickable="true"
+            android:text="Video"
+            android:textColor="@color/txWhite"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@color/txBlack"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/quality_selection"
         android:layout_width="wrap_content"
@@ -108,63 +189,69 @@
 
     <RelativeLayout
         android:id="@+id/videoControlView"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:gravity="bottom"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cancel_layout">
 
-        <ImageButton
-            android:id="@+id/camera_button"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="@drawable/bg_circle"
-            android:contentDescription="@string/camera"
-            android:outlineProvider="background"
-            android:translationX="18dp"
-            android:translationY="38dp"
-            tools:ignore="ImageContrastCheck" />
+        <ImageView
+            android:id="@+id/dualCamera"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_above="@id/capture_button"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="30dp"
+            android:background="@drawable/ic_switch_camera"
+            android:foreground="#00555555" />
 
         <ImageButton
             android:id="@+id/capture_button"
-            android:layout_width="48dp"
-            android:layout_height="50dp"
+            android:layout_width="63dp"
+            android:layout_height="63dp"
+            android:layout_above="@+id/camera_button"
             android:layout_centerInParent="true"
+            android:layout_marginBottom="30dp"
+            android:background="@drawable/ic_shutter_normal"
             android:contentDescription="@string/capture"
-            android:src="@drawable/ic_shutter_normal"
-            android:translationY="14dp"
+            tools:ignore="ImageContrastCheck" />
+
+        <ImageButton
+            android:id="@+id/camera_button"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="30dp"
+            android:background="@drawable/ic_placeholder_img"
+            android:contentDescription="@string/camera"
+            android:outlineProvider="background"
             tools:ignore="ImageContrastCheck" />
 
         <ImageButton
             android:id="@+id/stop_button"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_alignParentBottom="true"
+            android:layout_centerInParent="true"
             android:background="@drawable/ic_stop"
             android:contentDescription="@string/stop"
             android:scaleType="fitCenter"
-            android:translationX="100dp"
-            android:translationY="-15dp"
+            android:translationY="12dp"
             android:visibility="invisible"
             tools:ignore="ImageContrastCheck" />
 
         <TextView
             android:id="@+id/saveText"
             android:layout_width="wrap_content"
-            android:layout_height="31dp"
-            android:layout_marginBottom="47dp"
-            android:layout_alignParentEnd="true"
-            android:translationX="-20dp"
-            android:translationY="43dp"
+            android:layout_height="24dp"
+            android:layout_below="@id/camera_button"
+            android:layout_centerInParent="true"
+            android:background="@drawable/bg_save_text"
             android:gravity="center"
             android:text="Save"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
             android:textAllCaps="true"
-            android:background="@drawable/bg_save_text"
             android:textColor="@color/txWhite"
-            android:textSize="16sp"
-            app:layout_constraintEnd_toStartOf="parent" />
+            android:textSize="14sp"
+            android:textStyle="bold" />
     </RelativeLayout>
 
     <TextView
@@ -195,6 +282,7 @@
         android:background="@color/txBlack"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 

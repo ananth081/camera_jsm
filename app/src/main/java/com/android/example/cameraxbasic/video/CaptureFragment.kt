@@ -50,6 +50,7 @@ import androidx.camera.video.*
 import androidx.concurrent.futures.await
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.util.Consumer
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
@@ -63,6 +64,7 @@ import com.android.example.cameraxbasic.R
 import com.android.example.cameraxbasic.camera.CameraActivity
 import com.android.example.cameraxbasic.camera.VideoActivity
 import com.android.example.cameraxbasic.databinding.FragmentCaptureBinding
+import com.android.example.cameraxbasic.fragments.CameraFragment
 import com.android.example.cameraxbasic.video.extensions.getAspectRatio
 import com.android.example.cameraxbasic.video.extensions.getAspectRatioString
 import com.android.example.cameraxbasic.video.extensions.getNameString
@@ -75,8 +77,8 @@ import kotlinx.coroutines.*
 class CaptureFragment : Fragment() {
 
     // UI with ViewBinding
-    private var _captureViewBinding: FragmentCaptureBinding? = null
-    private val captureViewBinding get() = _captureViewBinding!!
+    lateinit var captureViewBinding: FragmentCaptureBinding
+    //private val captureViewBinding get() = _captureViewBinding
     private val captureLiveStatus = MutableLiveData<String>()
 
     /** Host's navigation controller */
@@ -227,7 +229,7 @@ class CaptureFragment : Fragment() {
         if (event is VideoRecordEvent.Finalize) {
             // display the captured video
             lifecycleScope.launch {
-                captureViewBinding.cameraButton.setBackgroundResource(R.drawable.bg_circle)
+                captureViewBinding.cameraButton.setBackgroundResource(R.drawable.ic_placeholder_img)
                 captureViewBinding.cameraButton.visibility = View.VISIBLE
                 captureViewBinding.cameraButton.isEnabled = true
 
@@ -349,7 +351,7 @@ class CaptureFragment : Fragment() {
     @SuppressLint("ClickableViewAccessibility", "MissingPermission")
     private fun initializeUI() {
         if (outputUri == null) {
-            captureViewBinding.cameraButton.setBackgroundResource(R.drawable.ic_photo)
+            captureViewBinding.cameraButton.setBackgroundResource(R.drawable.ic_placeholder_img)
         }
 
         captureViewBinding.cameraButton.apply {
@@ -447,6 +449,44 @@ class CaptureFragment : Fragment() {
             activity?.finish()
         }
 
+        captureViewBinding.cameraZoomText05?.setOnClickListener {
+            camera?.cameraControl?.setLinearZoom(0.05f)
+            captureViewBinding.cameraZoomText05?.text = "1x"
+            captureViewBinding.cameraZoomText0?.setBackgroundResource(R.drawable.zoom_button_bg_inactive)
+            context?.getColor(R.color.ic_white)?.let { it1 -> captureViewBinding.cameraZoomText0?.setTextColor(it1) }
+            context?.resources?.getColor(R.color.txBlack)?.let { it1 -> captureViewBinding.cameraZoomText05?.setTextColor(it1) }
+            it.setBackgroundResource(R.drawable.zoom_button_bg)
+        }
+
+        captureViewBinding.cameraZoomText0?.setOnClickListener {
+            camera?.cameraControl?.setLinearZoom(1f)
+            captureViewBinding.cameraZoomText0?.text = "2x"
+            captureViewBinding.cameraZoomText05?.setBackgroundResource(R.drawable.zoom_button_bg_inactive)
+            context?.getColor(R.color.ic_white)?.let { it1 -> captureViewBinding.cameraZoomText05?.setTextColor(it1) }
+            context?.resources?.getColor(R.color.txBlack)?.let { it1 -> captureViewBinding.cameraZoomText0?.setTextColor(it1) }
+            it.setBackgroundResource(R.drawable.zoom_button_bg)
+        }
+
+        captureViewBinding.photoBtn?.setOnTouchListener { v, event ->
+            captureViewBinding?.photoBtn?.background =
+                ResourcesCompat.getDrawable(resources, R.drawable.bg_photo_text, context?.theme)
+            captureViewBinding?.photoBtn?.setTextColor(resources.getColor(R.color.ic_white))
+            captureViewBinding?.videoBtn?.setBackgroundColor(resources.getColor(R.color.black_overlay))
+            captureViewBinding?.videoBtn?.setTextColor(resources.getColor(R.color.ic_white))
+            (activity as CameraActivity).showPhotoFragment()
+            true
+        }
+
+//        captureViewBinding?.videoBtn?.setOnTouchListener { v, event ->
+//            captureViewBinding?.photoBtn?.setBackgroundColor(resources.getColor(R.color.black_overlay))
+//            captureViewBinding?.photoBtn?.setTextColor(resources.getColor(R.color.ic_white))
+//            captureViewBinding?.videoBtn?.background =
+//                ResourcesCompat.getDrawable(resources, R.drawable.bg_photo_text, context?.theme)
+//            captureViewBinding?.videoBtn?.setTextColor(resources.getColor(R.color.ic_white))
+//            (activity as CameraActivity).showVideoFragment()
+//            true
+//        }
+
         captureLiveStatus.value = getString(R.string.Idle)
     }
 
@@ -539,7 +579,7 @@ class CaptureFragment : Fragment() {
                     it.audioSelection.visibility = View.INVISIBLE
                     it.qualitySelection.visibility = View.INVISIBLE
                     it.saveText.visibility = View.GONE
-
+                    it.dualCamera.visibility = View.GONE
                     it.captureButton.setImageResource(R.drawable.ic_pause)
                     it.captureButton.isEnabled = true
                     it.stopButton.visibility = View.VISIBLE
@@ -548,6 +588,7 @@ class CaptureFragment : Fragment() {
                 UiState.FINALIZED -> {
                     it.captureButton.setImageResource(R.drawable.ic_shutter_normal)
                     it.saveText.visibility = View.VISIBLE
+                    it.dualCamera.visibility = View.VISIBLE
                     it.stopButton.visibility = View.INVISIBLE
                 }
                 else -> {
@@ -632,7 +673,7 @@ class CaptureFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _captureViewBinding = FragmentCaptureBinding.inflate(inflater, container, false)
+        captureViewBinding = FragmentCaptureBinding.inflate(inflater, container, false)
         return captureViewBinding.root
     }
 
@@ -642,7 +683,7 @@ class CaptureFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        _captureViewBinding = null
+       // captureViewBinding = null
         super.onDestroyView()
     }
 

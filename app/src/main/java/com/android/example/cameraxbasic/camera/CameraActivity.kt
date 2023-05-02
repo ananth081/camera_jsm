@@ -38,7 +38,7 @@ class CameraActivity : AppCompatActivity() {
 //        appBarConfiguration = AppBarConfiguration(navController.graph)
 //        setupActionBarWithNavController(navController, appBarConfiguration)
 
-        showPhotoFragment(CameraFragment())
+        showPhotoFragment()
         // val (videoFragment, transaction) = showVideoFragment(fragment)
 
         ///tab click starting
@@ -128,12 +128,11 @@ class CameraActivity : AppCompatActivity() {
         transaction.commitAllowingStateLoss()
     }
 
-    fun showPhotoFragment(fragment: CameraFragment): Pair<CameraFragment, FragmentTransaction> {
-        val videoFragment = CameraFragment()
+    fun showPhotoFragment(){
+        val photoFragment = CameraFragment()
         val transaction1 = supportFragmentManager.beginTransaction()
-        transaction1.replace(R.id.fragment_container, fragment, "CameraFragment")
-        transaction1.commitAllowingStateLoss()
-        return Pair(videoFragment, transaction1)
+        transaction1.replace(R.id.fragment_container, photoFragment, "CameraFragment")
+        transaction1.commit()
     }
 
     fun updateZoomText(zoomRatio: Float) {

@@ -16,13 +16,13 @@
   -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android" >
     <item
-        android:bottom="1dp"
-        android:top="1dp">
+        android:bottom="0dp"
+        android:top="0dp">
         <shape
-            android:shape="rectangle">
-            <size android:height="1dp" />
-            <corners android:radius="55dp" />
-            <solid android:color="#C6000000"/>
+            android:shape="oval">
+            <size android:height="8dp" />
+            <corners android:radius="20dp" />
+            <solid android:color="#99000000"/>
         </shape>
     </item>
 </selector>

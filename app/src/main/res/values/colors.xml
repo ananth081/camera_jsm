@@ -42,5 +42,6 @@
     <color name="transp">#80000000</color>
 
     <color name="yello">#FFD60A</color>
+    <color name="zoom_unselected_bg_color">#00555555</color>
 
 </resources>

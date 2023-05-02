@@ -35,12 +35,9 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
-import android.view.View.OnClickListener
-import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.*
@@ -52,23 +49,16 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import androidx.navigation.Navigation
 import androidx.window.WindowManager
 import com.android.example.cameraxbasic.R
 import com.android.example.cameraxbasic.camera.CameraActivity
 import com.android.example.cameraxbasic.camera.GalleryActivity
 import com.android.example.cameraxbasic.databinding.CameraPreviewBinding
-import com.android.example.cameraxbasic.databinding.FragmentCameraBinding
 import com.android.example.cameraxbasic.save.SaveDialog
 import com.android.example.cameraxbasic.utils.ANIMATION_FAST_MILLIS
 import com.android.example.cameraxbasic.utils.ANIMATION_SLOW_MILLIS
 import com.android.example.cameraxbasic.utils.MediaStoreUtils
-import com.android.example.cameraxbasic.video.CaptureFragment
-import com.google.android.material.tabs.TabLayout
-import kotlinx.coroutines.launch
 import java.io.*
-import java.nio.ByteBuffer
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
@@ -76,6 +66,7 @@ import java.util.concurrent.Executors
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
+import kotlinx.coroutines.launch
 
 
 /** Helper type alias used for analysis use case callbacks */
@@ -93,7 +84,7 @@ private var WRITE_PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.WRITE_EXTER
 class CameraFragment : Fragment() {
 
     //private var _fragmentCameraBinding: FragmentCameraBinding? = null
-    private var cameraPreview: CameraPreviewBinding? = null
+    private lateinit var cameraPreview: CameraPreviewBinding
     private lateinit var mediaStoreUtils: MediaStoreUtils
     private var displayId: Int = -1
     private var lensFacing: Int = CameraSelector.LENS_FACING_BACK
@@ -168,7 +159,7 @@ class CameraFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        cameraPreview = null
+      //  cameraPreview = null
         super.onDestroyView()
 
         // Shut down our background executor
@@ -219,10 +210,13 @@ class CameraFragment : Fragment() {
         mediaStoreUtils = MediaStoreUtils(requireContext())
 
         // Wait for the views to be properly laid out
-        cameraPreview?.viewFinder?.post {
+        cameraPreview.viewFinder?.post {
 
             // Keep track of the display in which this view is attached
-            displayId = cameraPreview!!.viewFinder.display.displayId
+            cameraPreview?.viewFinder?.let {
+                displayId = it?.display?.displayId ?: 0
+            }
+
 
             // Build UI controls
             updateCameraUi()
@@ -233,14 +227,15 @@ class CameraFragment : Fragment() {
             }
         }
 
-        cameraPreview?.photoBtn?.setOnTouchListener { v, event ->
-            cameraPreview?.photoBtn?.background =
-                ResourcesCompat.getDrawable(resources, R.drawable.bg_photo_text, context?.theme)
-            cameraPreview?.photoBtn?.setTextColor(resources.getColor(R.color.ic_white))
-            cameraPreview?.videoBtn?.setBackgroundColor(resources.getColor(R.color.black_overlay))
-            cameraPreview?.videoBtn?.setTextColor(resources.getColor(R.color.ic_white))
-            true
-        }
+//        cameraPreview?.photoBtn?.setOnTouchListener { v, event ->
+//            cameraPreview?.photoBtn?.background =
+//                ResourcesCompat.getDrawable(resources, R.drawable.bg_photo_text, context?.theme)
+//            cameraPreview?.photoBtn?.setTextColor(resources.getColor(R.color.ic_white))
+//            cameraPreview?.videoBtn?.setBackgroundColor(resources.getColor(R.color.black_overlay))
+//            cameraPreview?.videoBtn?.setTextColor(resources.getColor(R.color.ic_white))
+//            (activity as CameraActivity).showPhotoFragment()
+//            true
+//        }
 
         cameraPreview?.videoBtn?.setOnTouchListener { v, event ->
             cameraPreview?.photoBtn?.setBackgroundColor(resources.getColor(R.color.black_overlay))
@@ -248,17 +243,9 @@ class CameraFragment : Fragment() {
             cameraPreview?.videoBtn?.background =
                 ResourcesCompat.getDrawable(resources, R.drawable.bg_photo_text, context?.theme)
             cameraPreview?.videoBtn?.setTextColor(resources.getColor(R.color.ic_white))
+            (activity as CameraActivity).showVideoFragment()
             true
         }
-
-
-        cameraPreview?.photoBtn?.setOnClickListener {
-            (activity as CameraActivity).showPhotoFragment(this@CameraFragment)
-        }
-        cameraPreview?.videoBtn?.setOnClickListener {
-            (activity as CameraActivity).showVideoFragment()
-        }
-
 //        cameraPreview?.videoBtn?.setOnClickListener {
 //            cameraPreview?.photoBtn?.setBackgroundColor(resources.getColor(R.color.black_overlay))
 //            cameraPreview?.photoBtn?.setTextColor(resources.getColor(R.color.ic_white))
@@ -311,7 +298,7 @@ class CameraFragment : Fragment() {
 
     /** Initialize CameraX, and prepare to bind the camera use cases  */
     private suspend fun setUpCamera() {
-        cameraProvider = ProcessCameraProvider.getInstance(requireContext()).await()
+        cameraProvider = mContext?.let { ProcessCameraProvider.getInstance(it).await() }
 
         // Select lensFacing depending on the available cameras
         lensFacing = when {
@@ -337,7 +324,8 @@ class CameraFragment : Fragment() {
         val screenAspectRatio = aspectRatio(metrics.width(), metrics.height())
         Log.d(TAG, "Preview aspect ratio: $screenAspectRatio")
 
-        val rotation = cameraPreview?.viewFinder!!.display.rotation
+        val rotation = cameraPreview?.viewFinder?.display?.rotation ?: 0
+        Log.d(TAG, "bindCameraUseCases: rotation=="+rotation)
 
         // CameraProvider
         val cameraProvider = cameraProvider
@@ -602,17 +590,26 @@ class CameraFragment : Fragment() {
         }
 
         setScale()
-//        cameraPreview?.cameraZoomText0?.setOnClickListener {
-//            camera?.cameraControl?.setZoomRatio(0.02f)
-//        }
-//
-//        cameraPreview?.cameraZoomText05?.setOnClickListener {
-//            camera?.cameraControl?.setLinearZoom(0.05f)
-//        }
-//
-//        cameraPreview?.cameraZoomText1?.setOnClickListener {
-//            camera?.cameraControl?.setLinearZoom(1f)
-//        }
+
+
+        cameraPreview?.cameraZoomText05?.setOnClickListener {
+            camera?.cameraControl?.setLinearZoom(0.05f)
+            cameraPreview?.cameraZoomText05?.text = "1x"
+            cameraPreview?.cameraZoomText0?.setBackgroundResource(R.drawable.zoom_button_bg_inactive)
+            context?.getColor(R.color.ic_white)?.let { it1 -> cameraPreview?.cameraZoomText0?.setTextColor(it1) }
+            context?.resources?.getColor(R.color.txBlack)?.let { it1 -> cameraPreview?.cameraZoomText05?.setTextColor(it1) }
+            it.setBackgroundResource(R.drawable.zoom_button_bg)
+
+        }
+
+        cameraPreview?.cameraZoomText0?.setOnClickListener {
+            camera?.cameraControl?.setLinearZoom(1f)
+            cameraPreview?.cameraZoomText0?.text = "2x"
+            cameraPreview?.cameraZoomText05?.setBackgroundResource(R.drawable.zoom_button_bg_inactive)
+            context?.getColor(R.color.ic_white)?.let { it1 -> cameraPreview?.cameraZoomText05?.setTextColor(it1) }
+            context?.resources?.getColor(R.color.txBlack)?.let { it1 -> cameraPreview?.cameraZoomText0?.setTextColor(it1) }
+            it.setBackgroundResource(R.drawable.zoom_button_bg)
+        }
     }
 
     fun setCameraZoomLevels(zoomValue: Float) {
@@ -694,7 +691,7 @@ class CameraFragment : Fragment() {
                 }
 
             }
-        val scaleGestureDetector = ScaleGestureDetector(requireContext(), listener)
+        val scaleGestureDetector = ScaleGestureDetector(mContext!!, listener)
 
         cameraPreview?.viewFinder?.setOnTouchListener { view, motionEvent ->
             scaleGestureDetector.onTouchEvent(
@@ -740,4 +737,11 @@ class CameraFragment : Fragment() {
             }
         }
     }
+    private var mContext: Context? = context
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mContext = context
+    }
+
 }
