@@ -348,7 +348,7 @@ class CaptureFragment : Fragment() {
      * Note that preview and capture are both initialized either by UI or CameraX callbacks
      * (except the very 1st time upon entering to this fragment in onCreateView()
      */
-    @SuppressLint("ClickableViewAccessibility", "MissingPermission")
+    @SuppressLint("ClickableViewAccessibility", "MissingPermission", "RestrictedApi")
     private fun initializeUI() {
         if (outputUri == null) {
             captureViewBinding.cameraButton.setBackgroundResource(R.drawable.ic_placeholder_img)
@@ -450,7 +450,9 @@ class CaptureFragment : Fragment() {
         }
 
         captureViewBinding.cameraZoomText05?.setOnClickListener {
-            camera?.cameraControl?.setLinearZoom(0.05f)
+            videoCapture?.camera?.let{
+                it.cameraControl.setLinearZoom(0.3f)
+            }
             captureViewBinding.cameraZoomText05?.text = "1x"
             captureViewBinding.cameraZoomText0?.setBackgroundResource(R.drawable.zoom_button_bg_inactive)
             context?.getColor(R.color.ic_white)?.let { it1 -> captureViewBinding.cameraZoomText0?.setTextColor(it1) }
@@ -459,7 +461,9 @@ class CaptureFragment : Fragment() {
         }
 
         captureViewBinding.cameraZoomText0?.setOnClickListener {
-            camera?.cameraControl?.setLinearZoom(1f)
+            videoCapture?.camera?.let{
+                it.cameraControl.setLinearZoom(1.0f)
+            }
             captureViewBinding.cameraZoomText0?.text = "2x"
             captureViewBinding.cameraZoomText05?.setBackgroundResource(R.drawable.zoom_button_bg_inactive)
             context?.getColor(R.color.ic_white)?.let { it1 -> captureViewBinding.cameraZoomText05?.setTextColor(it1) }
@@ -569,7 +573,6 @@ class CaptureFragment : Fragment() {
                 UiState.IDLE -> {
                     it.captureButton.setImageResource(R.drawable.ic_shutter_normal)
                     it.stopButton.visibility = View.INVISIBLE
-
                     it.cameraButton.visibility = View.VISIBLE
                     it.audioSelection.visibility = View.VISIBLE
                     it.qualitySelection.visibility = View.VISIBLE
