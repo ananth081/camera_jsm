@@ -90,36 +90,43 @@
 
     <LinearLayout
         android:id="@+id/switchCameraLayout"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:translationY="-20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@color/txBlack"
+        android:gravity="center|start"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <Button
-            android:id="@+id/photoBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="12dp"
-            android:background="@drawable/bg_photo_text"
-            android:clickable="true"
-            android:text="Photo"
-            android:textColor="@color/txWhite"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+        app:layout_constraintEnd_toEndOf="@id/previewView"
+        app:layout_constraintRight_toRightOf="@id/zoomControls"
+        app:layout_constraintTop_toTopOf="parent">
 
         <Button
             android:id="@+id/videoBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/bg_photo_text"
             android:clickable="true"
+            android:rotation="270"
             android:text="Video"
             android:textColor="@color/txWhite"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/photoBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:background="@color/black_overlay"
+            android:clickable="true"
+            android:rotation="270"
+            android:text="Photo"
+            android:textColor="@color/txWhite"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -214,6 +221,56 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.50" />
 
+    <LinearLayout
+        android:id="@+id/zoomControls"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/zoom_button_corners"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:translationX="-110dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/previewView"
+        app:layout_constraintTop_toTopOf="@id/switchCameraLayout">
+
+        <Button
+            android:id="@+id/cameraZoomText0"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginBottom="5dp"
+            android:background="#00555555"
+            android:foreground="#00555555"
+            android:gravity="center"
+            android:padding="2dp"
+            android:text="2x"
+            android:textColor="@color/txWhite"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/cameraZoomText05"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/zoom_button_bg"
+            android:foreground="#00555555"
+            android:gravity="center"
+            android:padding="2dp"
+            android:layout_marginTop="12dp"
+            android:text="1x"
+            android:textColor="@color/txBlack"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/cameraZoomText1"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="#00555555"
+            android:foreground="#00555555"
+            android:gravity="center"
+            android:padding="12dp"
+            android:text="2.0x"
+            android:textSize="16sp"
+            android:visibility="gone" />
+    </LinearLayout>
 
 
     <FrameLayout

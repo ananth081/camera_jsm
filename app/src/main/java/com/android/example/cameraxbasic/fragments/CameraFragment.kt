@@ -599,7 +599,6 @@ class CameraFragment : Fragment() {
             context?.getColor(R.color.ic_white)?.let { it1 -> cameraPreview?.cameraZoomText0?.setTextColor(it1) }
             context?.resources?.getColor(R.color.txBlack)?.let { it1 -> cameraPreview?.cameraZoomText05?.setTextColor(it1) }
             it.setBackgroundResource(R.drawable.zoom_button_bg)
-
         }
 
         cameraPreview?.cameraZoomText0?.setOnClickListener {
