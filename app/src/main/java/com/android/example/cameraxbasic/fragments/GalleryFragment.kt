@@ -69,7 +69,7 @@ class GalleryFragment internal constructor() : Fragment() {
         FragmentStateAdapter(fm, lifecycle) {
         override fun getItemCount(): Int = mediaList.size
         override fun createFragment(position: Int): Fragment =
-            PhotoFragment.create(mediaList[position])
+            PdftronPhotoFragment.create(mediaList[position])
 
         override fun getItemId(position: Int): Long {
             return mediaList[position].id

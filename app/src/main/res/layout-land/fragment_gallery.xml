@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2020 The Android Open Source Project
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     https://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:layout_gravity="top"
+        android:visibility="gone"
+        android:theme="@style/AppTheme">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:background="@color/colorPrimary"
+            android:background="@color/colorPrimary">
+            <ImageButton
+                android:id="@+id/galleryBackButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="Back button"
+                android:padding="12dp"
+                android:background="@color/colorPrimary"
+                app:srcCompat="@drawable/ic_back"/>
+            <TextView
+                android:id="@+id/toolbarText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:text="4 of 4"
+                android:gravity="start"/>
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/photo_view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        app:tabBackground="@drawable/tab_selector"
+        app:tabIndicatorColor="@color/colorPrimary"
+        android:contentDescription="tabLayout"
+        android:gravity="bottom|center"
+        app:tabGravity="center"
+        android:layout_marginBottom="16dp"
+        app:tabIndicatorHeight="2dp" />
+
+    <ImageButton
+        android:id="@+id/back_button"
+        android:layout_width="@dimen/round_button_small"
+        android:layout_height="@dimen/round_button_small"
+        android:layout_marginStart="@dimen/margin_xsmall"
+        android:layout_marginTop="@dimen/margin_small"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/back_button_alt"
+        android:visibility="gone"
+        android:scaleType="fitCenter" />
+    <!--    app:srcCompat="@drawable/ic_back"-->
+
+    <LinearLayout
+        android:id="@+id/cutout_safe_area"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:visibility="gone"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="bottom|center"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/share_button"
+                android:layout_width="@dimen/round_button_small"
+                android:layout_height="@dimen/round_button_small"
+                android:layout_marginEnd="@dimen/margin_xlarge"
+                android:layout_marginBottom="@dimen/margin_small"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/share_button_alt"
+                android:visibility="gone"
+                android:scaleType="fitCenter" />
+            <!--            app:srcCompat="@drawable/ic_share"-->
+
+            <ImageButton
+                android:id="@+id/delete_button"
+                android:layout_width="@dimen/round_button_small"
+                android:layout_height="@dimen/round_button_small"
+                android:layout_marginStart="@dimen/margin_xlarge"
+                android:layout_marginBottom="@dimen/margin_small"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/delete_button_alt"
+                android:visibility="gone"
+                android:scaleType="fitCenter" />
+            <!--            app:srcCompat="@drawable/ic_delete"-->
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

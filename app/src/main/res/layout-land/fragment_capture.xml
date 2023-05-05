@@ -33,11 +33,11 @@
             android:id="@+id/cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_above="@+id/dualCamera"
             android:layout_marginStart="12dp"
+            android:layout_marginBottom="50dp"
             android:text="Cancel"
             android:textColor="@color/ic_white"
-            android:layout_above="@+id/dualCamera"
-            android:layout_marginBottom="50dp"
             android:textSize="16sp" />
 
         <ImageView
@@ -61,12 +61,12 @@
     <androidx.camera.view.PreviewView
         android:id="@+id/previewView"
         android:layout_width="match_parent"
-        android:layout_marginEnd="80dp"
-        android:layout_marginStart="80dp"
         android:layout_height="match_parent"
+        android:layout_marginStart="80dp"
+        android:layout_marginEnd="80dp"
         android:background="@color/ic_white"
-        app:layout_constraintStart_toStartOf="@id/cancel_layout"
-        app:layout_constraintEnd_toStartOf="@id/videoControlView" />
+        app:layout_constraintEnd_toStartOf="@id/videoControlView"
+        app:layout_constraintStart_toStartOf="@id/cancel_layout" />
 
     <CheckBox
         android:id="@+id/audio_selection"
@@ -104,8 +104,9 @@
             android:id="@+id/videoBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginBottom="24dp"
-            android:background="@drawable/bg_photo_text"
+            android:background="@color/black_overlay"
             android:clickable="true"
             android:rotation="270"
             android:text="Video"
@@ -116,17 +117,16 @@
         <Button
             android:id="@+id/photoBtn"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
             android:layout_marginTop="25dp"
-            android:background="@color/black_overlay"
+            android:background="@drawable/phone_photo_text_bg"
             android:clickable="true"
             android:rotation="270"
             android:text="Photo"
             android:textColor="@color/txWhite"
             android:textSize="12sp"
             android:textStyle="bold" />
-
-
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -152,10 +152,10 @@
             android:id="@+id/camera_button"
             android:layout_width="44dp"
             android:layout_height="44dp"
-            android:layout_marginStart="18dp"
-            android:layout_marginEnd="18dp"
             android:layout_above="@id/capture_button"
             android:layout_centerInParent="true"
+            android:layout_marginStart="18dp"
+            android:layout_marginEnd="18dp"
             android:background="@drawable/bg_circle"
             android:contentDescription="@string/camera"
             tools:ignore="ImageContrastCheck" />
@@ -175,10 +175,10 @@
             android:id="@+id/stop_button"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:background="@drawable/ic_stop"
             android:layout_alignBottom="@+id/camera_button"
             android:layout_marginStart="14dp"
             android:layout_marginEnd="14dp"
+            android:background="@drawable/ic_stop"
             android:contentDescription="@string/stop"
             android:scaleType="fitCenter"
             android:visibility="invisible"
@@ -190,10 +190,10 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/capture_button"
             android:layout_centerInParent="true"
-            android:background="@drawable/bg_save_text"
             android:layout_marginStart="8dp"
-            android:padding="8dp"
             android:layout_marginEnd="8dp"
+            android:background="@drawable/bg_save_text"
+            android:padding="8dp"
             android:text="Save"
             android:textAllCaps="true"
             android:textColor="@color/txWhite"
@@ -250,11 +250,11 @@
             android:id="@+id/cameraZoomText05"
             android:layout_width="24dp"
             android:layout_height="24dp"
+            android:layout_marginTop="12dp"
             android:background="@drawable/zoom_button_bg"
             android:foreground="#00555555"
             android:gravity="center"
             android:padding="2dp"
-            android:layout_marginTop="12dp"
             android:text="1x"
             android:textColor="@color/txBlack"
             android:textSize="12sp" />
@@ -278,10 +278,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/txBlack"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView

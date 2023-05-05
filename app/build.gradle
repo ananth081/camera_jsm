@@ -28,6 +28,7 @@ android {
         targetSdkVersion 33
         versionCode 1
         versionName "1.0.0"
+        manifestPlaceholders = [pdftronLicenseKey:PDFTRON_LICENSE_KEY]
     }
 
     compileOptions {
@@ -121,5 +122,14 @@ dependencies {
     androidTestImplementation "androidx.test:runner:1.4.0"
     androidTestImplementation "androidx.test.espresso:espresso-core:3.4.0"
     implementation project(path: ':utils')
+
+    implementation("com.pdftron:pdftron:9.2.1") {
+        // exclude group: 'com.google.code.gson', module: 'gson'
+       // exclude group: 'io.reactivex.rxjava2', module: 'rxjava'
+    }
+    implementation("com.pdftron:tools:9.2.1") {
+        //exclude group: 'com.google.code.gson', module: 'gson'
+        // exclude group: 'io.reactivex.rxjava2', module: 'rxjava'
+    }
 
 }

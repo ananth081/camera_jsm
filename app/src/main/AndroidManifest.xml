@@ -18,6 +18,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup">
+        <meta-data
+            android:name="pdftron_license_key"
+            android:value="${pdftronLicenseKey}"  />
         <activity
             android:name=".camera.HomeScreenActivity"
             android:exported="true"

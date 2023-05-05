@@ -238,7 +238,7 @@ class CameraFragment : Fragment() {
 //        }
 
         cameraPreview?.videoBtn?.setOnTouchListener { v, event ->
-            cameraPreview?.photoBtn?.setBackgroundColor(resources.getColor(R.color.black_overlay))
+            cameraPreview?.photoBtn?.setBackgroundColor(resources.getColor(R.color.trans))
             cameraPreview?.photoBtn?.setTextColor(resources.getColor(R.color.ic_white))
             cameraPreview?.videoBtn?.background =
                 ResourcesCompat.getDrawable(resources, R.drawable.bg_photo_text, context?.theme)
