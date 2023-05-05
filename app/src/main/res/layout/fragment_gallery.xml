@@ -49,7 +49,6 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="#FFFFFF"
-                android:text="4 of 4"
                 android:gravity="start"/>
         </androidx.appcompat.widget.Toolbar>
 
@@ -59,21 +58,18 @@
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/photo_view_pager"
         android:layout_width="match_parent"
-        android:layout_marginTop="80dp"
-        android:layout_marginBottom="50dp"
         android:layout_height="0dp"
         android:layout_weight="1"/>
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
-        android:layout_height="24dp"
+        android:layout_height="wrap_content"
         app:tabBackground="@drawable/tab_selector"
         app:tabIndicatorColor="@color/colorPrimary"
         android:contentDescription="tabLayout"
         android:gravity="bottom|center"
         app:tabGravity="center"
-        android:layout_marginBottom="16dp"
         app:tabIndicatorHeight="2dp" />
 
     <ImageButton

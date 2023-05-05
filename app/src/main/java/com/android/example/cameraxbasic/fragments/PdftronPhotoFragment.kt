@@ -67,7 +67,6 @@ class PdftronPhotoFragment internal constructor() : Fragment(), PdfViewCtrlTabHo
        // Glide.with(view).load(resource).into(galleryImageItemBinding.galleryImage)
         //galleryImageItemBinding.galleryImage.setImageURI(Uri.parse(resource.toString()))
         val config = ViewerConfig.Builder()
-            .addToolbarBuilder(getToolbar())
             .toolbarTitle(getString(R.string.app_name))
             .showToolbarSwitcher(false)
             .hidePresetBar(true)
@@ -83,6 +82,7 @@ class PdftronPhotoFragment internal constructor() : Fragment(), PdfViewCtrlTabHo
             .showPrintOption(false)
             .showCloseTabOption(false)
             .showTopToolbar(false)
+            .showPageNumberIndicator(false)
             .build()
 
         mHostFragment = ViewerBuilder2
