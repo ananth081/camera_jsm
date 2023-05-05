@@ -120,7 +120,7 @@
             android:id="@+id/videoBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_photo_text"
+            android:background="@drawable/phone_photo_text_bg"
             android:clickable="true"
             android:text="Video"
             android:textColor="@color/txWhite"
@@ -284,7 +284,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/place_holder_image"
