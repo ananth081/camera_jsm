@@ -64,7 +64,6 @@ import com.android.example.cameraxbasic.R
 import com.android.example.cameraxbasic.camera.CameraActivity
 import com.android.example.cameraxbasic.camera.VideoActivity
 import com.android.example.cameraxbasic.databinding.FragmentCaptureBinding
-import com.android.example.cameraxbasic.fragments.CameraFragment
 import com.android.example.cameraxbasic.video.extensions.getAspectRatio
 import com.android.example.cameraxbasic.video.extensions.getAspectRatioString
 import com.android.example.cameraxbasic.video.extensions.getNameString
@@ -74,7 +73,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.*
 
-class CaptureFragment : Fragment() {
+class VideoCaptureFragment : Fragment() {
 
     // UI with ViewBinding
     lateinit var captureViewBinding: FragmentCaptureBinding
@@ -127,7 +126,7 @@ class CaptureFragment : Fragment() {
         val qualitySelector = QualitySelector.from(quality)
 
         captureViewBinding.previewView.updateLayoutParams<ConstraintLayout.LayoutParams> {
-            val orientation = this@CaptureFragment.resources.configuration.orientation
+            val orientation = this@VideoCaptureFragment.resources.configuration.orientation
             dimensionRatio = quality.getAspectRatioString(
                 quality,
                 (orientation == Configuration.ORIENTATION_PORTRAIT)
@@ -399,7 +398,7 @@ class CaptureFragment : Fragment() {
         // React to user touching the capture button
         captureViewBinding.captureButton.apply {
             setOnClickListener {
-                if (!this@CaptureFragment::recordingState.isInitialized ||
+                if (!this@VideoCaptureFragment::recordingState.isInitialized ||
                     recordingState is VideoRecordEvent.Finalize
                 ) {
                     enableUI(false)  // Our eventListener will turn on the Recording UI.
@@ -693,7 +692,7 @@ class CaptureFragment : Fragment() {
     companion object {
         // default Quality selection if no input from UI
         const val DEFAULT_QUALITY_IDX = 0
-        val TAG: String = CaptureFragment::class.java.simpleName
+        val TAG: String = VideoCaptureFragment::class.java.simpleName
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
     }
 

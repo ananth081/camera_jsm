@@ -4,15 +4,12 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentTransaction
 import androidx.navigation.ui.AppBarConfiguration
 import com.android.example.cameraxbasic.R
 import com.android.example.cameraxbasic.databinding.ActivityCameraBinding
 import com.android.example.cameraxbasic.fragments.CameraFragment
-import com.android.example.cameraxbasic.video.CaptureFragment
-import com.google.android.material.tabs.TabItem
+import com.android.example.cameraxbasic.video.VideoCaptureFragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.Tab
 
@@ -80,7 +77,7 @@ class CameraActivity : AppCompatActivity() {
                         }
                         val videoFragment =
                             supportFragmentManager.findFragmentByTag("CaptureFragment")
-                        if (videoFragment != null && videoFragment is CaptureFragment) {
+                        if (videoFragment != null && videoFragment is VideoCaptureFragment) {
                             videoFragment.setLinearZoom(0.0f)
                         }
                     }
@@ -91,7 +88,7 @@ class CameraActivity : AppCompatActivity() {
                         }
                         val videoFragment =
                             supportFragmentManager.findFragmentByTag("CaptureFragment")
-                        if (videoFragment != null && videoFragment is CaptureFragment) {
+                        if (videoFragment != null && videoFragment is VideoCaptureFragment) {
                             videoFragment.setLinearZoom(0.7f)
                         }
                     }
@@ -102,7 +99,7 @@ class CameraActivity : AppCompatActivity() {
                         }
                         val videoFragment =
                             supportFragmentManager.findFragmentByTag("CaptureFragment")
-                        if (videoFragment != null && videoFragment is CaptureFragment) {
+                        if (videoFragment != null && videoFragment is VideoCaptureFragment) {
                             videoFragment.setLinearZoom(1.0f)
                         }
                     }
@@ -122,7 +119,7 @@ class CameraActivity : AppCompatActivity() {
     }
 
     fun showVideoFragment(){
-        val videoFragment = CaptureFragment()
+        val videoFragment = VideoCaptureFragment()
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.fragment_container, videoFragment, "CaptureFragment")
         transaction.commitAllowingStateLoss()
