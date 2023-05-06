@@ -1,25 +1,25 @@
 package com.android.example.cameraxbasic.adapter
 
-import android.content.Context
-import android.net.Uri
-import android.util.Log
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.net.toUri
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.android.example.cameraxbasic.databinding.ItemDateBinding
 import com.android.example.cameraxbasic.databinding.ItemImageBinding
+import com.bumptech.glide.Glide
 import java.io.File
 
+@RequiresApi(Build.VERSION_CODES.Q)
 class ImageRecyclerViewAdapter() :
     RecyclerView.Adapter<ImageRecyclerViewAdapter.ImageViewHolder>() {
 
     val typeDate = 100
     val typeMedia = 101
-    var getGalleryView: MutableList<Any> = emptyList<Any>().toMutableList()
+    var dataList: MutableList<Any> = emptyList<Any>().toMutableList()
     override fun getItemViewType(position: Int): Int {
-        val listItem = getGalleryView.elementAt(position)
+        val listItem = dataList.elementAt(position)
         return when (listItem) {
             is String -> typeDate
             else -> typeMedia
@@ -39,13 +39,14 @@ class ImageRecyclerViewAdapter() :
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
         //holder.view.galleryImage.setImageURI(imageList[position]?.toUri())
-        val listItem = getGalleryView.elementAt(position)
+        val listItem = dataList.elementAt(position)
         if (listItem is String) {
-            bindDateView(holder, position, getGalleryView)
+            bindDateView(holder, position, dataList)
         } else {
-            bindMediaView(holder, position, getGalleryView)
+            bindMediaView(holder, position, dataList)
         }
     }
+
 
     private fun bindMediaView(
         holder: ImageRecyclerViewAdapter.ImageViewHolder,
@@ -53,7 +54,9 @@ class ImageRecyclerViewAdapter() :
         files: MutableList<Any>
     ) {
         val mediaBinding = holder.itemBinding
-        mediaBinding.galleryImage.setImageURI(Uri.parse(files.elementAt(position).toString()))
+        Glide.with(holder.dateBinding.root.context)
+            .load((files.elementAt(position) as File).absolutePath)
+            .into(mediaBinding.galleryImage)
     }
 
     private fun bindDateView(
@@ -67,7 +70,7 @@ class ImageRecyclerViewAdapter() :
 
 
     override fun getItemCount(): Int {
-        return getGalleryView.size
+        return dataList.size
     }
 
     class ImageViewHolder(
