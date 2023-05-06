@@ -2,6 +2,7 @@ package com.android.example.cameraxbasic.adapter
 
 import android.graphics.Bitmap
 import android.media.ThumbnailUtils
+import android.net.Uri
 import android.os.Build
 import android.util.Size
 import android.view.LayoutInflater
@@ -76,7 +77,9 @@ class ImageRecyclerViewAdapter() :
             if ((files.elementAt(position) as MediaStoreFile).fileType == FILE_TYPE_IMAGE) {
                 listener?.onImageItemClick((files.elementAt(position) as MediaStoreFile).uri.toString())
             } else {
-                listener?.onVideoItemClick((files.elementAt(position) as MediaStoreFile).uri.toString())
+                val uriString =
+                    Uri.parse((files.elementAt(position) as MediaStoreFile).file.absolutePath)
+                listener?.onVideoItemClick(uriString.toString())
             }
         }
         if ((files.elementAt(position) as MediaStoreFile).fileType == FILE_TYPE_IMAGE) {
