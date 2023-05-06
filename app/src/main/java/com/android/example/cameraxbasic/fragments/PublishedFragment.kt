@@ -1,6 +1,8 @@
 package com.android.example.cameraxbasic.fragments
 
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,9 +11,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
+import com.android.example.cameraxbasic.ImageDetailActivity
 import com.android.example.cameraxbasic.adapter.ImageRecyclerViewAdapter
 import com.android.example.cameraxbasic.camera.JsmGalleryActivity
+import com.android.example.cameraxbasic.camera.VideoActivity
 import com.android.example.cameraxbasic.databinding.FragmentPublishedBinding
+import com.android.example.cameraxbasic.utils.IMAGE_URI_STRING_KEY
 import com.android.example.cameraxbasic.utils.MEDIA_TYPE_KEY
 import com.android.example.cameraxbasic.viewmodels.DRAFT
 import com.android.example.cameraxbasic.viewmodels.GalleryViewModel
@@ -19,7 +24,7 @@ import java.io.File
 import kotlin.math.roundToInt
 
 
-class PublishedFragment : Fragment() {
+class PublishedFragment : Fragment(), ImageRecyclerViewAdapter.ItemClickListenr {
     val TAG = "PublishedFragment"
     lateinit var binding: FragmentPublishedBinding
     var adapter: ImageRecyclerViewAdapter? = null
@@ -60,6 +65,7 @@ class PublishedFragment : Fragment() {
             if (type == DRAFT)
                 (activity as JsmGalleryActivity).updateText(list.size)
             adapter = ImageRecyclerViewAdapter()
+            adapter?.setClickListner(this)
             val displayMetrics = resources.displayMetrics
             val screenWidth = displayMetrics.widthPixels / displayMetrics.density
             val noOfColumns = (screenWidth / 100 + 0.9).roundToInt() - 1
@@ -91,6 +97,18 @@ class PublishedFragment : Fragment() {
     private fun readImageFileFromStorage() {
         dataViewModel.loadImages(requireContext(), type)
 
+    }
+
+    override fun onImageItemClick(uri: String) {
+        val intent = Intent(requireContext(),ImageDetailActivity::class.java)
+        intent.putExtra(IMAGE_URI_STRING_KEY,uri)
+        startActivity(intent)
+    }
+
+    override fun onVideoItemClick(uri: String) {
+        val intent = Intent(requireContext(),VideoActivity::class.java)
+        intent.putExtra("video_uri", Uri.parse(uri))
+        startActivity(intent)
     }
 
 //    fun onMediaViewSelected(viewSelected: String) {

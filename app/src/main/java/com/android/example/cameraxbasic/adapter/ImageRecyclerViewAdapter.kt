@@ -3,7 +3,6 @@ package com.android.example.cameraxbasic.adapter
 import android.graphics.Bitmap
 import android.media.ThumbnailUtils
 import android.os.Build
-import android.provider.MediaStore
 import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
@@ -13,14 +12,26 @@ import com.android.example.cameraxbasic.databinding.ItemDateBinding
 import com.android.example.cameraxbasic.databinding.ItemImageBinding
 import com.android.example.cameraxbasic.utils.FILE_TYPE_IMAGE
 import com.android.example.cameraxbasic.utils.MediaStoreFile
-import java.io.File
 
 class ImageRecyclerViewAdapter() :
     RecyclerView.Adapter<ImageRecyclerViewAdapter.ImageViewHolder>() {
 
+    interface ItemClickListenr {
+        fun onImageItemClick(uri: String)
+        fun onVideoItemClick(uri: String)
+    }
+
     val typeDate = 100
     val typeMedia = 101
     var dataList: MutableList<Any> = emptyList<Any>().toMutableList()
+    var listener: ItemClickListenr? = null
+
+
+    fun setClickListner(clickListenr: ItemClickListenr) {
+        this.listener = clickListenr
+
+    }
+
     override fun getItemViewType(position: Int): Int {
         val listItem = dataList.elementAt(position)
         return when (listItem) {
@@ -62,7 +73,11 @@ class ImageRecyclerViewAdapter() :
 //            .load((files.elementAt(position) as File).absolutePath)
 //            .into(mediaBinding.galleryImage)
         holder.itemBinding.root.setOnClickListener {
-
+            if ((files.elementAt(position) as MediaStoreFile).fileType == FILE_TYPE_IMAGE) {
+                listener?.onImageItemClick((files.elementAt(position) as MediaStoreFile).uri.toString())
+            } else {
+                listener?.onVideoItemClick((files.elementAt(position) as MediaStoreFile).uri.toString())
+            }
         }
         if ((files.elementAt(position) as MediaStoreFile).fileType == FILE_TYPE_IMAGE) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

@@ -52,6 +52,7 @@ class VideoViewerFragment() : androidx.fragment.app.Fragment(), Player.Listener 
     // This property is only valid between onCreateView and onDestroyView.
     private var _binding: FragmentVideoViewerBinding? = null
     private val binding get() = _binding!!
+    var player: ExoPlayer? = null
 
     companion object {
         fun newInstance(uri: Uri?): VideoViewerFragment {
@@ -122,25 +123,24 @@ class VideoViewerFragment() : androidx.fragment.app.Fragment(), Player.Listener 
      *   - the file size and location
      */
     private fun showVideo(uri: Uri) {
-        val fileSize = getFileSizeFromUri(uri)
-        if (fileSize == null || fileSize <= 0) {
-            Log.e("VideoViewerFragment", "Failed to get recorded file size, could not be played!")
-            return
-        }
+//        val fileSize = getFileSizeFromUri(uri)
+//        if (fileSize == null || fileSize <= 0) {
+//            Log.e("VideoViewerFragment", "Failed to get recorded file size, could not be played!")
+//            return
+//        }
+//
+//        val filePath = getAbsolutePathFromUri(uri) ?: return
+//        val fileInfo = "FileSize: $fileSize\n $filePath"
+//        Log.i("VideoViewerFragment", fileInfo)
+//        binding.videoViewerTips.text = fileInfo
 
-        val filePath = getAbsolutePathFromUri(uri) ?: return
-        val fileInfo = "FileSize: $fileSize\n $filePath"
-        Log.i("VideoViewerFragment", fileInfo)
-        binding.videoViewerTips.text = fileInfo
 
-        var player: ExoPlayer? = null
         player = ExoPlayer.Builder(requireContext())
             .build()
             .also { exoPlayer ->
                 binding.videoViewer.player = exoPlayer
                 val mediaItem = MediaItem.fromUri(uri)
                 exoPlayer.setMediaItem(mediaItem)
-
                 //exoPlayer.seekTo(currentItem, playbackPosition)
                 exoPlayer.prepare()
             }
