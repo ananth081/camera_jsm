@@ -501,8 +501,7 @@ class CameraFragment : Fragment() {
             // Get a stable reference of the modifiable image capture use case
             imageCapture?.let { imageCapture ->
                 // Create time stamped name and MediaStore entry.
-                val name = SimpleDateFormat(FILENAME, Locale.US)
-                    .format(System.currentTimeMillis())
+                val name = SimpleDateFormat(FILENAME, Locale.US).format(System.currentTimeMillis())
                 val contentValues = ContentValues().apply {
                     put(MediaStore.MediaColumns.DISPLAY_NAME, name)
                     put(MediaStore.MediaColumns.MIME_TYPE, PHOTO_TYPE)

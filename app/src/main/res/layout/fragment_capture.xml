@@ -196,7 +196,6 @@
         android:id="@+id/videoControlView"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:gravity="bottom"
         app:layout_constraintBottom_toBottomOf="parent"
         android:background="@color/txBlack"
         app:layout_constraintEnd_toEndOf="parent">
@@ -218,22 +217,40 @@
             android:layout_height="50dp"
             android:layout_centerInParent="true"
             android:contentDescription="@string/capture"
-            android:background="@drawable/ic_shutter_normal"
+            android:background="@drawable/ic_record"
             android:translationY="14dp"
             tools:ignore="ImageContrastCheck" />
 
-        <ImageButton
-            android:id="@+id/stop_button"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_alignParentBottom="true"
-            android:background="@drawable/ic_stop"
-            android:contentDescription="@string/stop"
-            android:scaleType="fitCenter"
-            android:translationX="100dp"
-            android:translationY="-15dp"
-            android:visibility="invisible"
-            tools:ignore="ImageContrastCheck" />
+        <LinearLayout
+            android:id="@+id/recordLayout"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/video_rec_bg"
+            android:orientation="horizontal"
+            android:translationY="4dp"
+            android:visibility="invisible">
+
+            <ImageButton
+                android:id="@+id/stop_button"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center"
+                android:translationX="10dp"
+                android:background="@drawable/baseline_stop_24"
+                android:contentDescription="@string/stop"
+                tools:ignore="ImageContrastCheck" />
+
+            <ImageButton
+                android:id="@+id/pause_button"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center"
+                android:translationX="40dp"
+                android:background="@drawable/baseline_pause_24"
+                android:contentDescription="@string/stop"
+                tools:ignore="ImageContrastCheck" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/saveText"
@@ -256,7 +273,7 @@
 
     <TextView
         android:id="@+id/capture_status"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="47dp"
         android:background="@color/transparent"
@@ -264,9 +281,9 @@
         android:maxLines="2"
         android:textColor="@color/txWhite"
         android:textSize="16sp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/videoControlView"
-        app:layout_constraintEnd_toStartOf="parent" />
+        android:visibility="visible"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@+id/cancel_layout" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/horizontal_guideline"

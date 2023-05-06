@@ -121,7 +121,7 @@
             android:layout_above="@+id/camera_button"
             android:layout_centerInParent="true"
             android:layout_marginBottom="30dp"
-            android:background="@drawable/ic_shutter_normal"
+            android:background="@drawable/ic_record"
             android:contentDescription="@string/capture"
             tools:ignore="ImageContrastCheck" />
 
@@ -136,16 +136,37 @@
             android:outlineProvider="background"
             tools:ignore="ImageContrastCheck" />
 
-        <ImageButton
-            android:id="@+id/stop_button"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+        <LinearLayout
+            android:id="@+id/recordLayout"
+            android:layout_width="52dp"
+            android:layout_height="100dp"
             android:layout_centerInParent="true"
-            android:background="@drawable/ic_stop"
-            android:contentDescription="@string/stop"
-            android:scaleType="fitCenter"
-            android:visibility="invisible"
-            tools:ignore="ImageContrastCheck" />
+            android:background="@drawable/video_rec_bg"
+            android:orientation="vertical"
+            android:translationY="-60dp"
+            android:visibility="invisible">
+
+            <ImageButton
+                android:id="@+id/stop_button"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center"
+                android:background="@drawable/baseline_stop_24"
+                android:contentDescription="@string/stop"
+                android:scaleType="fitCenter"
+                android:translationY="10dp"
+                tools:ignore="ImageContrastCheck" />
+
+            <ImageButton
+                android:id="@+id/pause_button"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center"
+                android:background="@drawable/baseline_pause_24"
+                android:contentDescription="@string/stop"
+                android:translationY="40dp"
+                tools:ignore="ImageContrastCheck" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/saveText"
