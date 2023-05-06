@@ -4,18 +4,25 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import com.android.example.cameraxbasic.R
 import com.android.example.cameraxbasic.camera.JsmGalleryActivity
 import com.android.example.cameraxbasic.databinding.SaveDialogItemBinding
+import com.android.example.cameraxbasic.utils.EventObserver
+import com.android.example.cameraxbasic.viewmodels.CaptureViewModel
 
 class SaveDialog : DialogFragment() {
     lateinit var binding: SaveDialogItemBinding
+    val captureViewModel: CaptureViewModel by activityViewModels()
+    lateinit var intent: Intent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +50,7 @@ class SaveDialog : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val alertOption = arrayOf("Publish Now", "Needs review")
         return activity?.let {
+            intent = Intent(requireContext(), JsmGalleryActivity::class.java)
             val builder = AlertDialog.Builder(it, R.style.AlertDialogTheme)
             // Get the layout inflater
             val inflater = requireActivity().layoutInflater;
@@ -51,7 +59,6 @@ class SaveDialog : DialogFragment() {
             // Pass null as the parent view because its going in the dialog layout
             // builder.setView(inflater.inflate(R.layout.save_dialog_item, null))
             builder.setTitle("Do you want to publish this media now, or does it need to be reviewed")
-
 
             // Add action buttons
 //                .setPositiveButton("Cancel"
@@ -73,21 +80,24 @@ class SaveDialog : DialogFragment() {
                 }
 
             }
-            val intent = Intent(requireContext(), JsmGalleryActivity::class.java)
+
             builder.setPositiveButton(
                 "Save"
             ) { dialog, id ->
+
                 Log.d(
                     "PRS",
                     "id" + id + " binding.publishRadioBt.isChecked" + binding.publishRadioBt.isChecked
                 )
                 if (binding.publishRadioBt.isChecked) {
                     intent.putExtra("IS_PUBLISHED_SCREEN", true)
+                    launchNextScreen()
                 } else {
                     intent.putExtra("IS_PUBLISHED_SCREEN", false)
+                    captureViewModel.moveFileToDraftFolder(requireContext())
+                    launchNextScreen()
                 }
-                startActivity(intent)
-                getDialog()?.cancel()
+
             }.setNegativeButton("Cancel") { dialog, id ->
                 getDialog()?.cancel()
 //                    intent.putExtra("IS_PUBLISHED_SCREEN",true)
@@ -97,9 +107,28 @@ class SaveDialog : DialogFragment() {
         } ?: throw IllegalStateException("Activity cannot be null")
     }
 
+    private fun launchNextScreen() {
+            dialog?.cancel()
+            startActivity(intent)
+
+
+
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+//        captureViewModel.status.observe(this, EventObserver { status ->
+//            Log.d("tag", "move to next screen")
+//            launchNextScreen()
+//        })
+
+    }
+
     override fun onStart() {
         super.onStart()
         val dialog = dialog
+
+
 //        if (dialog != null) {
 //            val width = getWidth()
 //            val height = getHeight()

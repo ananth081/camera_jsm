@@ -21,26 +21,25 @@ import android.content.Intent
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.ColorDrawable
-import android.media.MediaScannerConnection
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.*
-import android.webkit.MimeTypeMap
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.android.example.cameraxbasic.R
-import com.android.example.cameraxbasic.camera.CameraActivity
 import com.android.example.cameraxbasic.databinding.FragmentGalleryBinding
-import com.android.example.cameraxbasic.utils.MediaStoreFile
-import com.android.example.cameraxbasic.utils.MediaStoreUtils
+import com.android.example.cameraxbasic.utils.CapturedMediaDto
+import com.android.example.cameraxbasic.utils.MEDIA_LIST_KEY
 import com.android.example.cameraxbasic.utils.padWithDisplayCutout
 import com.android.example.cameraxbasic.utils.showImmersive
+import com.android.example.cameraxbasic.viewmodels.CaptureViewModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayoutMediator
@@ -58,31 +57,27 @@ class GalleryFragment internal constructor() : Fragment() {
     /** AndroidX navigation arguments */
     private val args: GalleryFragmentArgs by navArgs()
 
-    private var mediaList: MutableList<MediaStoreFile> = mutableListOf()
+    private var mediaList: List<String> = arrayListOf()
     private var hasMediaItems = CompletableDeferred<Boolean>()
+    val captureViewModel: CaptureViewModel by activityViewModels()
 
     /** Adapter class used to present a fragment containing one photo or video as a page */
     inner class MediaPagerAdapter(
         fm: FragmentManager,
-        private var mediaList: MutableList<MediaStoreFile>
+        private var uriList: List<String>
     ) :
         FragmentStateAdapter(fm, lifecycle) {
-        override fun getItemCount(): Int = mediaList.size
+        override fun getItemCount(): Int = uriList.size
         override fun createFragment(position: Int): Fragment =
-            PdftronPhotoFragment.create(mediaList[position])
+            PdftronPhotoFragment.create(uriList[position])
 
         override fun getItemId(position: Int): Long {
-            return mediaList[position].id
+            return position.toLong()
         }
 
-        override fun containsItem(itemId: Long): Boolean {
-            return null != mediaList.firstOrNull { it.id == itemId }
-        }
 
-        fun setMediaListAndNotify(mediaList: MutableList<MediaStoreFile>) {
-            this.mediaList = mediaList
-            notifyDataSetChanged()
-        }
+
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -91,10 +86,10 @@ class GalleryFragment internal constructor() : Fragment() {
 
         lifecycleScope.launch {
             // Get images this app has access to from MediaStore
-            mediaList = MediaStoreUtils(requireContext()).getImages()
-            (fragmentGalleryBinding.photoViewPager.adapter as MediaPagerAdapter)
-                .setMediaListAndNotify(mediaList)
-            hasMediaItems.complete(mediaList.isNotEmpty())
+//            mediaList = captureViewModel.mediaList
+//            (fragmentGalleryBinding.photoViewPager.adapter as MediaPagerAdapter)
+//                .setMediaListAndNotify(mediaList)
+//            hasMediaItems.complete(mediaList.isNotEmpty())
         }
 
     }
@@ -111,17 +106,26 @@ class GalleryFragment internal constructor() : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        extractArguments()
         fragmentGalleryBinding.toolbar.inflateMenu(R.menu.main_menu)
-        fragmentGalleryBinding?.toolbar?.background = ColorDrawable(resources.getColor(R.color.colorPrimary))
-        fragmentGalleryBinding.toolbar.overflowIcon?.colorFilter =  PorterDuffColorFilter(resources.getColor(R.color.ic_white), PorterDuff.Mode.SRC_ATOP)
+        fragmentGalleryBinding?.toolbar?.background =
+            ColorDrawable(resources.getColor(R.color.colorPrimary))
+        fragmentGalleryBinding.toolbar.overflowIcon?.colorFilter =
+            PorterDuffColorFilter(resources.getColor(R.color.ic_white), PorterDuff.Mode.SRC_ATOP)
         fragmentGalleryBinding.toolbar.setOnMenuItemClickListener {
             if (it.itemId == R.id.actionRetake) {
                 mediaList.getOrNull(fragmentGalleryBinding.photoViewPager.currentItem)
                     ?.let { mediaStoreFile ->
-                        mediaStoreFile.file.delete()
+                        mediaStoreFile.let { it1 ->
+                            context?.contentResolver?.delete(
+                                Uri.parse(it1),
+                                null,
+                                null
+                            )
+                        };
                         val intent = Intent()
                         intent.putExtra("source", "retake_picture")
-                        intent.putExtra("file_uri", mediaStoreFile.uri)
+                        intent.putExtra("file_uri", mediaStoreFile)
                         activity?.setResult(Activity.RESULT_OK, intent)
                         activity?.finish()
                     }
@@ -179,27 +183,27 @@ class GalleryFragment internal constructor() : Fragment() {
         }
 
         // Handle share button press
-        fragmentGalleryBinding.shareButton.setOnClickListener {
-
-            mediaList.getOrNull(fragmentGalleryBinding.photoViewPager.currentItem)
-                ?.let { mediaStoreFile ->
-                    val mediaFile = mediaStoreFile.file
-                    // Create a sharing intent
-                    val intent = Intent().apply {
-                        // Infer media type from file extension
-                        val mediaType = MimeTypeMap.getSingleton()
-                            .getMimeTypeFromExtension(mediaFile.extension)
-                        // Set the appropriate intent extra, type, action and flags
-                        type = mediaType
-                        action = Intent.ACTION_SEND
-                        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-                        putExtra(Intent.EXTRA_STREAM, mediaStoreFile.uri)
-                    }
-
-                    // Launch the intent letting the user choose which app to share with
-                    startActivity(Intent.createChooser(intent, getString(R.string.share_hint)))
-                }
-        }
+//        fragmentGalleryBinding.shareButton.setOnClickListener {
+//
+//            mediaList.getOrNull(fragmentGalleryBinding.photoViewPager.currentItem)
+//                ?.let { mediaStoreFile ->
+//                    val mediaFile = mediaStoreFile.file
+//                    // Create a sharing intent
+//                    val intent = Intent().apply {
+//                        // Infer media type from file extension
+//                        val mediaType = MimeTypeMap.getSingleton()
+//                            .getMimeTypeFromExtension(mediaFile.extension)
+//                        // Set the appropriate intent extra, type, action and flags
+//                        type = mediaType
+//                        action = Intent.ACTION_SEND
+//                        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+//                        putExtra(Intent.EXTRA_STREAM, mediaStoreFile.uri)
+//                    }
+//
+//                    // Launch the intent letting the user choose which app to share with
+//                    startActivity(Intent.createChooser(intent, getString(R.string.share_hint)))
+//                }
+//        }
 
         // Handle delete button press
         fragmentGalleryBinding.deleteButton.setOnClickListener {
@@ -213,10 +217,13 @@ class GalleryFragment internal constructor() : Fragment() {
 
     }
 
+    private fun extractArguments() {
+        mediaList = arguments?.getStringArrayList(MEDIA_LIST_KEY)!!
+    }
+
     private fun deleteSpecificImage() {
         mediaList.getOrNull(fragmentGalleryBinding.photoViewPager.currentItem)
             ?.let { mediaStoreFile ->
-                val mediaFile = mediaStoreFile.file
 
                 AlertDialog.Builder(requireContext(), android.R.style.Theme_Material_Dialog)
                     .setTitle(getString(R.string.delete_title))
@@ -225,24 +232,27 @@ class GalleryFragment internal constructor() : Fragment() {
                     .setPositiveButton(android.R.string.ok) { _, _ ->
 
                         // Delete current photo
-                        mediaFile.delete()
+                        mediaStoreFile.let {
+                            context?.contentResolver?.delete(
+                                Uri.parse(it),
+                                null,
+                                null
+                            )
+                        }
+
 
                         // Send relevant broadcast to notify other apps of deletion
-                        MediaScannerConnection.scanFile(
-                            requireContext(), arrayOf(mediaFile.absolutePath), null, null
-                        )
+//                        MediaScannerConnection.scanFile(
+//                            requireContext(), arrayOf(mediaFile.absolutePath), null, null
+//                        )
 
                         // Notify our view pager
-                        mediaList.removeAt(fragmentGalleryBinding.photoViewPager.currentItem)
+//                        mediaList.removeAt(fragmentGalleryBinding.photoViewPager.currentItem)
                         fragmentGalleryBinding.photoViewPager.adapter?.notifyDataSetChanged()
 
                         // If all photos have been deleted, return to camera
                         if (mediaList.isEmpty()) {
                             activity?.finish()
-//                            Navigation.findNavController(
-//                                requireActivity(),
-//                                R.id.fragment_container
-//                            ).navigateUp()
                         }
 
                     }

@@ -33,6 +33,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import android.util.Size
 import android.view.*
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -46,6 +47,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.window.WindowManager
 import com.android.example.cameraxbasic.R
@@ -55,16 +57,19 @@ import com.android.example.cameraxbasic.databinding.CameraPreviewBinding
 import com.android.example.cameraxbasic.save.SaveDialog
 import com.android.example.cameraxbasic.utils.ANIMATION_FAST_MILLIS
 import com.android.example.cameraxbasic.utils.ANIMATION_SLOW_MILLIS
+import com.android.example.cameraxbasic.utils.CapturedMediaDto
+import com.android.example.cameraxbasic.utils.MEDIA_LIST_KEY
 import com.android.example.cameraxbasic.utils.MediaStoreUtils
+import com.android.example.cameraxbasic.viewmodels.CaptureViewModel
+import com.android.example.cameraxbasic.viewmodels.PUBLISHED
 import kotlinx.coroutines.launch
 import java.io.*
-import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.StandardCopyOption
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.collections.ArrayList
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -95,9 +100,11 @@ class CameraFragment : Fragment() {
     private var cameraProvider: ProcessCameraProvider? = null
     private lateinit var windowManager: WindowManager
     private var fromRetakeScreen: String? = null
+    var count = 0
     private val displayManager by lazy {
         requireContext().getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
     }
+    val captureViewModel: CaptureViewModel by activityViewModels()
 
     /** Blocking camera operations are performed using this executor */
     private lateinit var cameraExecutor: ExecutorService
@@ -160,7 +167,7 @@ class CameraFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-      //  cameraPreview = null
+        //  cameraPreview = null
         super.onDestroyView()
 
         // Shut down our background executor
@@ -180,7 +187,7 @@ class CameraFragment : Fragment() {
         return cameraPreview!!.root
     }
 
-    private fun setGalleryThumbnail(filename: String) {
+    private fun setGalleryThumbnail(filename: Uri) {
         // Run the operations in the view's thread
         cameraPreview?.photoView?.let { photoViewButton ->
             photoViewButton.post {
@@ -188,7 +195,16 @@ class CameraFragment : Fragment() {
                 photoViewButton.setPadding(resources.getDimension(R.dimen.stroke_small).toInt())
 
                 // Load thumbnail into circular button using Glide
-                photoViewButton.setImageURI(Uri.parse(filename))
+//                photoViewButton.setImageURI(Uri.parse(filename))
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    val bitmap = context?.contentResolver?.loadThumbnail(
+                        filename,
+                        Size(100, 100),
+                        null
+                    )
+                    photoViewButton.setImageBitmap(bitmap)
+                }
             }
         }
     }
@@ -217,11 +233,11 @@ class CameraFragment : Fragment() {
                 displayId = it?.display?.displayId ?: 0
             }
 
-            lifecycleScope.launch {
-                context?.let {
-                    mediaStoreUtils.deleteImageAPI29(it)
-                }
-            }
+//            lifecycleScope.launch {
+//                context?.let {
+//                    mediaStoreUtils.deleteImageAPI29(it)
+//                }
+//            }
 
             // Build UI controls
             updateCameraUi()
@@ -280,8 +296,11 @@ class CameraFragment : Fragment() {
 //            }
 //
 //        })
-        Log.d("PRS","test")
+        Log.d("PRS", "test")
         cameraPreview.saveText.visibility = View.INVISIBLE
+        captureViewModel.cancelCommunicator.observe(viewLifecycleOwner) {
+            handleCancelClicked()
+        }
     }
 
     /**
@@ -331,7 +350,7 @@ class CameraFragment : Fragment() {
         Log.d(TAG, "Preview aspect ratio: $screenAspectRatio")
 
         val rotation = cameraPreview?.viewFinder?.display?.rotation ?: 0
-        Log.d(TAG, "bindCameraUseCases: rotation=="+rotation)
+        Log.d(TAG, "bindCameraUseCases: rotation==" + rotation)
 
         // CameraProvider
         val cameraProvider = cameraProvider
@@ -445,20 +464,21 @@ class CameraFragment : Fragment() {
 
 //        cameraPreview?.photoView?.setImageDrawable(resources.getDrawable(R.drawable.ic_placeholder_img))
         // In the background, load latest photo taken (if any) for gallery thumbnail
-        lifecycleScope.launch {
-            val thumbnailUri = mediaStoreUtils.getLatestImageFilename()
-            thumbnailUri?.let {
-                setGalleryThumbnail(it)
-            }
-        }
+//        lifecycleScope.launch {
+//            val thumbnailUri = mediaStoreUtils.getLatestImageFilename()
+//            thumbnailUri?.let {
+//                setGalleryThumbnail(it)
+//            }
+//        }
 
         // Listener for button used to capture photo
-        var count = 0
-        cameraPreview?.cameraCaptureButton?.setOnClickListener {
+
+        cameraPreview.cameraCaptureButton?.setOnClickListener {
             cameraPreview.saveText.visibility = View.VISIBLE
-            count ++
-            Log.d("PRS","count "+count)
-            cameraPreview?.saveText?.text = "Save($count)"
+            count++
+            Log.d("PRS", "count " + count)
+            val saveTxt = "Save($count)"
+            cameraPreview.saveText.text = saveTxt
 //            lifecycleScope.launch {
 //                count ++
 //                if (mediaStoreUtils.getImages().isNotEmpty()) {
@@ -488,7 +508,10 @@ class CameraFragment : Fragment() {
                     put(MediaStore.MediaColumns.MIME_TYPE, PHOTO_TYPE)
                     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
                         val appName = requireContext().resources.getString(R.string.app_name)
-                        put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/${appName}")
+                        put(
+                            MediaStore.Images.Media.RELATIVE_PATH,
+                            "${Environment.DIRECTORY_PICTURES}/${appName}/$PUBLISHED"
+                        )
                     }
                 }
 
@@ -511,6 +534,13 @@ class CameraFragment : Fragment() {
 
                         override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                             val savedUri = output.savedUri
+                            val capturedMediaDto =
+                                savedUri?.let { uri ->
+                                    captureViewModel.mediaList.add(
+                                        CapturedMediaDto(contentValues, uri)
+                                    )
+                                }
+
                             Log.d(TAG, "Photo capture succeeded: $savedUri")
 
                             // We can only change the foreground Drawable using API level 23+ API
@@ -526,7 +556,7 @@ class CameraFragment : Fragment() {
                                         }
                                     }
                                 } else {
-                                    setGalleryThumbnail(savedUri.toString())
+                                    savedUri?.let { it1 -> setGalleryThumbnail(it1) }
                                 }
 
                             }
@@ -592,50 +622,61 @@ class CameraFragment : Fragment() {
         }
 
         cameraPreview?.photoViewButton?.setOnClickListener {
-            lifecycleScope.launch {
-                if (mediaStoreUtils.getImages().isNotEmpty()) {
-                    val intent = Intent(context, GalleryActivity::class.java)
-                    startForResult.launch(intent)
-                }
+
+            if (captureViewModel.mediaList.isNotEmpty()) {
+
+                val list = captureViewModel.mediaList.map {
+                    it.uri.toString()
+                }.toList()
+                val intent = Intent(context, GalleryActivity::class.java)
+                intent.putStringArrayListExtra(MEDIA_LIST_KEY, ArrayList(list))
+                startForResult.launch(intent)
             }
+
         }
 
         cameraPreview?.cancel?.setOnClickListener {
-            count = 0
-            activity?.finish()
+            if (captureViewModel.mediaList.isNotEmpty()) {
+                captureViewModel.deleteUnsavedMedia(requireContext())
+            } else {
+                handleCancelClicked()
+            }
         }
 
         cameraPreview?.saveText?.setOnClickListener {
             count = 0
-            val appName = "JSM Analysis"
-            val appName2 = "Test"
-            val filePath1 =
-                File(Environment.getExternalStorageDirectory().path + File.separator + "Pictures/${appName}")
-           //var fileList = filePath1.listFiles()?.toList()
-            var filePath2 = File(Environment.getExternalStorageDirectory().path + File.separator + "Pictures/${appName2}")
-//            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+
+
 //
-//                Files.move(
-//                    filePath1.toPath(),
-//                    filePath2.toPath(),
-//                    StandardCopyOption.REPLACE_EXISTING
-//                )
+//            val appName = "JSM Analysis"
+//            val appName2 = "Test"
+//            val filePath1 =
+//                File(Environment.getExternalStorageDirectory().path + File.separator + "Pictures/${appName}")
+//           //var fileList = filePath1.listFiles()?.toList()
+//            var filePath2 = File(Environment.getExternalStorageDirectory().path + File.separator + "Pictures/${appName2}")
+////            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+////
+////                Files.move(
+////                    filePath1.toPath(),
+////                    filePath2.toPath(),
+////                    StandardCopyOption.REPLACE_EXISTING
+////                )
+////            }
+//            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+////                val filePath = File(Environment.getExternalStorageDirectory().path + File.separator + "/Pictures/JSM Analysis")
+//                var fileList:List<File>? = null
+//                fileList = filePath1.listFiles()?.toList()
+//                var i = 0
+//                fileList?.forEach {
+//                  // filePath2 = File(it.toString().replace("JSM Analysis","Test"))
+//                    copyDir(fileList?.get(i)?.toPath()!!, filePath2.toPath())
+//                    i++
+//                }
+//
+//
+//               // copyDir(fileList?.get(0)?.toPath()!!, filePath2.toPath())
+//
 //            }
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-//                val filePath = File(Environment.getExternalStorageDirectory().path + File.separator + "/Pictures/JSM Analysis")
-                var fileList:List<File>? = null
-                fileList = filePath1.listFiles()?.toList()
-                var i = 0
-                fileList?.forEach {
-                  // filePath2 = File(it.toString().replace("JSM Analysis","Test"))
-                    copyDir(fileList?.get(i)?.toPath()!!, filePath2.toPath())
-                    i++
-                }
-
-
-               // copyDir(fileList?.get(0)?.toPath()!!, filePath2.toPath())
-
-            }
             val dialog = SaveDialog.newInstance()
             dialog.show(childFragmentManager, SaveDialog::class.java.simpleName)
         }
@@ -647,8 +688,10 @@ class CameraFragment : Fragment() {
             camera?.cameraControl?.setLinearZoom(0.02f)
             cameraPreview?.cameraZoomText05?.text = "1x"
             cameraPreview?.cameraZoomText0?.setBackgroundResource(R.drawable.zoom_button_bg_inactive)
-            context?.getColor(R.color.ic_white)?.let { it1 -> cameraPreview?.cameraZoomText0?.setTextColor(it1) }
-            context?.resources?.getColor(R.color.txBlack)?.let { it1 -> cameraPreview?.cameraZoomText05?.setTextColor(it1) }
+            context?.getColor(R.color.ic_white)
+                ?.let { it1 -> cameraPreview?.cameraZoomText0?.setTextColor(it1) }
+            context?.resources?.getColor(R.color.txBlack)
+                ?.let { it1 -> cameraPreview?.cameraZoomText05?.setTextColor(it1) }
             it.setBackgroundResource(R.drawable.zoom_button_bg)
         }
 
@@ -656,15 +699,23 @@ class CameraFragment : Fragment() {
             camera?.cameraControl?.setLinearZoom(0.7f)
             cameraPreview?.cameraZoomText0?.text = "2x"
             cameraPreview?.cameraZoomText05?.setBackgroundResource(R.drawable.zoom_button_bg_inactive)
-            context?.getColor(R.color.ic_white)?.let { it1 -> cameraPreview?.cameraZoomText05?.setTextColor(it1) }
-            context?.resources?.getColor(R.color.txBlack)?.let { it1 -> cameraPreview?.cameraZoomText0?.setTextColor(it1) }
+            context?.getColor(R.color.ic_white)
+                ?.let { it1 -> cameraPreview?.cameraZoomText05?.setTextColor(it1) }
+            context?.resources?.getColor(R.color.txBlack)
+                ?.let { it1 -> cameraPreview?.cameraZoomText0?.setTextColor(it1) }
             it.setBackgroundResource(R.drawable.zoom_button_bg)
         }
     }
+
+    private fun handleCancelClicked() {
+        count = 0
+        activity?.finish()
+    }
+
     fun copyDir(src: Path, dest: Path) {
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-          //  Files.move(src,dest,StandardCopyOption.REPLACE_EXISTING)
+            //  Files.move(src,dest,StandardCopyOption.REPLACE_EXISTING)
 //        Files.walk(src).forEach {
 //            Files.copy(
 //                it, dest.resolve(src.relativize(it)),
@@ -673,6 +724,7 @@ class CameraFragment : Fragment() {
 //        }
         }
     }
+
     fun setCameraZoomLevels(zoomValue: Float) {
         camera?.cameraControl?.setLinearZoom(zoomValue)
     }
@@ -703,8 +755,8 @@ class CameraFragment : Fragment() {
 
     companion object {
         private const val TAG = "CameraXBasic"
-        private const val FILENAME = "yyyy-MM-dd-HH-mm-ss-SSS"
-        private const val PHOTO_TYPE = "image/jpeg"
+         const val FILENAME = "yyyy-MM-dd-HH-mm-ss-SSS"
+         const val PHOTO_TYPE = "image/jpeg"
         private const val RATIO_4_3_VALUE = 4.0 / 3.0
         private const val RATIO_16_9_VALUE = 16.0 / 9.0
     }
@@ -798,6 +850,7 @@ class CameraFragment : Fragment() {
             }
         }
     }
+
     private var mContext: Context? = context
 
     override fun onAttach(context: Context) {
@@ -807,10 +860,8 @@ class CameraFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        lifecycleScope.launch {
-            // if (mediaStoreUtils.getImages().isNotEmpty()) {
-            mediaStoreUtils.deleteImageAPI29(requireContext())
-            // }
-        }
+
     }
+
+
 }

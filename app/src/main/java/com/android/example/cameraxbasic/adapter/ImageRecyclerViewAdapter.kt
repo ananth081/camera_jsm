@@ -1,6 +1,7 @@
 package com.android.example.cameraxbasic.adapter
 
 import android.os.Build
+import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,10 +9,10 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.android.example.cameraxbasic.databinding.ItemDateBinding
 import com.android.example.cameraxbasic.databinding.ItemImageBinding
+import com.android.example.cameraxbasic.utils.MediaStoreFile
 import com.bumptech.glide.Glide
 import java.io.File
 
-@RequiresApi(Build.VERSION_CODES.Q)
 class ImageRecyclerViewAdapter() :
     RecyclerView.Adapter<ImageRecyclerViewAdapter.ImageViewHolder>() {
 
@@ -53,10 +54,20 @@ class ImageRecyclerViewAdapter() :
         position: Int,
         files: MutableList<Any>
     ) {
+        val context = holder.dateBinding.root.context
         val mediaBinding = holder.itemBinding
-        Glide.with(holder.dateBinding.root.context)
-            .load((files.elementAt(position) as File).absolutePath)
-            .into(mediaBinding.galleryImage)
+//        Glide.with(holder.dateBinding.root.context)
+//            .load((files.elementAt(position) as File).absolutePath)
+//            .into(mediaBinding.galleryImage)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val bitmap = context?.contentResolver?.loadThumbnail(
+                (files.elementAt(position) as MediaStoreFile).uri,
+                Size(100, 100),
+                null
+            )
+            mediaBinding.galleryImage.setImageBitmap(bitmap)
+
+        }
     }
 
     private fun bindDateView(

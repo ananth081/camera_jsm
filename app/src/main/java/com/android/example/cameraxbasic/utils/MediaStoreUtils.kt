@@ -16,20 +16,21 @@
 
 package com.android.example.cameraxbasic.utils
 
-import android.app.RecoverableSecurityException
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
-import androidx.activity.result.IntentSenderRequest
 import androidx.core.net.toUri
-import java.io.File
+import com.android.example.cameraxbasic.viewmodels.APP_NAME
+import com.android.example.cameraxbasic.viewmodels.PUBLISHED
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
 
 
 /**
@@ -61,6 +62,24 @@ class MediaStoreUtils(private val context: Context) {
         return cursor
     }
 
+    private suspend fun getPublishedImageCursor(mediaStoreCollection: Uri): Cursor? {
+        var cursor: Cursor?
+
+        withContext(Dispatchers.IO) {
+            val projection = arrayOf(imageDataColumnIndex, imageIdColumnIndex)
+            val sortOrder = "DATE_ADDED DESC"
+            cursor = context.contentResolver.query(
+                mediaStoreCollection,
+                projection,
+                android.provider.MediaStore.Images.Media.DATA + "like ?",
+                arrayOf(PUBLISHED),
+                sortOrder,
+                null
+            )
+        }
+        return cursor
+    }
+
 
     fun deleteImageAPI29(context: Context) {
         mediaStoreCollection?.let {
@@ -68,7 +87,7 @@ class MediaStoreUtils(private val context: Context) {
             try {
                 resolver.delete(it, null, null)
             } catch (ex: java.lang.Exception) {
-                Log.d("", "deleteImageAPI29: ex"+ex.printStackTrace())
+                Log.d("", "deleteImageAPI29: ex" + ex.printStackTrace())
             }
         }
     }
@@ -85,12 +104,40 @@ class MediaStoreUtils(private val context: Context) {
         return filename
     }
 
-
-    suspend fun getImages(): MutableList<MediaStoreFile> {
+    suspend fun getImages(type: String =""): MutableList<MediaStoreFile> {
         val files = mutableListOf<MediaStoreFile>()
         if (mediaStoreCollection == null) return files
 
         getMediaStoreImageCursor(mediaStoreCollection).use { cursor ->
+            val imageDataColumn = cursor?.getColumnIndexOrThrow(imageDataColumnIndex)
+            val imageIdColumn = cursor?.getColumnIndexOrThrow(imageIdColumnIndex)
+
+            if (cursor != null && imageDataColumn != null && imageIdColumn != null) {
+                while (cursor.moveToNext()) {
+
+                    if (cursor.getString(imageDataColumn)
+                            .contains(type)
+                    ) {
+                        val id = cursor.getLong(imageIdColumn)
+                        val contentUri: Uri = ContentUris.withAppendedId(
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                            id
+                        )
+                        val contentFile = File(cursor.getString(imageDataColumn))
+                        files.add(MediaStoreFile(contentUri, contentFile, id))
+                    }
+                }
+            }
+        }
+
+        return files
+    }
+
+    suspend fun getPublishedImages(): MutableList<MediaStoreFile> {
+        val files = mutableListOf<MediaStoreFile>()
+        if (mediaStoreCollection == null) return files
+
+        getPublishedImageCursor(mediaStoreCollection).use { cursor ->
             val imageDataColumn = cursor?.getColumnIndexOrThrow(imageDataColumnIndex)
             val imageIdColumn = cursor?.getColumnIndexOrThrow(imageIdColumnIndex)
 
@@ -110,15 +157,6 @@ class MediaStoreUtils(private val context: Context) {
         return files
     }
 
-    suspend fun deleteImages(){
-        //val files = mutableListOf<MediaStoreFile>()
-
-        mediaStoreCollection?.let {
-            getMediaStoreImageCursor(it).use { cursor ->
-            }
-        }
-
-    }
 
     companion object {
         // Suppress DATA index deprecation warning since we need the file location for the Glide library
@@ -129,50 +167,3 @@ class MediaStoreUtils(private val context: Context) {
 }
 
 data class MediaStoreFile(val uri: Uri, val file: File, val id: Long)
-
-//    private suspend fun getMediaStoreImageCursor(mediaStoreCollection: Uri): Cursor? {
-//        var cursor: Cursor?
-//        val appName = context.resources.getString(R.string.app_name)
-//        val DIRECTORY_NAME = "%Pictures/$appName%"
-//        val selectionArgs = arrayOf(DIRECTORY_NAME)
-//
-//        withContext(Dispatchers.IO) {
-//            val sortOrder = "DATE_ADDED DESC"
-//            val projection = arrayOf(imageDataColumnIndex, imageIdColumnIndex)
-////            val sortOrder = "DATE_ADDED DESC"
-////            cursor = context.contentResolver.query(
-////                mediaStoreCollection, projection, null, null, sortOrder
-////            )
-//            cursor = context.contentResolver.query(
-//                MediaStore.Files.getContentUri("external"),
-//                projection,
-//                MediaStore.Images.Media.DATA + " like ? ",
-//                selectionArgs,
-//                sortOrder);
-//        }
-//        return cursor
-//    }
-
-//    suspend fun getImages(): MutableList<MediaStoreFile> {
-//        val files = mutableListOf<MediaStoreFile>()
-//        if (mediaStoreCollection == null) return files
-//
-//        getMediaStoreImageCursor(mediaStoreCollection).use { cursor ->
-//            val imageDataColumn = cursor?.getColumnIndexOrThrow(imageDataColumnIndex)
-//            val imageIdColumn = cursor?.getColumnIndexOrThrow(imageIdColumnIndex)
-//
-//            if (cursor != null && imageDataColumn != null && imageIdColumn != null) {
-//                while (cursor.moveToNext()) {
-//                    val id = cursor.getLong(imageIdColumn)
-//                    val contentUri: Uri = ContentUris.withAppendedId(
-//                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-//                        id
-//                    )
-//                    val contentFile = File(cursor.getString(imageDataColumn))
-//                    files.add(MediaStoreFile(contentUri, contentFile, id))
-//                }
-//            }
-//        }
-//
-//        return files
-//    }

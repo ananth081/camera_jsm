@@ -27,6 +27,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.android.example.cameraxbasic.R
 import com.android.example.cameraxbasic.databinding.PdftronImageItemBinding
+import com.android.example.cameraxbasic.utils.CapturedMediaDto
 import com.android.example.cameraxbasic.utils.MediaStoreFile
 import com.pdftron.pdf.PDFDoc
 import com.pdftron.pdf.PDFViewCtrl
@@ -41,7 +42,8 @@ import java.io.File
 
 
 /** Fragment used for each individual page showing a photo inside of [GalleryFragment] */
-class PdftronPhotoFragment internal constructor() : Fragment(), PdfViewCtrlTabHostFragment2.TabHostListener {
+class PdftronPhotoFragment internal constructor() : Fragment(),
+    PdfViewCtrlTabHostFragment2.TabHostListener {
 
 //    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
 //                              savedInstanceState: Bundle?) = ImageView(context)
@@ -50,7 +52,7 @@ class PdftronPhotoFragment internal constructor() : Fragment(), PdfViewCtrlTabHo
     private var mPdfViewCtrl: PDFViewCtrl? = null
     private var mPdfDoc: PDFDoc? = null
     lateinit var galleryImageItemBinding: PdftronImageItemBinding
-    var mediastoreFile:File? = null
+    var uriString: String? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -63,8 +65,8 @@ class PdftronPhotoFragment internal constructor() : Fragment(), PdfViewCtrlTabHo
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val args = arguments ?: return
-
-       // Glide.with(view).load(resource).into(galleryImageItemBinding.galleryImage)
+        uriString = args.getString(FILE_NAME_KEY)
+        // Glide.with(view).load(resource).into(galleryImageItemBinding.galleryImage)
         //galleryImageItemBinding.galleryImage.setImageURI(Uri.parse(resource.toString()))
         val config = ViewerConfig.Builder()
             .toolbarTitle(getString(R.string.app_name))
@@ -88,7 +90,7 @@ class PdftronPhotoFragment internal constructor() : Fragment(), PdfViewCtrlTabHo
             .build()
 
         mHostFragment = ViewerBuilder2
-            .withUri(Uri.fromFile(mediastoreFile))
+            .withUri(Uri.parse(uriString))
             .usingConfig(config)
             //.usingTheme(R.style.Theme_PdftronSampleActivity)
             .build(requireContext())
@@ -101,11 +103,9 @@ class PdftronPhotoFragment internal constructor() : Fragment(), PdfViewCtrlTabHo
     companion object {
         private const val FILE_NAME_KEY = "file_name"
 
-        fun create(mediaStoreFile: MediaStoreFile) = PdftronPhotoFragment().apply {
-            val image = mediaStoreFile.file
-            mediastoreFile = mediaStoreFile.file
+        fun create(uriString: String) = PdftronPhotoFragment().apply {
             arguments = Bundle().apply {
-                putString(FILE_NAME_KEY, image.absolutePath)
+                putString(FILE_NAME_KEY, uriString)
             }
         }
     }
