@@ -60,6 +60,7 @@ import com.android.example.cameraxbasic.utils.ANIMATION_SLOW_MILLIS
 import com.android.example.cameraxbasic.utils.CapturedMediaDto
 import com.android.example.cameraxbasic.utils.MEDIA_LIST_KEY
 import com.android.example.cameraxbasic.utils.MediaStoreUtils
+import com.android.example.cameraxbasic.viewmodels.APP_NAME
 import com.android.example.cameraxbasic.viewmodels.CaptureViewModel
 import com.android.example.cameraxbasic.viewmodels.PUBLISHED
 import kotlinx.coroutines.launch
@@ -506,10 +507,9 @@ class CameraFragment : Fragment() {
                     put(MediaStore.MediaColumns.DISPLAY_NAME, name)
                     put(MediaStore.MediaColumns.MIME_TYPE, PHOTO_TYPE)
                     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-                        val appName = requireContext().resources.getString(R.string.app_name)
                         put(
                             MediaStore.Images.Media.RELATIVE_PATH,
-                            "${Environment.DIRECTORY_PICTURES}/${appName}/$PUBLISHED"
+                            "${Environment.DIRECTORY_PICTURES}/${APP_NAME}/$PUBLISHED"
                         )
                     }
                 }
@@ -548,7 +548,7 @@ class CameraFragment : Fragment() {
 
                                 if ("retake_picture" == fromRetakeScreen) {
                                     lifecycleScope.launch {
-                                        if (mediaStoreUtils.getImages().isNotEmpty()) {
+                                        if (mediaStoreUtils.getMediaList().isNotEmpty()) {
                                             val intent =
                                                 Intent(context, GalleryActivity::class.java)
                                             startForResult.launch(intent)

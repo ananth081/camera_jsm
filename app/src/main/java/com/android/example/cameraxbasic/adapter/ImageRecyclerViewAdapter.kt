@@ -1,16 +1,18 @@
 package com.android.example.cameraxbasic.adapter
 
+import android.graphics.Bitmap
+import android.media.ThumbnailUtils
 import android.os.Build
+import android.provider.MediaStore
 import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.android.example.cameraxbasic.databinding.ItemDateBinding
 import com.android.example.cameraxbasic.databinding.ItemImageBinding
+import com.android.example.cameraxbasic.utils.FILE_TYPE_IMAGE
 import com.android.example.cameraxbasic.utils.MediaStoreFile
-import com.bumptech.glide.Glide
 import java.io.File
 
 class ImageRecyclerViewAdapter() :
@@ -59,15 +61,31 @@ class ImageRecyclerViewAdapter() :
 //        Glide.with(holder.dateBinding.root.context)
 //            .load((files.elementAt(position) as File).absolutePath)
 //            .into(mediaBinding.galleryImage)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val bitmap = context?.contentResolver?.loadThumbnail(
-                (files.elementAt(position) as MediaStoreFile).uri,
-                Size(100, 100),
-                null
-            )
-            mediaBinding.galleryImage.setImageBitmap(bitmap)
 
+        if ((files.elementAt(position) as MediaStoreFile).fileType == FILE_TYPE_IMAGE) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val bitmap = context?.contentResolver?.loadThumbnail(
+                    (files.elementAt(position) as MediaStoreFile).uri,
+                    Size(100, 100),
+                    null
+                )
+                mediaBinding.galleryImage.setImageBitmap(bitmap)
+                mediaBinding.videoPlaceHolder.visibility = View.GONE
+            }
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val bitmap: Bitmap =
+                    ThumbnailUtils.createVideoThumbnail(
+                        (files.elementAt(position) as MediaStoreFile).file,
+                        Size(100, 100),
+                        null
+                    )
+                mediaBinding.galleryImage.setImageBitmap(bitmap)
+                mediaBinding.videoPlaceHolder.visibility = View.VISIBLE
+
+            }
         }
+
     }
 
     private fun bindDateView(

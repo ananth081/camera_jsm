@@ -4,8 +4,6 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,9 +12,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.android.example.cameraxbasic.R
+import com.android.example.cameraxbasic.camera.HomeScreenActivity
 import com.android.example.cameraxbasic.camera.JsmGalleryActivity
 import com.android.example.cameraxbasic.databinding.SaveDialogItemBinding
-import com.android.example.cameraxbasic.utils.EventObserver
 import com.android.example.cameraxbasic.viewmodels.CaptureViewModel
 
 class SaveDialog : DialogFragment() {
@@ -108,10 +106,12 @@ class SaveDialog : DialogFragment() {
     }
 
     private fun launchNextScreen() {
-            dialog?.cancel()
-            startActivity(intent)
-
-
+        if(activity is HomeScreenActivity) {
+            (activity as HomeScreenActivity).clearStack()
+        }
+        activity?.finish()
+        dialog?.cancel()
+        startActivity(intent)
 
     }
 

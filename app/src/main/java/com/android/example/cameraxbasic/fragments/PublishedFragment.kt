@@ -10,8 +10,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.android.example.cameraxbasic.adapter.ImageRecyclerViewAdapter
+import com.android.example.cameraxbasic.camera.JsmGalleryActivity
 import com.android.example.cameraxbasic.databinding.FragmentPublishedBinding
 import com.android.example.cameraxbasic.utils.MEDIA_TYPE_KEY
+import com.android.example.cameraxbasic.viewmodels.DRAFT
 import com.android.example.cameraxbasic.viewmodels.GalleryViewModel
 import java.io.File
 import kotlin.math.roundToInt
@@ -55,6 +57,8 @@ class PublishedFragment : Fragment() {
         extractArguments()
         readImageFileFromStorage()
         dataViewModel.communicator.observe(viewLifecycleOwner) { list ->
+            if (type == DRAFT)
+                (activity as JsmGalleryActivity).updateText(list.size)
             adapter = ImageRecyclerViewAdapter()
             val displayMetrics = resources.displayMetrics
             val screenWidth = displayMetrics.widthPixels / displayMetrics.density

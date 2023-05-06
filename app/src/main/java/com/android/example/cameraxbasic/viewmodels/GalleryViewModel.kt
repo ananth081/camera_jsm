@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.android.example.cameraxbasic.utils.MediaStoreFile
 import com.android.example.cameraxbasic.utils.MediaStoreUtils
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class GalleryViewModel : ViewModel() {
@@ -19,12 +18,18 @@ class GalleryViewModel : ViewModel() {
 
 
     fun loadImages(context: Context, type: String) {
+        val mediaStoreUtils = MediaStoreUtils(context)
         viewModelScope.launch(Dispatchers.IO) {
-            delay(1000)
             list.clear()
             list.addAll(
-                MediaStoreUtils(context).getImages(
+                mediaStoreUtils.getMediaList(
                     "${Environment.DIRECTORY_PICTURES}/${APP_NAME}/$type"
+                )
+            )
+            list.addAll(
+                mediaStoreUtils.getMediaList(
+                    "${Environment.DIRECTORY_PICTURES}/${APP_NAME}/$type",
+                    mediaStoreUtils.videoStoreCollection
                 )
             )
             communicator.postValue(list)

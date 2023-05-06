@@ -36,7 +36,9 @@ import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
@@ -69,6 +71,8 @@ import com.android.example.cameraxbasic.save.SaveDialog
 import com.android.example.cameraxbasic.video.extensions.getAspectRatio
 import com.android.example.cameraxbasic.video.extensions.getAspectRatioString
 import com.android.example.cameraxbasic.video.extensions.getNameString
+import com.android.example.cameraxbasic.viewmodels.APP_NAME
+import com.android.example.cameraxbasic.viewmodels.PUBLISHED
 import com.example.android.camera.utils.GenericListAdapter
 import java.text.SimpleDateFormat
 import java.util.*
@@ -79,6 +83,7 @@ class VideoCaptureFragment : Fragment() {
 
     // UI with ViewBinding
     lateinit var captureViewBinding: FragmentCaptureBinding
+
     //private val captureViewBinding get() = _captureViewBinding
     private val captureLiveStatus = MutableLiveData<String>()
 
@@ -200,6 +205,12 @@ class VideoCaptureFragment : Fragment() {
                     .format(System.currentTimeMillis()) + ".mp4"
         val contentValues = ContentValues().apply {
             put(MediaStore.Video.Media.DISPLAY_NAME, name)
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+                put(
+                    MediaStore.Images.Media.RELATIVE_PATH,
+                    "${Environment.DIRECTORY_PICTURES}/$APP_NAME/$PUBLISHED"
+                )
+            }
         }
         val mediaStoreOutput = MediaStoreOutputOptions.Builder(
             requireActivity().contentResolver,
@@ -451,11 +462,11 @@ class VideoCaptureFragment : Fragment() {
 
             setOnClickListener {
                 // stopping: hide it after getting a click before we go to viewing fragment
-                Log.d(TAG, "recordingStats: ==="+recordingState.getNameString())
+                Log.d(TAG, "recordingStats: ===" + recordingState.getNameString())
                 currentRecording?.pause()
 
                 recordingState?.let {
-                    if (it.getNameString() == "Paused"){
+                    if (it.getNameString() == "Paused") {
                         currentRecording?.resume()
                     }
                 }
@@ -476,24 +487,28 @@ class VideoCaptureFragment : Fragment() {
         }
 
         captureViewBinding.cameraZoomText05?.setOnClickListener {
-            videoCapture?.camera?.let{
+            videoCapture?.camera?.let {
                 it.cameraControl.setLinearZoom(0.02f)
             }
             captureViewBinding.cameraZoomText05?.text = "1x"
             captureViewBinding.cameraZoomText0?.setBackgroundResource(R.drawable.zoom_button_bg_inactive)
-            context?.getColor(R.color.ic_white)?.let { it1 -> captureViewBinding.cameraZoomText0?.setTextColor(it1) }
-            context?.resources?.getColor(R.color.txBlack)?.let { it1 -> captureViewBinding.cameraZoomText05?.setTextColor(it1) }
+            context?.getColor(R.color.ic_white)
+                ?.let { it1 -> captureViewBinding.cameraZoomText0?.setTextColor(it1) }
+            context?.resources?.getColor(R.color.txBlack)
+                ?.let { it1 -> captureViewBinding.cameraZoomText05?.setTextColor(it1) }
             it.setBackgroundResource(R.drawable.zoom_button_bg)
         }
 
         captureViewBinding.cameraZoomText0?.setOnClickListener {
-            videoCapture?.camera?.let{
+            videoCapture?.camera?.let {
                 camera?.cameraControl?.setLinearZoom(0.7f)
             }
             captureViewBinding.cameraZoomText0?.text = "2x"
             captureViewBinding.cameraZoomText05?.setBackgroundResource(R.drawable.zoom_button_bg_inactive)
-            context?.getColor(R.color.ic_white)?.let { it1 -> captureViewBinding.cameraZoomText05?.setTextColor(it1) }
-            context?.resources?.getColor(R.color.txBlack)?.let { it1 -> captureViewBinding.cameraZoomText0?.setTextColor(it1) }
+            context?.getColor(R.color.ic_white)
+                ?.let { it1 -> captureViewBinding.cameraZoomText05?.setTextColor(it1) }
+            context?.resources?.getColor(R.color.txBlack)
+                ?.let { it1 -> captureViewBinding.cameraZoomText0?.setTextColor(it1) }
             it.setBackgroundResource(R.drawable.zoom_button_bg)
         }
 
@@ -615,7 +630,7 @@ class VideoCaptureFragment : Fragment() {
                     it.saveText.visibility = View.GONE
                     it.dualCamera.visibility = View.GONE
                     it.pauseButton?.setImageResource(R.drawable.baseline_pause_24)
-                   // it.captureButton.setImageResource(R.drawable.ic_pause)
+                    // it.captureButton.setImageResource(R.drawable.ic_pause)
                     it.captureButton.visibility = View.INVISIBLE
                     it.recordLayout?.visibility = View.VISIBLE
                     it.stopButton.isEnabled = true
@@ -721,7 +736,7 @@ class VideoCaptureFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-       // captureViewBinding = null
+        // captureViewBinding = null
         super.onDestroyView()
     }
 
@@ -827,7 +842,7 @@ class VideoCaptureFragment : Fragment() {
 //                        ).show()
                         captureViewBinding.placeHolderLayout.postDelayed({
                             captureViewBinding?.placeHolderLayout?.visibility = View.GONE
-                        },300)
+                        }, 300)
 
                     }
                     CameraState.Type.CLOSING -> {

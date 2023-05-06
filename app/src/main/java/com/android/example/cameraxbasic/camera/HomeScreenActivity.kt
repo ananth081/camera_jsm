@@ -30,4 +30,8 @@ class HomeScreenActivity : AppCompatActivity() {
         }
     }
 
+    fun clearStack() {
+
+    }
+
 }
