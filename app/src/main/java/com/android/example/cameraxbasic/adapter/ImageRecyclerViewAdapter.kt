@@ -61,7 +61,9 @@ class ImageRecyclerViewAdapter() :
 //        Glide.with(holder.dateBinding.root.context)
 //            .load((files.elementAt(position) as File).absolutePath)
 //            .into(mediaBinding.galleryImage)
+        holder.itemBinding.root.setOnClickListener {
 
+        }
         if ((files.elementAt(position) as MediaStoreFile).fileType == FILE_TYPE_IMAGE) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 val bitmap = context?.contentResolver?.loadThumbnail(

@@ -9,7 +9,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
 
     <application
         android:name=".MainApplication"
@@ -21,7 +21,8 @@
         tools:ignore="AllowBackup">
         <meta-data
             android:name="pdftron_license_key"
-            android:value="${pdftronLicenseKey}"  />
+            android:value="${pdftronLicenseKey}" />
+
         <activity
             android:name=".camera.HomeScreenActivity"
             android:exported="true"
@@ -103,6 +104,9 @@
         </activity>
         <activity
             android:name=".camera.VideoActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity
+            android:name=".ImageDetailActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
     </application>
 
