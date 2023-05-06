@@ -64,6 +64,8 @@ import com.android.example.cameraxbasic.R
 import com.android.example.cameraxbasic.camera.CameraActivity
 import com.android.example.cameraxbasic.camera.VideoActivity
 import com.android.example.cameraxbasic.databinding.FragmentCaptureBinding
+import com.android.example.cameraxbasic.fragments.CameraFragment
+import com.android.example.cameraxbasic.save.SaveDialog
 import com.android.example.cameraxbasic.video.extensions.getAspectRatio
 import com.android.example.cameraxbasic.video.extensions.getAspectRatioString
 import com.android.example.cameraxbasic.video.extensions.getNameString
@@ -349,10 +351,14 @@ class VideoCaptureFragment : Fragment() {
      */
     @SuppressLint("ClickableViewAccessibility", "MissingPermission", "RestrictedApi")
     private fun initializeUI() {
+        var count = 0
         if (outputUri == null) {
             captureViewBinding.cameraButton.setBackgroundResource(R.drawable.ic_placeholder_img)
         }
-
+        captureViewBinding.saveText.setOnClickListener {
+            val dialog = SaveDialog.newInstance()
+            dialog.show(childFragmentManager, SaveDialog::class.java.simpleName)
+        }
         captureViewBinding.cameraButton.apply {
             setOnClickListener {
                 outputUri?.let {
@@ -420,6 +426,9 @@ class VideoCaptureFragment : Fragment() {
 
         captureViewBinding.stopButton.apply {
             setOnClickListener {
+                captureViewBinding.saveText.visibility = View.VISIBLE
+                count++
+                captureViewBinding.saveText.text = "Save($count)"
                 // stopping: hide it after getting a click before we go to viewing fragment
                 captureViewBinding.stopButton.visibility = View.INVISIBLE
                 if (currentRecording == null || recordingState is VideoRecordEvent.Finalize) {
@@ -582,7 +591,7 @@ class VideoCaptureFragment : Fragment() {
                     it.qualitySelection.visibility = View.INVISIBLE
                     it.saveText.visibility = View.GONE
                     it.dualCamera.visibility = View.GONE
-                   // it.captureButton.setImageResource(R.drawable.ic_pause)
+                    // it.captureButton.setImageResource(R.drawable.ic_pause)
                     it.captureButton.isEnabled = true
                     it.recordLayout?.visibility = View.VISIBLE
                     it.stopButton.isEnabled = true
@@ -681,11 +690,12 @@ class VideoCaptureFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        captureViewBinding.saveText.visibility = View.INVISIBLE
         initCameraFragment()
     }
 
     override fun onDestroyView() {
-       // captureViewBinding = null
+        // captureViewBinding = null
         super.onDestroyView()
     }
 

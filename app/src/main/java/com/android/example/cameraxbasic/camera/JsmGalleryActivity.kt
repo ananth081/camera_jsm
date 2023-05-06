@@ -20,9 +20,11 @@ class JsmGalleryActivity : AppCompatActivity(),GalleryViewDailogFragment.selecte
     private lateinit var binding:ActivityJsmGalleryBinding
     private var adapter: ViewPagerAdapter? = null
     private lateinit var mViewPager: ViewPager2
+    var source = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityJsmGalleryBinding.inflate(layoutInflater)
+        source = intent.getBooleanExtra("IS_PUBLISHED_SCREEN",true)
         binding.toolbar.title = "Media"
         binding.toolbar.navigationIcon = resources.getDrawable(R.drawable.ic_back_arrow)
         setContentView(binding.root)
@@ -58,6 +60,13 @@ class JsmGalleryActivity : AppCompatActivity(),GalleryViewDailogFragment.selecte
         TabLayoutMediator(binding.tabLayout, viewPager) { tab, position ->
             tab.text = if (position == 0) "Published" else "Needs Review (4)"
         }.attach()
+
+        if(source){
+            mViewPager.setCurrentItem(0)
+        }else{
+            mViewPager.setCurrentItem(1)
+
+        }
 
     }
 

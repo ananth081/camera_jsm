@@ -32,6 +32,9 @@ import android.view.ViewGroup
 import android.widget.MediaController
 import android.util.TypedValue
 import androidx.lifecycle.lifecycleScope
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
 import androidx.navigation.Navigation
 import com.android.example.cameraxbasic.R
 import com.android.example.cameraxbasic.databinding.FragmentVideoViewerBinding
@@ -43,7 +46,7 @@ import java.lang.RuntimeException
  *      Accept MediaStore URI and play it with VideoView (Also displaying file size and location)
  *      Note: Might be good to retrieve the encoded file mime type (not based on file type)
  */
-class VideoViewerFragment() : androidx.fragment.app.Fragment() {
+class VideoViewerFragment() : androidx.fragment.app.Fragment(), Player.Listener  {
     private var args: Bundle? = null
 
     // This property is only valid between onCreateView and onDestroyView.
@@ -68,7 +71,7 @@ class VideoViewerFragment() : androidx.fragment.app.Fragment() {
     ): View {
         _binding = FragmentVideoViewerBinding.inflate(inflater, container, false)
         // UI adjustment + hacking to display VideoView use tips / capture result
-      //  arguments?.getParcelable("video_uri") as Uri
+        //  arguments?.getParcelable("video_uri") as Uri
         val tv = TypedValue()
         if (requireActivity().theme.resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
             val actionBarHeight =
@@ -130,13 +133,28 @@ class VideoViewerFragment() : androidx.fragment.app.Fragment() {
         Log.i("VideoViewerFragment", fileInfo)
         binding.videoViewerTips.text = fileInfo
 
-        val mc = MediaController(requireContext())
-        binding.videoViewer.apply {
-            setVideoURI(uri)
-            setMediaController(mc)
-            requestFocus()
-        }.start()
-        mc.show(0)
+        var player: ExoPlayer? = null
+        player = ExoPlayer.Builder(requireContext())
+            .build()
+            .also { exoPlayer ->
+                binding.videoViewer.player = exoPlayer
+                val mediaItem = MediaItem.fromUri(uri)
+                exoPlayer.setMediaItem(mediaItem)
+
+                //exoPlayer.seekTo(currentItem, playbackPosition)
+                exoPlayer.prepare()
+            }
+
+        player?.addListener(this)
+
+
+//        val mc = MediaController(requireContext())
+//        binding.videoViewer.apply {
+//            setVideoURI(uri)
+//            setMediaController(mc)
+//            requestFocus()
+//        }.start()
+//        mc.show(0)
     }
 
     /**
@@ -183,4 +201,29 @@ class VideoViewerFragment() : androidx.fragment.app.Fragment() {
             return it.getLong(sizeIndex)
         }
     }
+
+//    var player: ExoPlayer? = null
+//
+//    player = ExoPlayer.Builder(requireContext())
+//    .build()
+//    .also { exoPlayer ->
+//        binding.videoDetail.player = exoPlayer
+//        val mediaItem = MediaItem.fromUri(url)
+//        if (isFromOffline) {
+//            exoPlayer.setMediaItem(mediaItem)
+//        } else {
+//            //val mediaItem = downloadRequest?.let { MediaItem.fromUri(it.uri) }
+//            val mediaSource = ProgressiveMediaSource.Factory(buildCacheDataSourceFactory())
+//                .createMediaSource(mediaItem)
+//            // val mediaSource = SingleSampleMediaSource.Factory(buildCacheDataSourceFactory()).createMediaSource(mediaItem)
+//            // uncomment below line for normal url video
+//            //exoPlayer.setMediaItem(mediaItem)
+//            exoPlayer.setMediaSource(mediaSource)
+//        }
+//        exoPlayer.playWhenReady = playWhenReady
+//        exoPlayer.seekTo(currentItem, playbackPosition)
+//        exoPlayer.prepare()
+//    }
+//
+//    player?.addListener(this)
 }
