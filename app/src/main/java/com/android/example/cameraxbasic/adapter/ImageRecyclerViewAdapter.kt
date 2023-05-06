@@ -53,22 +53,7 @@ class ImageRecyclerViewAdapter() :
         position: Int,
         files: MutableList<Any>
     ) {
-////        val uri: Uri = Uri.fromFile(files.elementAt(position) as File?)
-//        val uri: Uri = Uri.fromFile(files.elementAt(position) as File)
-//        val contentResolver = holder.dateBinding.root.context.contentResolver
-////        val thumbnail: Bitmap = if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)) {
-//        val bitmap =
-//            holder.dateBinding.root.context.contentResolver.loadThumbnail(uri, Size(100, 100), null)
-////        }
-//
-////        else {
-////            MediaStore.Images.Thumbnails.getThumbnail(contentResolver, id, MediaStore.Images.Thumbnails.MINI_KIND, null)
-////        }
-//
         val mediaBinding = holder.itemBinding
-//        mediaBinding.galleryImage.setImageBitmap(bitmap)
-////        mediaBinding.galleryImage.setImageURI(Uri.parse(files.elementAt(position).toString()))
-
         Glide.with(holder.dateBinding.root.context)
             .load((files.elementAt(position) as File).absolutePath)
             .into(mediaBinding.galleryImage)
