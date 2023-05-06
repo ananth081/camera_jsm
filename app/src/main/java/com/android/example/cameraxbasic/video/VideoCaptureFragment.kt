@@ -407,7 +407,7 @@ class VideoCaptureFragment : Fragment() {
                     when (recordingState) {
                         is VideoRecordEvent.Start -> {
                             currentRecording?.pause()
-                            captureViewBinding.stopButton.visibility = View.VISIBLE
+                            captureViewBinding.recordLayout?.visibility = View.VISIBLE
                         }
                         is VideoRecordEvent.Pause -> currentRecording?.resume()
                         is VideoRecordEvent.Resume -> currentRecording?.pause()
@@ -421,7 +421,7 @@ class VideoCaptureFragment : Fragment() {
         captureViewBinding.stopButton.apply {
             setOnClickListener {
                 // stopping: hide it after getting a click before we go to viewing fragment
-                captureViewBinding.stopButton.visibility = View.INVISIBLE
+                captureViewBinding.recordLayout?.visibility = View.INVISIBLE
                 if (currentRecording == null || recordingState is VideoRecordEvent.Finalize) {
                     return@setOnClickListener
                 }
@@ -431,11 +431,29 @@ class VideoCaptureFragment : Fragment() {
                     recording.stop()
                     currentRecording = null
                 }
-                captureViewBinding.captureButton.setImageResource(R.drawable.ic_shutter_normal)
+                captureViewBinding.captureButton.setImageResource(R.drawable.ic_record)
             }
             // ensure the stop button is initialized disabled & invisible
-            visibility = View.INVISIBLE
+            visibility = View.VISIBLE
             isEnabled = false
+        }
+
+        captureViewBinding.pauseButton?.apply {
+
+            setOnClickListener {
+                // stopping: hide it after getting a click before we go to viewing fragment
+                Log.d(TAG, "recordingStats: ==="+recordingState.getNameString())
+                currentRecording?.pause()
+
+                recordingState?.let {
+                    if (it.getNameString() == "Paused"){
+                        currentRecording?.resume()
+                    }
+                }
+            }
+
+            // ensure the stop button is initialized disabled & invisible
+            visibility = View.VISIBLE
         }
 
         captureLiveStatus.observe(viewLifecycleOwner) {
@@ -518,21 +536,26 @@ class VideoCaptureFragment : Fragment() {
                 showUI(UiState.FINALIZED, event.getNameString())
             }
             is VideoRecordEvent.Pause -> {
-                //captureViewBinding.captureButton.setImageResource(R.drawable.ic_resume)
+                captureViewBinding.pauseButton?.setImageResource(R.drawable.ic_resume)
             }
             is VideoRecordEvent.Resume -> {
-                //captureViewBinding.captureButton.setImageResource(R.drawable.ic_pause)
+                captureViewBinding.pauseButton?.setImageResource(R.drawable.baseline_pause_24)
             }
         }
 
         val stats = event.recordingStats
         val size = stats.numBytesRecorded / 1000
         val time = TimeUnit.NANOSECONDS.toSeconds(stats.recordedDurationNanos)
+        val hour = TimeUnit.HOURS.toHours(stats.recordedDurationNanos)
+        //val mins = TimeUnit.MINUTES.toMinutes(stats.recordedDurationNanos)
+        val minutes = time / 1000 / 60
+
+
         var text = "${state}: recorded ${size}KB, in ${time}second"
         if (event is VideoRecordEvent.Finalize)
             text = "${text}\nFile saved to: ${event.outputResults.outputUri}"
 
-        captureLiveStatus.value = text
+        captureLiveStatus.value = "$hour:$minutes:$time"
         Log.i(TAG, "recording event: $text")
     }
 
@@ -570,7 +593,7 @@ class VideoCaptureFragment : Fragment() {
         captureViewBinding.let {
             when (state) {
                 UiState.IDLE -> {
-                    it.captureButton.setImageResource(R.drawable.ic_shutter_normal)
+                    it.captureButton.setImageResource(R.drawable.ic_record)
                     it.recordLayout?.visibility = View.INVISIBLE
                     it.cameraButton.visibility = View.VISIBLE
                     it.audioSelection.visibility = View.VISIBLE
@@ -582,16 +605,19 @@ class VideoCaptureFragment : Fragment() {
                     it.qualitySelection.visibility = View.INVISIBLE
                     it.saveText.visibility = View.GONE
                     it.dualCamera.visibility = View.GONE
+                    it.pauseButton?.setImageResource(R.drawable.baseline_pause_24)
                    // it.captureButton.setImageResource(R.drawable.ic_pause)
-                    it.captureButton.isEnabled = true
+                    it.captureButton.visibility = View.INVISIBLE
                     it.recordLayout?.visibility = View.VISIBLE
                     it.stopButton.isEnabled = true
                 }
                 UiState.FINALIZED -> {
-                    it.captureButton.setImageResource(R.drawable.ic_shutter_normal)
+                    it.captureButton.visibility = View.VISIBLE
+                    it.captureButton.isEnabled = true
+                    it.captureButton.setImageResource(R.drawable.ic_record)
                     it.saveText.visibility = View.VISIBLE
                     it.dualCamera.visibility = View.VISIBLE
-                    it.stopButton.visibility = View.INVISIBLE
+                    it.recordLayout?.visibility = View.INVISIBLE
                 }
                 else -> {
                     val errorMsg = "Error: showUI($state) is not supported"
