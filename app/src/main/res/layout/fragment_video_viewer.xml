@@ -57,13 +57,20 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <VideoView
-        android:id="@+id/video_viewer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="35dp"
-        android:fitsSystemWindows="true"
-        android:layout_gravity="center|center"/>
+<!--    <VideoView-->
+<!--        android:id="@+id/video_viewer"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="35dp"-->
+<!--        android:fitsSystemWindows="true"-->
+<!--        android:layout_gravity="center|center"/>-->
+        <androidx.media3.ui.PlayerView
+            android:id="@+id/video_viewer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="35dp"
+            android:fitsSystemWindows="true"
+            android:layout_gravity="center|center"/>
 
     <TextView
         android:id="@+id/video_viewer_tips"

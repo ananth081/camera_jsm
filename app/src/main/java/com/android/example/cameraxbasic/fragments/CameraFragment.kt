@@ -30,13 +30,10 @@ import android.media.MediaActionSound
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.ScaleGestureDetector
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.activity.result.ActivityResult
@@ -59,7 +56,11 @@ import com.android.example.cameraxbasic.save.SaveDialog
 import com.android.example.cameraxbasic.utils.ANIMATION_FAST_MILLIS
 import com.android.example.cameraxbasic.utils.ANIMATION_SLOW_MILLIS
 import com.android.example.cameraxbasic.utils.MediaStoreUtils
+import kotlinx.coroutines.launch
 import java.io.*
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.StandardCopyOption
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
@@ -67,7 +68,6 @@ import java.util.concurrent.Executors
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
-import kotlinx.coroutines.launch
 
 
 /** Helper type alias used for analysis use case callbacks */
@@ -280,7 +280,8 @@ class CameraFragment : Fragment() {
 //            }
 //
 //        })
-
+        Log.d("PRS","test")
+        cameraPreview.saveText.visibility = View.INVISIBLE
     }
 
     /**
@@ -452,13 +453,22 @@ class CameraFragment : Fragment() {
         }
 
         // Listener for button used to capture photo
+        var count = 0
         cameraPreview?.cameraCaptureButton?.setOnClickListener {
-            lifecycleScope.launch {
-                if (mediaStoreUtils.getImages().isNotEmpty()) {
-                    cameraPreview?.saveText?.text =
-                        "Save(${mediaStoreUtils.getImages().size})"
-                }
-            }
+            cameraPreview.saveText.visibility = View.VISIBLE
+            count ++
+            Log.d("PRS","count "+count)
+            cameraPreview?.saveText?.text = "Save($count)"
+//            lifecycleScope.launch {
+//                count ++
+//                if (mediaStoreUtils.getImages().isNotEmpty()) {
+//
+////                    cameraPreview?.saveText?.text =
+////                        "Save(${mediaStoreUtils.getImages().size})"
+//                    cameraPreview?.saveText?.text =
+//                        "Save($count)"
+//                }
+//            }
 
             val sound = MediaActionSound()
             sound.play(MediaActionSound.SHUTTER_CLICK)
@@ -480,6 +490,7 @@ class CameraFragment : Fragment() {
                         put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/${appName}")
                     }
                 }
+
 
                 // Create output options object which contains file + metadata
                 val outputOptions = ImageCapture.OutputFileOptions
@@ -589,10 +600,41 @@ class CameraFragment : Fragment() {
         }
 
         cameraPreview?.cancel?.setOnClickListener {
+            count = 0
             activity?.finish()
         }
 
         cameraPreview?.saveText?.setOnClickListener {
+            count = 0
+            val appName = "JSM Analysis"
+            val appName2 = "Test"
+            val filePath1 =
+                File(Environment.getExternalStorageDirectory().path + File.separator + "Pictures/${appName}")
+           //var fileList = filePath1.listFiles()?.toList()
+            var filePath2 = File(Environment.getExternalStorageDirectory().path + File.separator + "Pictures/${appName2}")
+//            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+//
+//                Files.move(
+//                    filePath1.toPath(),
+//                    filePath2.toPath(),
+//                    StandardCopyOption.REPLACE_EXISTING
+//                )
+//            }
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+//                val filePath = File(Environment.getExternalStorageDirectory().path + File.separator + "/Pictures/JSM Analysis")
+                var fileList:List<File>? = null
+                fileList = filePath1.listFiles()?.toList()
+                var i = 0
+                fileList?.forEach {
+                  // filePath2 = File(it.toString().replace("JSM Analysis","Test"))
+                    copyDir(fileList?.get(i)?.toPath()!!, filePath2.toPath())
+                    i++
+                }
+
+
+               // copyDir(fileList?.get(0)?.toPath()!!, filePath2.toPath())
+
+            }
             val dialog = SaveDialog.newInstance()
             dialog.show(childFragmentManager, SaveDialog::class.java.simpleName)
         }
@@ -618,7 +660,18 @@ class CameraFragment : Fragment() {
             it.setBackgroundResource(R.drawable.zoom_button_bg)
         }
     }
+    fun copyDir(src: Path, dest: Path) {
 
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+          //  Files.move(src,dest,StandardCopyOption.REPLACE_EXISTING)
+//        Files.walk(src).forEach {
+//            Files.copy(
+//                it, dest.resolve(src.relativize(it)),
+//                StandardCopyOption.REPLACE_EXISTING
+//            )
+//        }
+        }
+    }
     fun setCameraZoomLevels(zoomValue: Float) {
         camera?.cameraControl?.setLinearZoom(zoomValue)
     }
