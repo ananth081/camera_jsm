@@ -123,11 +123,11 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:3.4.0"
     implementation project(path: ':utils')
 
-    implementation("com.pdftron:pdftron:9.2.1") {
+    implementation("com.pdftron:pdftron:10.0.0") {
         // exclude group: 'com.google.code.gson', module: 'gson'
        // exclude group: 'io.reactivex.rxjava2', module: 'rxjava'
     }
-    implementation("com.pdftron:tools:9.2.1") {
+    implementation("com.pdftron:tools:10.0.0") {
         //exclude group: 'com.google.code.gson', module: 'gson'
         // exclude group: 'io.reactivex.rxjava2', module: 'rxjava'
     }

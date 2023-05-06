@@ -51,9 +51,9 @@ import kotlinx.coroutines.launch
 class GalleryFragment internal constructor() : Fragment() {
 
     /** Android ViewBinding */
-    private var _fragmentGalleryBinding: FragmentGalleryBinding? = null
+    private lateinit var fragmentGalleryBinding: FragmentGalleryBinding
 
-    private val fragmentGalleryBinding get() = _fragmentGalleryBinding!!
+    //private val fragmentGalleryBinding get() = _fragmentGalleryBinding!!
 
     /** AndroidX navigation arguments */
     private val args: GalleryFragmentArgs by navArgs()
@@ -104,7 +104,7 @@ class GalleryFragment internal constructor() : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _fragmentGalleryBinding = FragmentGalleryBinding.inflate(inflater, container, false)
+        fragmentGalleryBinding = FragmentGalleryBinding.inflate(inflater, container, false)
         inflater.context.setTheme(R.style.AppTheme)
         return fragmentGalleryBinding.root
     }
@@ -112,7 +112,7 @@ class GalleryFragment internal constructor() : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         fragmentGalleryBinding.toolbar.inflateMenu(R.menu.main_menu)
-        _fragmentGalleryBinding?.toolbar?.background = ColorDrawable(resources.getColor(R.color.colorPrimary))
+        fragmentGalleryBinding?.toolbar?.background = ColorDrawable(resources.getColor(R.color.colorPrimary))
         fragmentGalleryBinding.toolbar.overflowIcon?.colorFilter =  PorterDuffColorFilter(resources.getColor(R.color.ic_white), PorterDuff.Mode.SRC_ATOP)
         fragmentGalleryBinding.toolbar.setOnMenuItemClickListener {
             if (it.itemId == R.id.actionRetake) {
@@ -253,7 +253,6 @@ class GalleryFragment internal constructor() : Fragment() {
     }
 
     override fun onDestroyView() {
-        _fragmentGalleryBinding = null
         super.onDestroyView()
     }
 }

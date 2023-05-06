@@ -26,6 +26,7 @@ import android.graphics.Color
 import android.graphics.RectF
 import android.graphics.drawable.ColorDrawable
 import android.hardware.display.DisplayManager
+import android.media.MediaActionSound
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -211,12 +212,16 @@ class CameraFragment : Fragment() {
 
         // Wait for the views to be properly laid out
         cameraPreview.viewFinder?.post {
-
             // Keep track of the display in which this view is attached
             cameraPreview?.viewFinder?.let {
                 displayId = it?.display?.displayId ?: 0
             }
 
+            lifecycleScope.launch {
+                context?.let {
+                    mediaStoreUtils.deleteImageAPI29(it)
+                }
+            }
 
             // Build UI controls
             updateCameraUi()
@@ -437,6 +442,7 @@ class CameraFragment : Fragment() {
 //            true
 //        )
 
+//        cameraPreview?.photoView?.setImageDrawable(resources.getDrawable(R.drawable.ic_placeholder_img))
         // In the background, load latest photo taken (if any) for gallery thumbnail
         lifecycleScope.launch {
             val thumbnailUri = mediaStoreUtils.getLatestImageFilename()
@@ -454,10 +460,13 @@ class CameraFragment : Fragment() {
                 }
             }
 
+            val sound = MediaActionSound()
+            sound.play(MediaActionSound.SHUTTER_CLICK)
+
             val anim: Animation =
                 AnimationUtils.loadAnimation(requireContext(), R.anim.flash_screen);
             anim.fillAfter = true
-            cameraPreview?.viewFinder?.startAnimation(anim);
+            cameraPreview?.viewFinder?.startAnimation(anim)
 
             // Get a stable reference of the modifiable image capture use case
             imageCapture?.let { imageCapture ->
@@ -593,7 +602,7 @@ class CameraFragment : Fragment() {
 
 
         cameraPreview?.cameraZoomText05?.setOnClickListener {
-            camera?.cameraControl?.setLinearZoom(0.05f)
+            camera?.cameraControl?.setLinearZoom(0.02f)
             cameraPreview?.cameraZoomText05?.text = "1x"
             cameraPreview?.cameraZoomText0?.setBackgroundResource(R.drawable.zoom_button_bg_inactive)
             context?.getColor(R.color.ic_white)?.let { it1 -> cameraPreview?.cameraZoomText0?.setTextColor(it1) }
@@ -602,7 +611,7 @@ class CameraFragment : Fragment() {
         }
 
         cameraPreview?.cameraZoomText0?.setOnClickListener {
-            camera?.cameraControl?.setLinearZoom(1f)
+            camera?.cameraControl?.setLinearZoom(0.7f)
             cameraPreview?.cameraZoomText0?.text = "2x"
             cameraPreview?.cameraZoomText05?.setBackgroundResource(R.drawable.zoom_button_bg_inactive)
             context?.getColor(R.color.ic_white)?.let { it1 -> cameraPreview?.cameraZoomText05?.setTextColor(it1) }
@@ -743,4 +752,12 @@ class CameraFragment : Fragment() {
         mContext = context
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        lifecycleScope.launch {
+            // if (mediaStoreUtils.getImages().isNotEmpty()) {
+            mediaStoreUtils.deleteImageAPI29(requireContext())
+            // }
+        }
+    }
 }

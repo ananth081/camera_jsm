@@ -451,7 +451,7 @@ class CaptureFragment : Fragment() {
 
         captureViewBinding.cameraZoomText05?.setOnClickListener {
             videoCapture?.camera?.let{
-                it.cameraControl.setLinearZoom(0.3f)
+                it.cameraControl.setLinearZoom(0.02f)
             }
             captureViewBinding.cameraZoomText05?.text = "1x"
             captureViewBinding.cameraZoomText0?.setBackgroundResource(R.drawable.zoom_button_bg_inactive)
@@ -462,7 +462,7 @@ class CaptureFragment : Fragment() {
 
         captureViewBinding.cameraZoomText0?.setOnClickListener {
             videoCapture?.camera?.let{
-                it.cameraControl.setLinearZoom(1.0f)
+                camera?.cameraControl?.setLinearZoom(0.7f)
             }
             captureViewBinding.cameraZoomText0?.text = "2x"
             captureViewBinding.cameraZoomText05?.setBackgroundResource(R.drawable.zoom_button_bg_inactive)
@@ -519,10 +519,10 @@ class CaptureFragment : Fragment() {
                 showUI(UiState.FINALIZED, event.getNameString())
             }
             is VideoRecordEvent.Pause -> {
-                captureViewBinding.captureButton.setImageResource(R.drawable.ic_resume)
+                //captureViewBinding.captureButton.setImageResource(R.drawable.ic_resume)
             }
             is VideoRecordEvent.Resume -> {
-                captureViewBinding.captureButton.setImageResource(R.drawable.ic_pause)
+                //captureViewBinding.captureButton.setImageResource(R.drawable.ic_pause)
             }
         }
 
@@ -546,11 +546,11 @@ class CaptureFragment : Fragment() {
         arrayOf(
             captureViewBinding.cameraButton,
             captureViewBinding.captureButton,
-            captureViewBinding.stopButton,
+            captureViewBinding.recordLayout,
             captureViewBinding.audioSelection,
             captureViewBinding.qualitySelection
         ).forEach {
-            it.isEnabled = enable
+            it?.isEnabled = enable
         }
         // disable the camera button if no device to switch
         if (cameraCapabilities.size <= 1) {
@@ -572,7 +572,7 @@ class CaptureFragment : Fragment() {
             when (state) {
                 UiState.IDLE -> {
                     it.captureButton.setImageResource(R.drawable.ic_shutter_normal)
-                    it.stopButton.visibility = View.INVISIBLE
+                    it.recordLayout?.visibility = View.INVISIBLE
                     it.cameraButton.visibility = View.VISIBLE
                     it.audioSelection.visibility = View.VISIBLE
                     it.qualitySelection.visibility = View.VISIBLE
@@ -583,9 +583,9 @@ class CaptureFragment : Fragment() {
                     it.qualitySelection.visibility = View.INVISIBLE
                     it.saveText.visibility = View.GONE
                     it.dualCamera.visibility = View.GONE
-                    it.captureButton.setImageResource(R.drawable.ic_pause)
+                   // it.captureButton.setImageResource(R.drawable.ic_pause)
                     it.captureButton.isEnabled = true
-                    it.stopButton.visibility = View.VISIBLE
+                    it.recordLayout?.visibility = View.VISIBLE
                     it.stopButton.isEnabled = true
                 }
                 UiState.FINALIZED -> {

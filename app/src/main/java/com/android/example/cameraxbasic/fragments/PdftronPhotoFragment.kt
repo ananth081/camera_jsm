@@ -83,6 +83,8 @@ class PdftronPhotoFragment internal constructor() : Fragment(), PdfViewCtrlTabHo
             .showCloseTabOption(false)
             .showTopToolbar(false)
             .showPageNumberIndicator(false)
+            .fullscreenModeEnabled(false)
+            .showDocumentSlider(false)
             .build()
 
         mHostFragment = ViewerBuilder2
