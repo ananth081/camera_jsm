@@ -28,6 +28,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -80,10 +81,10 @@ class GalleryFragment internal constructor() : Fragment() {
         override fun getItemId(position: Int): Long {
             return uriList[position].hashCode().toLong()
         }
+
         fun getItemPosition(`object`: Any?): Int {
             return PagerAdapter.POSITION_NONE
         }
-
 
 
     }
@@ -228,53 +229,107 @@ class GalleryFragment internal constructor() : Fragment() {
 
     private fun extractArguments() {
         mediaList = arguments?.getStringArrayList(MEDIA_LIST_KEY)!!
+
+
     }
 
     private fun deleteSpecificImage() {
         mediaList.getOrNull(fragmentGalleryBinding.photoViewPager.currentItem)
             ?.let { mediaStoreFile ->
 
-                AlertDialog.Builder(requireContext(), android.R.style.Theme_Material_Dialog)
-                    .setTitle(getString(R.string.delete_title))
-                    .setMessage(getString(R.string.delete_dialog))
-                    .setIcon(android.R.drawable.ic_dialog_alert)
 
-                    .setPositiveButton(android.R.string.ok,
-                        object : DialogInterface.OnClickListener {
-                            override fun onClick(p0: DialogInterface?, p1: Int) {
-                                // Delete current photo
-                                mediaStoreFile.let {
-                                    context?.contentResolver?.delete(
-                                        Uri.parse(it),
-                                        null,
-                                        null
-                                    )
-                                }
+                val dialogBuilder = AlertDialog.Builder(requireContext())
 
-                                deletedList.add(mediaStoreFile)
-                                // Notify our view pager
-                                mediaList.remove(mediaStoreFile)
-                                (fragmentGalleryBinding.photoViewPager.adapter as MediaPagerAdapter).uriList.remove(
-                                    mediaStoreFile
-                                )
-                                fragmentGalleryBinding.photoViewPager.adapter?.notifyDataSetChanged()
+                // ...Irrelevant code for customizing the buttons and title
 
-                                // If all photos have been deleted, return to camera
-                                if (mediaList.isEmpty()) {
-                                    val intent = Intent()
-                                    intent.putStringArrayListExtra(
-                                        DELETED_LIST_INTENT_KEY,
-                                        deletedList
-                                    )
-                                    activity?.setResult(Activity.RESULT_OK, intent)
-                                    activity?.finish()
-                                }
-                            }
 
-                        })
+                // ...Irrelevant code for customizing the buttons and title
+                val inflater = this.layoutInflater
 
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .create().showImmersive()
+                val dialogView: View = inflater.inflate(R.layout.delete_image_dialog_item, null)
+                dialogBuilder.setView(dialogView)
+
+                val deleteBtn: TextView = dialogView.findViewById<View>(R.id.deleteBtn) as TextView
+                val cancelBtn: TextView = dialogView.findViewById<View>(R.id.cancelBtn) as TextView
+
+                deleteBtn.setOnClickListener {
+
+                    mediaStoreFile.let {
+                        context?.contentResolver?.delete(
+                            Uri.parse(it),
+                            null,
+                            null
+                        )
+                    }
+
+                    deletedList.add(mediaStoreFile)
+                    // Notify our view pager
+                    mediaList.remove(mediaStoreFile)
+                    (fragmentGalleryBinding.photoViewPager.adapter as MediaPagerAdapter).uriList.remove(
+                        mediaStoreFile
+                    )
+                    fragmentGalleryBinding.photoViewPager.adapter?.notifyDataSetChanged()
+
+                    // If all photos have been deleted, return to camera
+                    if (mediaList.isEmpty()) {
+                        val intent = Intent()
+                        intent.putStringArrayListExtra(
+                            DELETED_LIST_INTENT_KEY,
+                            deletedList
+                        )
+                        activity?.setResult(Activity.RESULT_OK, intent)
+                        activity?.finish()
+                    }
+                }
+
+                cancelBtn.setOnClickListener {
+                    dialogBuilder.create().dismiss()
+                }
+
+
+                dialogBuilder.create().show()
+
+
+//                AlertDialog.Builder(requireContext(), android.R.style.Theme_Material_Dialog)
+//                    .setTitle(getString(R.string.delete_title))
+//                    .setMessage(getString(R.string.delete_dialog))
+//                    .setIcon(android.R.drawable.ic_dialog_alert)
+//                    .setPositiveButton(android.R.string.ok,
+//                        object : DialogInterface.OnClickListener {
+//                            override fun onClick(p0: DialogInterface?, p1: Int) {
+//                                // Delete current photo
+//                                mediaStoreFile.let {
+//                                    context?.contentResolver?.delete(
+//                                        Uri.parse(it),
+//                                        null,
+//                                        null
+//                                    )
+//                                }
+//
+//                                deletedList.add(mediaStoreFile)
+//                                // Notify our view pager
+//                                mediaList.remove(mediaStoreFile)
+//                                (fragmentGalleryBinding.photoViewPager.adapter as MediaPagerAdapter).uriList.remove(
+//                                    mediaStoreFile
+//                                )
+//                                fragmentGalleryBinding.photoViewPager.adapter?.notifyDataSetChanged()
+//
+//                                // If all photos have been deleted, return to camera
+//                                if (mediaList.isEmpty()) {
+//                                    val intent = Intent()
+//                                    intent.putStringArrayListExtra(
+//                                        DELETED_LIST_INTENT_KEY,
+//                                        deletedList
+//                                    )
+//                                    activity?.setResult(Activity.RESULT_OK, intent)
+//                                    activity?.finish()
+//                                }
+//                            }
+//
+//                        })
+//
+//                    .setNegativeButton(android.R.string.cancel, null)
+//                    .create().showImmersive()
             }
     }
 

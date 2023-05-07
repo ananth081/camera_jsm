@@ -242,7 +242,7 @@ class CameraFragment : Fragment() {
                 displayId = it?.display?.displayId ?: 0
             }
 
-//            lifecycleScope.launch {
+
 //                context?.let {
 //                    mediaStoreUtils.deleteImageAPI29(it)
 //                }
