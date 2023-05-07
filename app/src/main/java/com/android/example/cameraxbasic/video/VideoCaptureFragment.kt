@@ -191,7 +191,9 @@ class VideoCaptureFragment : Fragment() {
             }
         }
     }
+
     val contentValues = ContentValues()
+
     /**
      * Kick start the video recording
      *   - config Recorder to capture to MediaStoreOutput
@@ -260,8 +262,10 @@ class VideoCaptureFragment : Fragment() {
                             CapturedMediaDto(contentValues, uri)
                         )
                     }
-
-
+                lifecycleScope.launch(Dispatchers.Main) {
+                    val text = "Save(${captureViewModel.getSize()})"
+                    captureViewBinding.saveText.text = text
+                }
                 context?.let { context ->
                     outputUri?.let { uri ->
                         val createVideoThumb = createVideoThumb(context, uri)
@@ -376,7 +380,7 @@ class VideoCaptureFragment : Fragment() {
      */
     @SuppressLint("ClickableViewAccessibility", "MissingPermission", "RestrictedApi")
     private fun initializeUI() {
-        var count = 0
+
         if (outputUri == null) {
             captureViewBinding.cameraButton.setBackgroundResource(R.drawable.ic_placeholder_img)
         }
@@ -452,8 +456,7 @@ class VideoCaptureFragment : Fragment() {
         captureViewBinding.stopButton.apply {
             setOnClickListener {
                 captureViewBinding.saveText.visibility = View.VISIBLE
-                count++
-                captureViewBinding.saveText.text = "Save($count)"
+
                 // stopping: hide it after getting a click before we go to viewing fragment
                 captureViewBinding.recordLayout?.visibility = View.INVISIBLE
                 if (currentRecording == null || recordingState is VideoRecordEvent.Finalize) {
@@ -497,7 +500,13 @@ class VideoCaptureFragment : Fragment() {
         }
 
         captureViewBinding.cancel.setOnClickListener {
-            activity?.finish()
+
+            if (captureViewModel.mediaList.isNotEmpty()) {
+                captureViewModel.deleteUnsavedMedia(requireContext())
+            } else {
+                handleCancelClicked()
+            }
+
         }
 
         captureViewBinding.cameraZoomText05?.setOnClickListener {
@@ -527,6 +536,7 @@ class VideoCaptureFragment : Fragment() {
         }
 
         captureViewBinding.photoBtn?.setOnTouchListener { v, event ->
+            captureViewModel.deleteUnsavedMediaWithoutNotify(requireContext())
             captureViewBinding?.photoBtn?.background =
                 ResourcesCompat.getDrawable(resources, R.drawable.bg_photo_text, context?.theme)
             captureViewBinding?.photoBtn?.setTextColor(resources.getColor(R.color.ic_white))
@@ -547,6 +557,11 @@ class VideoCaptureFragment : Fragment() {
 //        }
 
         captureLiveStatus.value = getString(R.string.Idle)
+    }
+
+    private fun handleCancelClicked() {
+        captureViewModel.reset()
+        activity?.finish()
     }
 
     /**
@@ -747,6 +762,9 @@ class VideoCaptureFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         captureViewBinding.saveText.visibility = View.INVISIBLE
         initCameraFragment()
+        captureViewModel.cancelCommunicator.observe(viewLifecycleOwner) {
+            handleCancelClicked()
+        }
     }
 
     override fun onDestroyView() {

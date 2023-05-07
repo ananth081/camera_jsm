@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Environment
 import android.os.FileUtils
 import android.provider.MediaStore
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -31,6 +32,13 @@ class CaptureViewModel : ViewModel() {
 
     val cancelCommunicator: MutableLiveData<String> = MutableLiveData<String>()
 
+    fun reset() {
+        mediaList.clear()
+    }
+
+    fun getSize(): Int {
+        return mediaList.size
+    }
 
     fun moveFileToDraftFolder(context: Context) {
 //        viewModelScope.launch {
@@ -96,6 +104,21 @@ class CaptureViewModel : ViewModel() {
                 context.contentResolver?.delete(it.uri, null, null)
             }
             cancelCommunicator.postValue("")
+        }
+    }
+
+    @Synchronized
+    fun deleteUnsavedMediaWithoutNotify(context: Context) {
+        Log.d("tag", "deleteUnsavedMediaWithoutNotify")
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                mediaList.forEach {
+                    context.contentResolver?.delete(it.uri, null, null)
+                }
+                mediaList.clear()
+            } catch (ex: java.lang.Exception) {
+                ex.printStackTrace()
+            }
         }
     }
 }

@@ -63,6 +63,7 @@ import com.android.example.cameraxbasic.utils.MediaStoreUtils
 import com.android.example.cameraxbasic.viewmodels.APP_NAME
 import com.android.example.cameraxbasic.viewmodels.CaptureViewModel
 import com.android.example.cameraxbasic.viewmodels.PUBLISHED
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.*
 import java.nio.file.Path
@@ -102,7 +103,6 @@ class CameraFragment : Fragment() {
     private var cameraProvider: ProcessCameraProvider? = null
     private lateinit var windowManager: WindowManager
     private var fromRetakeScreen: String? = null
-    var count = 0
     private val displayManager by lazy {
         requireContext().getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
     }
@@ -261,6 +261,7 @@ class CameraFragment : Fragment() {
 //        }
 
         cameraPreview?.videoBtn?.setOnTouchListener { v, event ->
+            captureViewModel.deleteUnsavedMediaWithoutNotify(requireContext())
             cameraPreview?.photoBtn?.setBackgroundColor(resources.getColor(R.color.trans))
             cameraPreview?.photoBtn?.setTextColor(resources.getColor(R.color.ic_white))
             cameraPreview?.videoBtn?.background =
@@ -477,20 +478,8 @@ class CameraFragment : Fragment() {
 
         cameraPreview.cameraCaptureButton?.setOnClickListener {
             cameraPreview.saveText.visibility = View.VISIBLE
-            count++
-            Log.d("PRS", "count " + count)
-            val saveTxt = "Save($count)"
-            cameraPreview.saveText.text = saveTxt
-//            lifecycleScope.launch {
-//                count ++
-//                if (mediaStoreUtils.getImages().isNotEmpty()) {
-//
-////                    cameraPreview?.saveText?.text =
-////                        "Save(${mediaStoreUtils.getImages().size})"
-//                    cameraPreview?.saveText?.text =
-//                        "Save($count)"
-//                }
-//            }
+
+
 
             val sound = MediaActionSound()
             sound.play(MediaActionSound.SHUTTER_CLICK)
@@ -540,7 +529,10 @@ class CameraFragment : Fragment() {
                                         CapturedMediaDto(contentValues, uri)
                                     )
                                 }
-
+                            val saveTxt = "Save(${captureViewModel.getSize()})"
+                            lifecycleScope.launch(Dispatchers.Main){
+                                cameraPreview.saveText.text = saveTxt
+                            }
                             Log.d(TAG, "Photo capture succeeded: $savedUri")
 
                             // We can only change the foreground Drawable using API level 23+ API
@@ -644,7 +636,6 @@ class CameraFragment : Fragment() {
         }
 
         cameraPreview?.saveText?.setOnClickListener {
-            count = 0
 
 
 //
@@ -708,7 +699,7 @@ class CameraFragment : Fragment() {
     }
 
     private fun handleCancelClicked() {
-        count = 0
+        captureViewModel.reset()
         activity?.finish()
     }
 
@@ -723,6 +714,11 @@ class CameraFragment : Fragment() {
 //            )
 //        }
         }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        captureViewModel.reset()
     }
 
     fun setCameraZoomLevels(zoomValue: Float) {
