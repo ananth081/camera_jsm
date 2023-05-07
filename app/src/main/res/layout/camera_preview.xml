@@ -1,230 +1,227 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <RelativeLayout
-        android:id="@+id/cancel_layout"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:background="@color/txBlack"
-        android:gravity="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+            android:id="@+id/cancel_layout"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="@color/txBlack"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/cancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:translationY="19dp"
-            android:translationX="14dp"
-            android:text="Cancel"
-            android:textColor="@color/ic_white"
-            android:textSize="14sp" />
+                android:id="@+id/cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cancel"
+                android:textColor="@color/ic_white"
+                android:textSize="14sp"
+                android:translationX="14dp"
+                android:translationY="19dp" />
 
 
         <ImageView
-            android:id="@+id/flashLight"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:layout_marginTop="2dp"
-            android:visibility="visible"
-            android:translationX="-60dp"
-            android:layout_alignStart="@+id/dualCamera"
-            android:background="@drawable/flash_circle_1"/>
+                android:id="@+id/flashLight"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:layout_alignStart="@+id/dualCamera"
+                android:layout_marginTop="2dp"
+                android:background="@drawable/flash_circle_1"
+                android:translationX="-60dp"
+                android:visibility="visible" />
 
         <ImageView
-            android:id="@+id/dualCamera"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:translationY="3dp"
-            android:translationX="-10dp"
-            android:layout_alignParentEnd="true"
-            android:background="@drawable/ic_switch_camera" />
+                android:id="@+id/dualCamera"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/ic_switch_camera"
+                android:translationX="-10dp"
+                android:translationY="3dp" />
 
     </RelativeLayout>
 
     <androidx.camera.view.PreviewView
-        android:id="@+id/view_finder"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@color/ic_white"
-        app:layout_constraintBottom_toTopOf="@+id/switchCameraLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cancel_layout" >
+            android:id="@+id/view_finder"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/ic_white"
+            app:layout_constraintBottom_toTopOf="@+id/switchCameraLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cancel_layout">
 
         <com.android.example.cameraxbasic.utils.RectOverlay
-            android:id="@+id/rect_overlay_focus"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+                android:id="@+id/rect_overlay_focus"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
     </androidx.camera.view.PreviewView>
 
-    <LinearLayout
-        android:id="@+id/cameraZoom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/zoom_button_corners"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:translationY="-50dp"
-        android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/switchCameraLayout">
-
-        <Button
-            android:id="@+id/cameraZoomText05"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:background="@drawable/zoom_button_bg"
-            android:foreground="#00555555"
+    <FrameLayout
+            android:id="@+id/cameraZoom"
+            android:layout_width="70dp"
+            android:layout_height="25dp"
+            android:layout_marginBottom="50dp"
+            android:background="@drawable/zoom_button_corners"
             android:gravity="center"
-            android:layout_marginEnd="12dp"
-            android:padding="2dp"
-            android:text="1x"
-            android:textColor="@color/txBlack"
-            android:textSize="12sp" />
+            android:orientation="horizontal"
+            android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@id/switchCameraLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
-        <Button
-            android:id="@+id/cameraZoomText0"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:background="#00555555"
-            android:foreground="#00555555"
-            android:layout_marginEnd="2dp"
-            android:gravity="center"
-            android:padding="2dp"
-            android:text="2x"
-            android:textColor="@color/txWhite"
-            android:textSize="12sp" />
+        <View
+                android:id="@+id/zoomToggleBg"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="1dp"
+                android:background="@drawable/zoom_button_bg" />
 
-        <Button
-            android:id="@+id/cameraZoomText1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#00555555"
-            android:foreground="#00555555"
-            android:gravity="center"
-            android:padding="12dp"
-            android:text="2.0x"
-            android:textSize="16sp"
-            android:visibility="gone" />
-    </LinearLayout>
+        <TextView
+                android:id="@+id/tvZoomOne"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="start"
+                android:layout_marginStart="1dp"
+                android:foreground="#00555555"
+                android:gravity="center"
+                android:text="1x"
+                android:textAllCaps="false"
+                android:textColor="@color/txBlack"
+                android:textSize="12sp" />
+
+        <TextView
+                android:id="@+id/tvZoomTwo"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="end"
+                android:layout_marginEnd="1dp"
+                android:background="#00555555"
+                android:foreground="#00555555"
+                android:gravity="center"
+                android:text="2x"
+                android:textAllCaps="false"
+                android:textColor="@color/txWhite"
+                android:textSize="12sp" />
+    </FrameLayout>
 
     <LinearLayout
-        android:id="@+id/switchCameraLayout"
-        android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:background="@color/txBlack"
-        android:gravity="center"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="@id/view_finder"
-        app:layout_constraintTop_toTopOf="@id/camera_control">
+            android:id="@+id/switchCameraLayout"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:background="@color/txBlack"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="@id/view_finder"
+            app:layout_constraintTop_toTopOf="@id/camera_control">
 
         <Button
-            android:id="@+id/photoBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="6dp"
-            android:background="@drawable/phone_photo_text_bg"
-            android:clickable="true"
-            android:gravity="center"
-            android:padding="12dp"
-            android:text="Photo"
-            android:textColor="@color/txWhite"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+                android:id="@+id/photoBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="6dp"
+                android:background="@drawable/phone_photo_text_bg"
+                android:clickable="true"
+                android:gravity="center"
+                android:padding="12dp"
+                android:text="Photo"
+                android:textColor="@color/txWhite"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
         <Button
-            android:id="@+id/videoBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_marginStart="6dp"
-            android:background="@color/black_overlay"
-            android:clickable="true"
-            android:gravity="center"
-            android:padding="12dp"
-            android:text="Video"
-            android:textColor="@color/txWhite"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+                android:id="@+id/videoBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginStart="6dp"
+                android:background="@color/black_overlay"
+                android:clickable="true"
+                android:gravity="center"
+                android:padding="12dp"
+                android:text="Video"
+                android:textColor="@color/txWhite"
+                android:textSize="14sp"
+                android:textStyle="bold" />
     </LinearLayout>
 
     <RelativeLayout
-        android:id="@+id/camera_control"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:background="@color/txBlack"
-        app:layout_constraintEnd_toEndOf="parent">
+            android:id="@+id/camera_control"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="@color/txBlack"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/photo_view_button"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_alignParentStart="true"
-            android:layout_centerHorizontal="true"
-            android:translationX="18dp"
-            android:translationY="17dp"
-            tools:ignore="ImageContrastCheck"
-            app:cardCornerRadius="40dp">
+                android:id="@+id/photo_view_button"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerHorizontal="true"
+                android:translationX="18dp"
+                android:translationY="17dp"
+                app:cardCornerRadius="40dp"
+                tools:ignore="ImageContrastCheck">
 
             <ImageView
-                android:id="@+id/photo_view"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_placeholder_img" />
+                    android:id="@+id/photo_view"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_placeholder_img" />
 
         </androidx.cardview.widget.CardView>
 
         <ImageView
-            android:id="@+id/camera_capture_button"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_centerInParent="true"
-            android:layout_toStartOf="@+id/saveText"
-            android:layout_toEndOf="@+id/photo_view_button"
-            android:src="@drawable/ic_shutter_normal"
-            android:translationX="22dp"
-            android:translationY="2dp" />
+                android:id="@+id/camera_capture_button"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerInParent="true"
+                android:layout_toStartOf="@+id/saveText"
+                android:layout_toEndOf="@+id/photo_view_button"
+                android:src="@drawable/ic_shutter_normal"
+                android:translationX="22dp"
+                android:translationY="2dp" />
 
         <TextView
-            android:id="@+id/saveText"
-            android:layout_width="wrap_content"
-            android:layout_height="35dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerInParent="true"
-            android:layout_marginEnd="12dp"
-            android:background="@drawable/bg_save_text"
-            android:gravity="center"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:text="Save"
-            android:textAllCaps="true"
-            android:textColor="@color/txWhite"
-            android:textSize="16sp" />
+                android:id="@+id/saveText"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/bg_save_text"
+                android:gravity="center"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="Save"
+                android:textAllCaps="true"
+                android:textColor="@color/txWhite"
+                android:textSize="16sp" />
     </RelativeLayout>
 
     <FrameLayout
-        android:id="@+id/place_holder_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/txBlack"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+            android:id="@+id/place_holder_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/txBlack"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/place_holder_image"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="center"
-            android:src="@drawable/outline_camera_alt_24" />
+                android:id="@+id/place_holder_image"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:src="@drawable/outline_camera_alt_24" />
     </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

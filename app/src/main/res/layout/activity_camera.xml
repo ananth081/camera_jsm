@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
+    android:animateLayoutChanges="true"
     android:id="@+id/cameraControls"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -62,7 +63,7 @@
         </com.google.android.material.tabs.TabLayout>
 
         <TextView
-            android:id="@+id/cameraZoomText0"
+            android:id="@+id/tvZoomTwo"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_gravity="center"

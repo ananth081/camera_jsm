@@ -254,7 +254,7 @@
         app:layout_constraintTop_toTopOf="@id/switchCameraLayout">
 
         <Button
-            android:id="@+id/cameraZoomText0"
+            android:id="@+id/tvZoomTwo"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginBottom="5dp"
@@ -267,7 +267,7 @@
             android:textSize="12sp" />
 
         <Button
-            android:id="@+id/cameraZoomText05"
+            android:id="@+id/tvZoomOne"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginTop="12dp"

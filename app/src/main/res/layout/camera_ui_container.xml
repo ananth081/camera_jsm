@@ -30,7 +30,7 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/cameraZoomText0"
+            android:id="@+id/tvZoomTwo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/zoom_button_corners"
@@ -40,7 +40,7 @@
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/cameraZoomText05"
+            android:id="@+id/tvZoomOne"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/zoom_button_corners"
