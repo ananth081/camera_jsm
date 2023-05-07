@@ -269,11 +269,11 @@ class CameraFragment : Fragment() {
 
         cameraPreview?.videoBtn?.setOnTouchListener { v, event ->
             captureViewModel.deleteUnsavedMediaWithoutNotify(requireContext())
-            cameraPreview?.photoBtn?.setBackgroundColor(resources.getColor(R.color.trans))
-            cameraPreview?.photoBtn?.setTextColor(resources.getColor(R.color.ic_white))
-            cameraPreview?.videoBtn?.background =
-                ResourcesCompat.getDrawable(resources, R.drawable.bg_photo_text, context?.theme)
-            cameraPreview?.videoBtn?.setTextColor(resources.getColor(R.color.ic_white))
+            // cameraPreview?.photoBtn?.setBackgroundColor(resources.getColor(R.color.trans))
+            // cameraPreview?.photoBtn?.setTextColor(resources.getColor(R.color.ic_white))
+            /*cameraPreview?.videoBtn?.background =
+                ResourcesCompat.getDrawable(resources, R.drawable.bg_photo_text, context?.theme)*/
+            // cameraPreview?.videoBtn?.setTextColor(resources.getColor(R.color.ic_white))
             (activity as CameraActivity).showVideoFragment()
             true
         }
@@ -428,7 +428,10 @@ class CameraFragment : Fragment() {
 //                            "CameraState: Open",
 //                            Toast.LENGTH_SHORT
 //                        ).show()
-                        cameraPreview?.placeHolderLayout?.visibility = View.GONE
+                        cameraPreview?.placeHolderLayout?.postDelayed({
+                            cameraPreview?.placeHolderLayout?.visibility = View.GONE
+                        }, 500)
+
                     }
 
                     else -> {
@@ -536,7 +539,7 @@ class CameraFragment : Fragment() {
                                         CapturedMediaDto(contentValues, uri)
                                     )
                                 }
-                            val saveTxt = "Save(${captureViewModel.getSize()})"
+                            val saveTxt = "Save (${captureViewModel.getSize()})"
                             lifecycleScope.launch(Dispatchers.Main) {
                                 cameraPreview.saveText.text = saveTxt
                             }
@@ -688,8 +691,8 @@ class CameraFragment : Fragment() {
                     cameraPreview.zoomToggleBg?.width?.plus(marginHorizontal) ?: marginHorizontal
                 val translationXEndVal = (cameraPreview.cameraZoom?.width?.minus(bgWidth)) ?: 0f
 
-                var startValue = 0f
-                var endValue = 0f
+                val startValue: Float
+                val endValue: Float
 
                 if ((cameraPreview.zoomToggleBg?.translationX ?: 0f) > marginHorizontal) {
                     // translated to end

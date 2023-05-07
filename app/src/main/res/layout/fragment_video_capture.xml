@@ -33,32 +33,28 @@
             android:id="@+id/cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:translationY="19dp"
-            android:translationX="14dp"
             android:text="Cancel"
             android:textColor="@color/ic_white"
-            android:textSize="14sp" />
-
-
-        <ImageView
-            android:id="@+id/flashLight"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:layout_marginTop="2dp"
-            android:visibility="visible"
-            android:translationX="-60dp"
-            android:layout_alignStart="@+id/dualCamera"
-            android:background="@drawable/flash_circle_1"/>
+            android:textSize="14sp"
+            android:translationX="13dp"
+            android:translationY="19dp" />
 
         <ImageView
             android:id="@+id/dualCamera"
             android:layout_width="52dp"
             android:layout_height="52dp"
-            android:translationY="3dp"
-            android:translationX="-10dp"
-            android:layout_alignParentEnd="true"
-            android:background="@drawable/ic_switch_camera" />
+            android:layout_gravity="center_vertical|right"
+            android:layout_toStartOf="@+id/flashLight"
+            android:background="@drawable/ic_switch_camera"
+            android:translationY="3dp" />
 
+        <ImageView
+            android:id="@+id/flashLight"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="2dp"
+            android:background="@drawable/flash_circle_1" />
 
     </RelativeLayout>
 
@@ -103,81 +99,89 @@
         app:layout_constraintBottom_toTopOf="@+id/videoControlView"
         app:layout_constraintStart_toStartOf="parent">
 
-        <Button
+        <TextView
             android:id="@+id/photoBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="12dp"
-            android:background="@android:color/transparent"
+            android:layout_marginEnd="6dp"
+            android:background="@color/black_overlay"
             android:clickable="true"
-            android:text="Photo"
+            android:gravity="center"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="8dp"
+            android:text="@string/photo"
+            android:textAllCaps="true"
             android:textColor="@color/txWhite"
             android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:ignore="KeyboardInaccessibleWidget" />
 
-        <Button
+        <TextView
             android:id="@+id/videoBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
             android:background="@drawable/phone_photo_text_bg"
             android:clickable="true"
-            android:text="Video"
+            android:gravity="center"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="8dp"
+            android:text="@string/video"
+            android:textAllCaps="true"
             android:textColor="@color/txWhite"
             android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:ignore="KeyboardInaccessibleWidget" />
     </LinearLayout>
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/cameraZoom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="75dp"
+        android:layout_height="32dp"
+        android:layout_marginBottom="50dp"
         android:background="@drawable/zoom_button_corners"
         android:gravity="center"
         android:orientation="horizontal"
-        android:translationY="-50dp"
         android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@id/switchCameraLayout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/switchCameraLayout">
+        app:layout_constraintStart_toStartOf="parent">
 
-        <Button
+        <View
+            android:id="@+id/zoomToggleBg"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginHorizontal="1dp"
+            android:background="@drawable/zoom_button_bg" />
+
+        <TextView
             android:id="@+id/tvZoomOne"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginEnd="12dp"
-            android:background="@drawable/zoom_button_bg"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="start"
+            android:layout_marginStart="1dp"
             android:foreground="#00555555"
             android:gravity="center"
-            android:padding="2dp"
             android:text="1x"
+            android:textAllCaps="false"
             android:textColor="@color/txBlack"
             android:textSize="12sp" />
 
-        <Button
+        <TextView
             android:id="@+id/tvZoomTwo"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginEnd="2dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="end"
+            android:layout_marginEnd="1dp"
             android:background="#00555555"
             android:foreground="#00555555"
             android:gravity="center"
-            android:padding="2dp"
             android:text="2x"
+            android:textAllCaps="false"
             android:textColor="@color/txWhite"
             android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/cameraZoomText1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#00555555"
-            android:foreground="#00555555"
-            android:gravity="center"
-            android:padding="12dp"
-            android:text="2.0x"
-            android:textSize="16sp"
-            android:visibility="gone" />
-    </LinearLayout>
+    </FrameLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/quality_selection"
@@ -191,83 +195,106 @@
         app:layout_constraintStart_toEndOf="@+id/vertical_guideline"
         app:layout_constraintTop_toTopOf="@id/audio_selection" />
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/videoControlView"
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:background="@color/txBlack"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <ImageButton
-            android:id="@+id/camera_button"
+            android:id="@+id/video_preview_image"
             android:layout_width="48dp"
             android:layout_height="48dp"
+            android:layout_marginEnd="44dp"
             android:background="@drawable/bg_circle"
             android:contentDescription="@string/camera"
             android:outlineProvider="background"
-            android:translationX="18dp"
-            android:translationY="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/captureButtonFrame"
+            app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ImageContrastCheck" />
 
-        <ImageButton
-            android:id="@+id/capture_button"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_centerInParent="true"
-            android:background="@drawable/ic_record"
-            android:contentDescription="@string/capture"
-            android:translationY="5dp"
-            tools:ignore="ImageContrastCheck" />
+        <FrameLayout
+            android:id="@+id/captureButtonFrame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:id="@+id/recordLayout"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:layout_centerInParent="true"
-            android:background="@drawable/video_rec_bg"
-            android:orientation="horizontal"
-            android:translationY="4dp"
-            android:visibility="invisible">
+            <View
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center"
+                android:background="@drawable/video_capture_gradient_bg" />
 
             <ImageButton
-                android:id="@+id/stop_button"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:id="@+id/capture_button"
+                android:layout_width="66dp"
+                android:layout_height="66dp"
                 android:layout_gravity="center"
-                android:background="@drawable/baseline_stop_24"
-                android:contentDescription="@string/stop"
-                android:translationX="10dp"
+                android:background="@drawable/video_capture_bg"
+                android:contentDescription="@string/capture"
                 tools:ignore="ImageContrastCheck" />
+        </FrameLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/recordLayout"
+            android:layout_width="100dp"
+            android:layout_height="45dp"
+            android:background="@drawable/video_rec_bg"
+            android:orientation="horizontal"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <ImageButton
                 android:id="@+id/pause_button"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:layout_gravity="center"
+                android:layout_marginStart="12dp"
                 android:background="@drawable/baseline_pause_24"
                 android:contentDescription="@string/pause"
-                android:translationX="40dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="ImageContrastCheck" />
-        </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/stop_button"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/baseline_stop_24"
+                android:contentDescription="@string/stop"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ImageContrastCheck" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
             android:id="@+id/saveText"
             android:layout_width="wrap_content"
             android:layout_height="35dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerInParent="true"
-            android:layout_marginEnd="12dp"
+            android:layout_marginStart="44dp"
             android:background="@drawable/bg_save_text"
             android:gravity="center"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:text="Save"
+            android:paddingHorizontal="16dp"
+            android:text="@string/save"
             android:textAllCaps="true"
             android:textColor="@color/txWhite"
-            android:textSize="16sp"
-            android:translationY="3dp" />
-    </RelativeLayout>
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/captureButtonFrame"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/capture_status"

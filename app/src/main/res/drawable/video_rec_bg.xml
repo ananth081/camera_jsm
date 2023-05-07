@@ -21,8 +21,8 @@
         <shape
             android:shape="rectangle">
             <size android:height="8dp" />
-            <corners android:radius="20dp" />
-            <solid android:color="#CDFFFFFF"/>
+            <corners android:radius="36dp" />
+            <solid android:color="#FFFFFFFF"/>
         </shape>
     </item>
 </selector>

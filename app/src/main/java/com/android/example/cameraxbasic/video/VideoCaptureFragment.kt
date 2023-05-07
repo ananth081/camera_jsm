@@ -52,7 +52,6 @@ import androidx.camera.video.*
 import androidx.concurrent.futures.await
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.util.Consumer
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
@@ -249,9 +248,9 @@ class VideoCaptureFragment : Fragment() {
         if (event is VideoRecordEvent.Finalize) {
             // display the captured video
             lifecycleScope.launch {
-                captureViewBinding.cameraButton.setBackgroundResource(R.drawable.ic_placeholder_img)
-                captureViewBinding.cameraButton.visibility = View.VISIBLE
-                captureViewBinding.cameraButton.isEnabled = true
+                captureViewBinding.videoPreviewImage.setBackgroundResource(R.drawable.ic_placeholder_img)
+                captureViewBinding.videoPreviewImage.visibility = View.VISIBLE
+                captureViewBinding.videoPreviewImage.isEnabled = true
 
 
                 outputUri = event.outputResults.outputUri
@@ -263,15 +262,15 @@ class VideoCaptureFragment : Fragment() {
                         )
                     }
                 lifecycleScope.launch(Dispatchers.Main) {
-                    val text = "Save(${captureViewModel.getSize()})"
+                    val text = "Save (${captureViewModel.getSize()})"
                     captureViewBinding.saveText.text = text
                 }
                 context?.let { context ->
                     outputUri?.let { uri ->
                         val createVideoThumb = createVideoThumb(context, uri)
                         createVideoThumb?.let {
-                            captureViewBinding.cameraButton.clipToOutline = true
-                            captureViewBinding.cameraButton.setImageBitmap(it)
+                            captureViewBinding.videoPreviewImage.clipToOutline = true
+                            captureViewBinding.videoPreviewImage.setImageBitmap(it)
                         }
                     }
                 }
@@ -382,13 +381,13 @@ class VideoCaptureFragment : Fragment() {
     private fun initializeUI() {
 
         if (outputUri == null) {
-            captureViewBinding.cameraButton.setBackgroundResource(R.drawable.ic_placeholder_img)
+            captureViewBinding.videoPreviewImage.setBackgroundResource(R.drawable.ic_placeholder_img)
         }
         captureViewBinding.saveText.setOnClickListener {
             val dialog = SaveDialog.newInstance()
             dialog.show(childFragmentManager, SaveDialog::class.java.simpleName)
         }
-        captureViewBinding.cameraButton.apply {
+        captureViewBinding.videoPreviewImage.apply {
             setOnClickListener {
                 outputUri?.let {
                     val intent = Intent(context, VideoActivity::class.java)
@@ -507,54 +506,16 @@ class VideoCaptureFragment : Fragment() {
 
         }
 
-        /*captureViewBinding.cameraZoomText05?.setOnClickListener {
-            videoCapture?.camera?.let {
-                it.cameraControl.setLinearZoom(0.02f)
-            }
-            captureViewBinding.cameraZoomText05?.text = "1x"
-            captureViewBinding.cameraZoomText0?.setBackgroundResource(R.drawable.zoom_button_bg_inactive)
-            context?.getColor(R.color.ic_white)
-                ?.let { it1 -> captureViewBinding.cameraZoomText0?.setTextColor(it1) }
-            context?.resources?.getColor(R.color.txBlack)
-                ?.let { it1 -> captureViewBinding.cameraZoomText05?.setTextColor(it1) }
-            it.setBackgroundResource(R.drawable.zoom_button_bg)
-        }
-
-        captureViewBinding.cameraZoomText0?.setOnClickListener {
-            videoCapture?.camera?.let {
-                camera?.cameraControl?.setLinearZoom(0.7f)
-            }
-            captureViewBinding.cameraZoomText0?.text = "2x"
-            captureViewBinding.cameraZoomText05?.setBackgroundResource(R.drawable.zoom_button_bg_inactive)
-            context?.getColor(R.color.ic_white)
-                ?.let { it1 -> captureViewBinding.cameraZoomText05?.setTextColor(it1) }
-            context?.resources?.getColor(R.color.txBlack)
-                ?.let { it1 -> captureViewBinding.cameraZoomText0?.setTextColor(it1) }
-            it.setBackgroundResource(R.drawable.zoom_button_bg)
-        }*/
-
         captureViewBinding.photoBtn?.setOnTouchListener { v, event ->
             captureViewModel.deleteUnsavedMediaWithoutNotify(requireContext())
-            captureViewBinding?.photoBtn?.background =
-                ResourcesCompat.getDrawable(resources, R.drawable.bg_photo_text, context?.theme)
-            captureViewBinding?.photoBtn?.setTextColor(resources.getColor(R.color.ic_white))
-            captureViewBinding?.videoBtn?.setBackgroundColor(resources.getColor(R.color.black_overlay))
-            captureViewBinding?.videoBtn?.setTextColor(resources.getColor(R.color.ic_white))
             (activity as CameraActivity).showPhotoFragment()
             true
         }
 
-//        captureViewBinding?.videoBtn?.setOnTouchListener { v, event ->
-//            captureViewBinding?.photoBtn?.setBackgroundColor(resources.getColor(R.color.black_overlay))
-//            captureViewBinding?.photoBtn?.setTextColor(resources.getColor(R.color.ic_white))
-//            captureViewBinding?.videoBtn?.background =
-//                ResourcesCompat.getDrawable(resources, R.drawable.bg_photo_text, context?.theme)
-//            captureViewBinding?.videoBtn?.setTextColor(resources.getColor(R.color.ic_white))
-//            (activity as CameraActivity).showVideoFragment()
-//            true
-//        }
-
-        //captureLiveStatus.value = getString(R.string.Idle)
+        captureViewBinding.videoBtn?.setOnTouchListener { v, event ->
+            (activity as CameraActivity).showVideoFragment()
+            true
+        }
     }
 
     private fun handleCancelClicked() {
@@ -618,7 +579,7 @@ class VideoCaptureFragment : Fragment() {
      */
     private fun enableUI(enable: Boolean) {
         arrayOf(
-            captureViewBinding.cameraButton,
+            captureViewBinding.videoPreviewImage,
             captureViewBinding.captureButton,
             captureViewBinding.recordLayout,
             captureViewBinding.audioSelection,
@@ -628,7 +589,7 @@ class VideoCaptureFragment : Fragment() {
         }
         // disable the camera button if no device to switch
         if (cameraCapabilities.size <= 1) {
-            captureViewBinding.cameraButton.isEnabled = false
+            captureViewBinding.videoPreviewImage.isEnabled = false
         }
         // disable the resolution list if no resolution to switch
         if (cameraCapabilities[cameraIndex].qualities.size <= 1) {
@@ -647,31 +608,34 @@ class VideoCaptureFragment : Fragment() {
                 UiState.IDLE -> {
                     it.captureButton.setImageResource(R.drawable.ic_record)
                     it.recordLayout?.visibility = View.INVISIBLE
-                    it.cameraButton.visibility = View.VISIBLE
+                    it.videoPreviewImage.visibility = View.VISIBLE
                     it.audioSelection.visibility = View.VISIBLE
                     it.qualitySelection.visibility = View.VISIBLE
                 }
                 UiState.RECORDING -> {
-                    it.cameraButton.visibility = View.INVISIBLE
+                    it.videoPreviewImage.visibility = View.INVISIBLE
                     it.audioSelection.visibility = View.INVISIBLE
                     it.qualitySelection.visibility = View.INVISIBLE
-                    it.saveText.visibility = View.GONE
+                    // it.saveText.visibility = View.GONE
                     it.dualCamera.visibility = View.GONE
                     it.pauseButton.setImageResource(R.drawable.baseline_pause_24)
                     // it.captureButton.setImageResource(R.drawable.ic_pause)
-                    it.captureButton.visibility = View.INVISIBLE
-                    it.recordLayout.visibility = View.VISIBLE
+                    // it.captureButtonFrame?.visibility = View.INVISIBLE
+                    // it.recordLayout.visibility = View.VISIBLE
                     it.stopButton.isEnabled = true
                     it.captureStatus.visibility = View.VISIBLE
+
+                    handleCaptureAndRecordLayoutAnimation(false)
                 }
                 UiState.FINALIZED -> {
-                    it.captureButton.visibility = View.VISIBLE
+                    // it.captureButtonFrame?.visibility = View.VISIBLE
                     it.captureButton.isEnabled = true
                     it.captureButton.setImageResource(R.drawable.ic_record)
-                    it.saveText.visibility = View.VISIBLE
+                    // it.saveText.visibility = View.VISIBLE
                     it.dualCamera.visibility = View.VISIBLE
-                    it.recordLayout.visibility = View.INVISIBLE
+                    // it.recordLayout.visibility = View.INVISIBLE
                     it.captureStatus.visibility = View.GONE
+                    handleCaptureAndRecordLayoutAnimation(true)
                 }
                 else -> {
                     val errorMsg = "Error: showUI($state) is not supported"
@@ -680,6 +644,25 @@ class VideoCaptureFragment : Fragment() {
                 }
             }
             it.captureStatus.text = status
+        }
+    }
+
+    private fun handleCaptureAndRecordLayoutAnimation(isShowCaptureButton: Boolean) {
+        if (isShowCaptureButton) {
+            captureViewBinding.captureButtonFrame?.animate()?.alpha(1f)?.setDuration(500)?.start()
+            captureViewBinding.videoPreviewImage.animate()?.alpha(1f)?.setDuration(500)?.start()
+            captureViewBinding.saveText.animate()?.alpha(1f)?.setDuration(500)?.start()
+
+            captureViewBinding.recordLayout.animate()?.alpha(0f)?.setDuration(500)?.start()
+        } else {
+            captureViewBinding.recordLayout.alpha = 0f
+            captureViewBinding.recordLayout.visibility = View.VISIBLE
+
+            captureViewBinding.captureButtonFrame?.animate()?.alpha(0f)?.setDuration(500)?.start()
+            captureViewBinding.videoPreviewImage.animate()?.alpha(0f)?.setDuration(500)?.start()
+            captureViewBinding.saveText.animate()?.alpha(0f)?.setDuration(500)?.start()
+
+            captureViewBinding.recordLayout.animate()?.alpha(1f)?.setDuration(500)?.start()
         }
     }
 
@@ -875,7 +858,7 @@ class VideoCaptureFragment : Fragment() {
 //                        ).show()
                         captureViewBinding.placeHolderLayout.postDelayed({
                             captureViewBinding?.placeHolderLayout?.visibility = View.GONE
-                        }, 300)
+                        }, 500)
 
                     }
                     CameraState.Type.CLOSING -> {

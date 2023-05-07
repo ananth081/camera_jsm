@@ -150,7 +150,7 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <ImageButton
-            android:id="@+id/camera_button"
+            android:id="@+id/video_preview_image"
             android:layout_width="44dp"
             android:layout_height="44dp"
             android:layout_above="@id/capture_button"
