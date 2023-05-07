@@ -589,6 +589,8 @@ class CameraFragment : Fragment() {
                 if (lensFacing == CameraSelector.LENS_FACING_FRONT) {
                     cameraPreview?.flashLight?.isEnabled = false
                     cameraPreview?.flashLight?.visibility = View.INVISIBLE
+
+
                 } else if (lensFacing == CameraSelector.LENS_FACING_BACK) {
                     cameraPreview?.flashLight?.isEnabled = true
                     cameraPreview?.flashLight?.isVisible = true

@@ -43,7 +43,6 @@
             android:translationX="-10dp"
             android:layout_alignParentEnd="true"
             android:background="@drawable/ic_switch_camera" />
-        />
 
     </RelativeLayout>
 
