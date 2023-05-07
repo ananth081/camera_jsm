@@ -18,6 +18,8 @@
 
 package com.android.example.cameraxbasic.video
 
+import android.app.PictureInPictureParams
+import android.content.pm.PackageManager
 import android.database.Cursor
 import android.media.MediaScannerConnection
 import android.net.Uri
@@ -51,8 +53,12 @@ class VideoViewerFragment() : androidx.fragment.app.Fragment(), Player.Listener 
 
     // This property is only valid between onCreateView and onDestroyView.
     private var _binding: FragmentVideoViewerBinding? = null
-    private val binding get() = _binding!!
+     val binding get() = _binding!!
     var player: ExoPlayer? = null
+    private var currentItem = 0
+    private var playWhenReady = true
+    private var playbackPosition = 0L
+
 
     companion object {
         fun newInstance(uri: Uri?): VideoViewerFragment {
@@ -83,9 +89,13 @@ class VideoViewerFragment() : androidx.fragment.app.Fragment(), Player.Listener 
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+   @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
+   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val uri: Uri? = arguments?.getParcelable("video_uri")!!
+        binding.videoViewer.setShowPreviousButton(false)
+        binding.videoViewer.setShowNextButton(false)
+        binding.videoViewer.setShowSubtitleButton(false)
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
             showVideo(uri!!)
         } else {
@@ -113,6 +123,7 @@ class VideoViewerFragment() : androidx.fragment.app.Fragment(), Player.Listener 
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
+        releasePlayer()
     }
 
     /**
@@ -141,20 +152,12 @@ class VideoViewerFragment() : androidx.fragment.app.Fragment(), Player.Listener 
                 binding.videoViewer.player = exoPlayer
                 val mediaItem = MediaItem.fromUri(uri)
                 exoPlayer.setMediaItem(mediaItem)
-                //exoPlayer.seekTo(currentItem, playbackPosition)
+                exoPlayer.playWhenReady = playWhenReady
+                exoPlayer.seekTo(currentItem, playbackPosition)
                 exoPlayer.prepare()
             }
 
         player?.addListener(this)
-
-
-//        val mc = MediaController(requireContext())
-//        binding.videoViewer.apply {
-//            setVideoURI(uri)
-//            setMediaController(mc)
-//            requestFocus()
-//        }.start()
-//        mc.show(0)
     }
 
     /**
@@ -202,28 +205,29 @@ class VideoViewerFragment() : androidx.fragment.app.Fragment(), Player.Listener 
         }
     }
 
-//    var player: ExoPlayer? = null
-//
-//    player = ExoPlayer.Builder(requireContext())
-//    .build()
-//    .also { exoPlayer ->
-//        binding.videoDetail.player = exoPlayer
-//        val mediaItem = MediaItem.fromUri(url)
-//        if (isFromOffline) {
-//            exoPlayer.setMediaItem(mediaItem)
-//        } else {
-//            //val mediaItem = downloadRequest?.let { MediaItem.fromUri(it.uri) }
-//            val mediaSource = ProgressiveMediaSource.Factory(buildCacheDataSourceFactory())
-//                .createMediaSource(mediaItem)
-//            // val mediaSource = SingleSampleMediaSource.Factory(buildCacheDataSourceFactory()).createMediaSource(mediaItem)
-//            // uncomment below line for normal url video
-//            //exoPlayer.setMediaItem(mediaItem)
-//            exoPlayer.setMediaSource(mediaSource)
-//        }
-//        exoPlayer.playWhenReady = playWhenReady
-//        exoPlayer.seekTo(currentItem, playbackPosition)
-//        exoPlayer.prepare()
-//    }
-//
-//    player?.addListener(this)
+    var forceStop = false
+    override fun onStop() {
+        super.onStop()
+        forceStop = true
+        player?.pause()
+    }
+
+    override fun onStart() {
+        if (forceStop) {
+            player?.play()
+        }
+        super.onStart()
+    }
+
+    private fun releasePlayer() {
+        player?.let { exoPlayer ->
+            playbackPosition = exoPlayer.currentPosition
+            currentItem = exoPlayer.currentMediaItemIndex
+            playWhenReady = exoPlayer.playWhenReady
+            exoPlayer.release()
+        }
+        player = null
+//        MediaCache.getCache(requireContext())?.release()
+    }
+
 }
