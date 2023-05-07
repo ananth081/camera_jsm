@@ -133,7 +133,7 @@ class CameraActivity : AppCompatActivity() {
     }
 
     fun updateZoomText(zoomRatio: Float) {
-        Log.d(CameraActivity::class.java.simpleName, "onScale: zoomRatio==$zoomRatio")
+        /*Log.d(CameraActivity::class.java.simpleName, "onScale: zoomRatio==$zoomRatio")
         val format = String.format("%.1f", zoomRatio)
         if ("0.9" == format || "1.0" == format) {
             binding.zoomTablayout.visibility = View.VISIBLE
@@ -142,7 +142,7 @@ class CameraActivity : AppCompatActivity() {
             binding.zoomTablayout.visibility = View.GONE
             binding.cameraZoomText0.visibility = View.VISIBLE
             binding.cameraZoomText0.text = format+""+"x"
-        }
+        }*/
     }
 
 //    override fun onSupportNavigateUp(): Boolean {

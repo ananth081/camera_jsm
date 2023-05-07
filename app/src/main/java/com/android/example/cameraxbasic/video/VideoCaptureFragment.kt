@@ -507,7 +507,7 @@ class VideoCaptureFragment : Fragment() {
 
         }
 
-        captureViewBinding.cameraZoomText05?.setOnClickListener {
+        /*captureViewBinding.cameraZoomText05?.setOnClickListener {
             videoCapture?.camera?.let {
                 it.cameraControl.setLinearZoom(0.02f)
             }
@@ -531,7 +531,7 @@ class VideoCaptureFragment : Fragment() {
             context?.resources?.getColor(R.color.txBlack)
                 ?.let { it1 -> captureViewBinding.cameraZoomText0?.setTextColor(it1) }
             it.setBackgroundResource(R.drawable.zoom_button_bg)
-        }
+        }*/
 
         captureViewBinding.photoBtn?.setOnTouchListener { v, event ->
             captureViewModel.deleteUnsavedMediaWithoutNotify(requireContext())

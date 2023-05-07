@@ -37,6 +37,7 @@ import android.util.Size
 import android.view.*
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.*
@@ -55,6 +56,8 @@ import com.android.example.cameraxbasic.R
 import com.android.example.cameraxbasic.camera.CameraActivity
 import com.android.example.cameraxbasic.camera.GalleryActivity
 import com.android.example.cameraxbasic.databinding.CameraPreviewBinding
+import com.android.example.cameraxbasic.extensions.animateXTranslation
+import com.android.example.cameraxbasic.extensions.toPx
 import com.android.example.cameraxbasic.save.SaveDialog
 import com.android.example.cameraxbasic.utils.ANIMATION_FAST_MILLIS
 import com.android.example.cameraxbasic.utils.ANIMATION_SLOW_MILLIS
@@ -590,7 +593,6 @@ class CameraFragment : Fragment() {
                     cameraPreview?.flashLight?.isEnabled = false
                     cameraPreview?.flashLight?.visibility = View.INVISIBLE
 
-
                 } else if (lensFacing == CameraSelector.LENS_FACING_BACK) {
                     cameraPreview?.flashLight?.isEnabled = true
                     cameraPreview?.flashLight?.isVisible = true
@@ -672,28 +674,69 @@ class CameraFragment : Fragment() {
         }
 
         setScale()
+        handleCameraZoomClick()
+    }
 
+    private fun handleCameraZoomClick() {
+        cameraPreview.cameraZoom?.setOnClickListener {
+            cameraPreview.cameraZoom?.post {
 
-        cameraPreview?.cameraZoomText05?.setOnClickListener {
-            camera?.cameraControl?.setLinearZoom(0.02f)
-            cameraPreview?.cameraZoomText05?.text = "1x"
-            cameraPreview?.cameraZoomText0?.setBackgroundResource(R.drawable.zoom_button_bg_inactive)
-            context?.getColor(R.color.ic_white)
-                ?.let { it1 -> cameraPreview?.cameraZoomText0?.setTextColor(it1) }
-            context?.resources?.getColor(R.color.txBlack)
-                ?.let { it1 -> cameraPreview?.cameraZoomText05?.setTextColor(it1) }
-            it.setBackgroundResource(R.drawable.zoom_button_bg)
-        }
+                val marginHorizontal = 1.toPx(requireContext()).toFloat()
+                var isAtStart = true
 
-        cameraPreview?.cameraZoomText0?.setOnClickListener {
-            camera?.cameraControl?.setLinearZoom(0.7f)
-            cameraPreview?.cameraZoomText0?.text = "2x"
-            cameraPreview?.cameraZoomText05?.setBackgroundResource(R.drawable.zoom_button_bg_inactive)
-            context?.getColor(R.color.ic_white)
-                ?.let { it1 -> cameraPreview?.cameraZoomText05?.setTextColor(it1) }
-            context?.resources?.getColor(R.color.txBlack)
-                ?.let { it1 -> cameraPreview?.cameraZoomText0?.setTextColor(it1) }
-            it.setBackgroundResource(R.drawable.zoom_button_bg)
+                val bgWidth =
+                    cameraPreview.zoomToggleBg?.width?.plus(marginHorizontal) ?: marginHorizontal
+                val translationXEndVal = (cameraPreview.cameraZoom?.width?.minus(bgWidth)) ?: 0f
+
+                var startValue = 0f
+                var endValue = 0f
+
+                if ((cameraPreview.zoomToggleBg?.translationX ?: 0f) > marginHorizontal) {
+                    // translated to end
+                    startValue = translationXEndVal
+                    endValue = marginHorizontal
+                    isAtStart = false
+                } else {
+                    // is at start
+                    startValue = marginHorizontal
+                    endValue = translationXEndVal
+                    isAtStart = true
+                }
+
+                cameraPreview.zoomToggleBg?.animateXTranslation(
+                    startValue,
+                    endValue,
+                    duration = 400,
+                    onAnimEnded = {
+                        if (isAtStart) {
+                            (cameraPreview.tvZoomTwo as TextView).setTextColor(
+                                resources.getColor(
+                                    android.R.color.black,
+                                    null
+                                )
+                            )
+                            (cameraPreview.tvZoomOne as TextView).setTextColor(
+                                resources.getColor(
+                                    android.R.color.white,
+                                    null
+                                )
+                            )
+                        } else {
+                            (cameraPreview.tvZoomOne as TextView).setTextColor(
+                                resources.getColor(
+                                    android.R.color.black,
+                                    null
+                                )
+                            )
+                            (cameraPreview.tvZoomTwo as TextView).setTextColor(
+                                resources.getColor(
+                                    android.R.color.white,
+                                    null
+                                )
+                            )
+                        }
+                    })
+            }
         }
     }
 
@@ -766,7 +809,8 @@ class CameraFragment : Fragment() {
                 val fileUri = intent?.extras?.getString("file_uri")
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     val list =
-                        captureViewModel.mediaList.filter { it.uri.toString() == fileUri }.toList()
+                        captureViewModel.mediaList.filter { it.uri.toString() == fileUri }
+                            .toList()
                     captureViewModel.mediaList.removeAll(list)
                 }
                 hideRetakeUiControls()
