@@ -45,6 +45,7 @@ import androidx.concurrent.futures.await
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.isVisible
 import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -317,10 +318,11 @@ class CameraFragment : Fragment() {
      * screen for devices that run Android 9 or below.
      */
     override fun onConfigurationChanged(newConfig: Configuration) {
+        Log.d(TAG, "onConfigurationChanged: called" + "")
         super.onConfigurationChanged(newConfig)
-
         // Rebind the camera with the updated display metrics
         bindCameraUseCases()
+        Log.d(TAG, "onConfigurationChanged: called" + "")
 
         // Enable or disable switching between cameras
         updateCameraSwitchButton()
@@ -585,8 +587,10 @@ class CameraFragment : Fragment() {
 
                 if (lensFacing == CameraSelector.LENS_FACING_FRONT) {
                     cameraPreview?.flashLight?.isEnabled = false
+                    cameraPreview?.flashLight?.visibility = View.INVISIBLE
                 } else if (lensFacing == CameraSelector.LENS_FACING_BACK) {
                     cameraPreview?.flashLight?.isEnabled = true
+                    cameraPreview?.flashLight?.isVisible = true
                 }
             }
         }
