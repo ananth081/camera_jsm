@@ -66,8 +66,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.example.cameraxbasic.R
 import com.android.example.cameraxbasic.camera.CameraActivity
 import com.android.example.cameraxbasic.camera.VideoActivity
-import com.android.example.cameraxbasic.databinding.FragmentCaptureBinding
-import com.android.example.cameraxbasic.fragments.CameraFragment
+import com.android.example.cameraxbasic.databinding.FragmentVideoCaptureBinding
 import com.android.example.cameraxbasic.save.SaveDialog
 import com.android.example.cameraxbasic.utils.CapturedMediaDto
 import com.android.example.cameraxbasic.video.extensions.getAspectRatio
@@ -85,7 +84,7 @@ import kotlinx.coroutines.*
 class VideoCaptureFragment : Fragment() {
 
     // UI with ViewBinding
-    lateinit var captureViewBinding: FragmentCaptureBinding
+    lateinit var captureViewBinding: FragmentVideoCaptureBinding
 
     //private val captureViewBinding get() = _captureViewBinding
     private val captureLiveStatus = MutableLiveData<String>()
@@ -476,7 +475,6 @@ class VideoCaptureFragment : Fragment() {
         }
 
         captureViewBinding.pauseButton?.apply {
-
             setOnClickListener {
                 // stopping: hide it after getting a click before we go to viewing fragment
                 Log.d(TAG, "recordingStats: ===" + recordingState.getNameString())
@@ -488,7 +486,6 @@ class VideoCaptureFragment : Fragment() {
                     }
                 }
             }
-
             // ensure the stop button is initialized disabled & invisible
             visibility = View.VISIBLE
         }
@@ -556,7 +553,7 @@ class VideoCaptureFragment : Fragment() {
 //            true
 //        }
 
-        captureLiveStatus.value = getString(R.string.Idle)
+        //captureLiveStatus.value = getString(R.string.Idle)
     }
 
     private fun handleCancelClicked() {
@@ -602,13 +599,14 @@ class VideoCaptureFragment : Fragment() {
         val hour = TimeUnit.HOURS.toHours(stats.recordedDurationNanos)
         //val mins = TimeUnit.MINUTES.toMinutes(stats.recordedDurationNanos)
         val minutes = time / 1000 / 60
+        val hrs = time / 60
 
 
         var text = "${state}: recorded ${size}KB, in ${time}second"
         if (event is VideoRecordEvent.Finalize)
             text = "${text}\nFile saved to: ${event.outputResults.outputUri}"
 
-        captureLiveStatus.value = "$hour:$minutes:$time"
+        captureLiveStatus.value = "$hrs:$minutes:$time"
         Log.i(TAG, "recording event: $text")
     }
 
@@ -642,7 +640,7 @@ class VideoCaptureFragment : Fragment() {
      *  - at recording: hide audio, qualitySelection,change camera UI; enable stop button
      *  - otherwise: show all except the stop button
      */
-    private fun showUI(state: UiState, status: String = "idle") {
+    private fun showUI(state: UiState, status: String = "") {
         captureViewBinding.let {
             when (state) {
                 UiState.IDLE -> {
@@ -658,11 +656,12 @@ class VideoCaptureFragment : Fragment() {
                     it.qualitySelection.visibility = View.INVISIBLE
                     it.saveText.visibility = View.GONE
                     it.dualCamera.visibility = View.GONE
-                    it.pauseButton?.setImageResource(R.drawable.baseline_pause_24)
+                    it.pauseButton.setImageResource(R.drawable.baseline_pause_24)
                     // it.captureButton.setImageResource(R.drawable.ic_pause)
                     it.captureButton.visibility = View.INVISIBLE
-                    it.recordLayout?.visibility = View.VISIBLE
+                    it.recordLayout.visibility = View.VISIBLE
                     it.stopButton.isEnabled = true
+                    it.captureStatus.visibility = View.VISIBLE
                 }
                 UiState.FINALIZED -> {
                     it.captureButton.visibility = View.VISIBLE
@@ -670,7 +669,8 @@ class VideoCaptureFragment : Fragment() {
                     it.captureButton.setImageResource(R.drawable.ic_record)
                     it.saveText.visibility = View.VISIBLE
                     it.dualCamera.visibility = View.VISIBLE
-                    it.recordLayout?.visibility = View.INVISIBLE
+                    it.recordLayout.visibility = View.INVISIBLE
+                    it.captureStatus.visibility = View.GONE
                 }
                 else -> {
                     val errorMsg = "Error: showUI($state) is not supported"
@@ -754,7 +754,7 @@ class VideoCaptureFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        captureViewBinding = FragmentCaptureBinding.inflate(inflater, container, false)
+        captureViewBinding = FragmentVideoCaptureBinding.inflate(inflater, container, false)
         return captureViewBinding.root
     }
 

@@ -600,14 +600,14 @@ class CameraFragment : Fragment() {
         }
         cameraPreview?.flashLight?.let { flashLightImg ->
             flashLightImg.isEnabled = true
-            var torchState = false
+            var torchState: Boolean
             flashLightImg.setOnClickListener {
                 torchState = TorchState.ON == camera?.cameraInfo?.torchState?.value
                 if (torchState) {
-                    flashLightImg.setImageResource(R.drawable.flash_circle_1)
+                    flashLightImg.background = resources.getDrawable(R.drawable.flash_circle_1)
                     camera?.cameraControl?.enableTorch(false)
                 } else {
-                    flashLightImg.setImageResource(R.drawable.flash_circle_on)
+                    flashLightImg.background = resources.getDrawable(R.drawable.flash_circle_on)
                     camera?.cameraControl?.enableTorch(true)
                 }
             }
