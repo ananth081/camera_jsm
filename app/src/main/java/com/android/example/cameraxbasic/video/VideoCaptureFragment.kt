@@ -56,6 +56,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.util.Consumer
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.whenCreated
@@ -68,10 +69,12 @@ import com.android.example.cameraxbasic.camera.VideoActivity
 import com.android.example.cameraxbasic.databinding.FragmentCaptureBinding
 import com.android.example.cameraxbasic.fragments.CameraFragment
 import com.android.example.cameraxbasic.save.SaveDialog
+import com.android.example.cameraxbasic.utils.CapturedMediaDto
 import com.android.example.cameraxbasic.video.extensions.getAspectRatio
 import com.android.example.cameraxbasic.video.extensions.getAspectRatioString
 import com.android.example.cameraxbasic.video.extensions.getNameString
 import com.android.example.cameraxbasic.viewmodels.APP_NAME
+import com.android.example.cameraxbasic.viewmodels.CaptureViewModel
 import com.android.example.cameraxbasic.viewmodels.PUBLISHED
 import com.example.android.camera.utils.GenericListAdapter
 import java.text.SimpleDateFormat
@@ -86,6 +89,7 @@ class VideoCaptureFragment : Fragment() {
 
     //private val captureViewBinding get() = _captureViewBinding
     private val captureLiveStatus = MutableLiveData<String>()
+    val captureViewModel: CaptureViewModel by activityViewModels()
 
     /** Host's navigation controller */
     private val navController: NavController by lazy {
@@ -110,7 +114,7 @@ class VideoCaptureFragment : Fragment() {
 
     private var cameraIndex = 0
     private var qualityIndex = DEFAULT_QUALITY_IDX
-    private var audioEnabled = false
+    private var audioEnabled = true
 
     private val mainThreadExecutor by lazy { ContextCompat.getMainExecutor(requireContext()) }
     private var enumerationDeferred: Deferred<Unit>? = null
@@ -187,7 +191,7 @@ class VideoCaptureFragment : Fragment() {
             }
         }
     }
-
+    val contentValues = ContentValues()
     /**
      * Kick start the video recording
      *   - config Recorder to capture to MediaStoreOutput
@@ -203,7 +207,9 @@ class VideoCaptureFragment : Fragment() {
         val name = "CameraX-recording-" +
                 SimpleDateFormat(FILENAME_FORMAT, Locale.US)
                     .format(System.currentTimeMillis()) + ".mp4"
-        val contentValues = ContentValues().apply {
+        contentValues.clear()
+        contentValues.apply {
+            put(MediaStore.MediaColumns.MIME_TYPE, CameraFragment.VIDEO_TYPE)
             put(MediaStore.Video.Media.DISPLAY_NAME, name)
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
                 put(
@@ -247,6 +253,14 @@ class VideoCaptureFragment : Fragment() {
 
 
                 outputUri = event.outputResults.outputUri
+
+                val capturedMediaDto =
+                    outputUri?.let { uri ->
+                        captureViewModel.mediaList.add(
+                            CapturedMediaDto(contentValues, uri)
+                        )
+                    }
+
 
                 context?.let { context ->
                     outputUri?.let { uri ->

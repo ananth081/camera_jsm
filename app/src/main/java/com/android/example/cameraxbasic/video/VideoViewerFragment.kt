@@ -33,6 +33,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.MediaController
 import android.util.TypedValue
+import android.widget.ImageButton
 import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -48,7 +49,7 @@ import java.lang.RuntimeException
  *      Accept MediaStore URI and play it with VideoView (Also displaying file size and location)
  *      Note: Might be good to retrieve the encoded file mime type (not based on file type)
  */
-class VideoViewerFragment() : androidx.fragment.app.Fragment(), Player.Listener  {
+class VideoViewerFragment() : androidx.fragment.app.Fragment(), Player.Listener {
     private var args: Bundle? = null
 
     // This property is only valid between onCreateView and onDestroyView.
@@ -118,8 +119,27 @@ class VideoViewerFragment() : androidx.fragment.app.Fragment(), Player.Listener 
 //            Navigation.findNavController(requireActivity(), R.id.fragment_container).navigateUp()
             activity?.finish()
         }
+        if (player != null)
+            currentVolume = player?.volume ?: 0F
+        Log.d("tag", "initial Volume $currentVolume")
+        val volumeBtn = binding.videoViewer.findViewById<ImageButton>(R.id.volume_btn)
+        volumeBtn.setOnClickListener {
+
+            volumeState = !volumeState
+            if (volumeState) {
+                volumeBtn.setImageResource(R.drawable.baseline_volume_up_24)
+                player?.volume = currentVolume
+            } else {
+                currentVolume = player?.volume ?: 0F
+                volumeBtn.setImageResource(R.drawable.baseline_volume_off_24)
+                player?.volume = 0F
+            }
+
+        }
     }
 
+    var volumeState = true
+    var currentVolume: Float = 0F
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
@@ -186,6 +206,11 @@ class VideoViewerFragment() : androidx.fragment.app.Fragment(), Player.Listener 
         } finally {
             cursor?.close()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        player?.release()
     }
 
     /**

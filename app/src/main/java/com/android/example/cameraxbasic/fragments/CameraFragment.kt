@@ -85,7 +85,8 @@ typealias LumaListener = (luma: Double) -> Unit
  * - Photo taking
  * - Image analysis
  */
-private var PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
+private var PERMISSIONS_REQUIRED =
+    arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO)
 private var WRITE_PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
 class CameraFragment : Fragment() {
@@ -754,8 +755,9 @@ class CameraFragment : Fragment() {
 
     companion object {
         private const val TAG = "CameraXBasic"
-         const val FILENAME = "yyyy-MM-dd-HH-mm-ss-SSS"
-         const val PHOTO_TYPE = "image/jpeg"
+        const val FILENAME = "yyyy-MM-dd-HH-mm-ss-SSS"
+        const val PHOTO_TYPE = "image/jpeg"
+        const val VIDEO_TYPE = "video/mp4"
         private const val RATIO_4_3_VALUE = 4.0 / 3.0
         private const val RATIO_16_9_VALUE = 16.0 / 9.0
     }

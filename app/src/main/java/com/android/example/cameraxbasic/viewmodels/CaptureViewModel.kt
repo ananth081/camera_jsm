@@ -47,7 +47,10 @@ class CaptureViewModel : ViewModel() {
                     .format(System.currentTimeMillis())
                 val contentValues = ContentValues().apply {
                     put(MediaStore.MediaColumns.DISPLAY_NAME, name)
-                    put(MediaStore.MediaColumns.MIME_TYPE, CameraFragment.PHOTO_TYPE)
+                    put(
+                        MediaStore.MediaColumns.MIME_TYPE,
+                        it.contentValues.getAsString(MediaStore.MediaColumns.MIME_TYPE)
+                    )
                     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
                         val appName = context.resources.getString(R.string.app_name)
                         put(
@@ -56,8 +59,12 @@ class CaptureViewModel : ViewModel() {
                         )
                     }
                 }
+                val uri: Uri = if (it.contentValues.getAsString(MediaStore.MediaColumns.MIME_TYPE)
+                        .contains("image")
+                )
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI else MediaStore.Video.Media.EXTERNAL_CONTENT_URI
                 destinationUri = context.contentResolver?.insert(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    uri,
                     contentValues
                 )
 
