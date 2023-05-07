@@ -67,6 +67,7 @@ import com.android.example.cameraxbasic.R
 import com.android.example.cameraxbasic.camera.CameraActivity
 import com.android.example.cameraxbasic.camera.VideoActivity
 import com.android.example.cameraxbasic.databinding.FragmentVideoCaptureBinding
+import com.android.example.cameraxbasic.fragments.CameraFragment
 import com.android.example.cameraxbasic.save.SaveDialog
 import com.android.example.cameraxbasic.utils.CapturedMediaDto
 import com.android.example.cameraxbasic.video.extensions.getAspectRatio

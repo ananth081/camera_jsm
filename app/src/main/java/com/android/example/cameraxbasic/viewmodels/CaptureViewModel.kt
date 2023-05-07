@@ -100,8 +100,12 @@ class CaptureViewModel : ViewModel() {
 
     fun deleteUnsavedMedia(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
-            mediaList.forEach {
-                context.contentResolver?.delete(it.uri, null, null)
+            try {
+                mediaList.forEach {
+                    context.contentResolver?.delete(it.uri, null, null)
+                }
+            } catch (ex: java.lang.Exception) {
+                ex.printStackTrace()
             }
             cancelCommunicator.postValue("")
         }
@@ -118,6 +122,15 @@ class CaptureViewModel : ViewModel() {
                 mediaList.clear()
             } catch (ex: java.lang.Exception) {
                 ex.printStackTrace()
+            }
+        }
+    }
+
+    fun deleteList(list: java.util.ArrayList<String>, context: Context) {
+        viewModelScope.launch {
+            list.forEach { uriString ->
+                val set = mediaList.filter { it.uri.toString() == uriString }.toSet()
+                mediaList.removeAll(set)
             }
         }
     }
