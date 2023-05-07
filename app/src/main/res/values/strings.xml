@@ -54,4 +54,7 @@
 
     <string name="publish">Publish</string>
     <string name="needs_review">Needs Review</string>
+    <string name="photo">Photo</string>
+    <string name="video">Video</string>
+    <string name="save">Save</string>
 </resources>
