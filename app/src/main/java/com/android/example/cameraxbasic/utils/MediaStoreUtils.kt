@@ -23,12 +23,17 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.text.format.DateUtils
 import android.util.Log
 import androidx.core.net.toUri
 import com.android.example.cameraxbasic.viewmodels.PUBLISHED
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 
 /**
@@ -56,7 +61,7 @@ class MediaStoreUtils(private val context: Context) {
     private suspend fun getMediaStoreImageCursor(mediaStoreCollection: Uri): Cursor? {
         var cursor: Cursor?
         withContext(Dispatchers.IO) {
-            val projection = arrayOf(imageDataColumnIndex, imageIdColumnIndex)
+            val projection = arrayOf(imageDataColumnIndex, imageIdColumnIndex, dateAddedColumnIndex)
             val sortOrder = "DATE_ADDED DESC"
             cursor = context.contentResolver.query(
                 mediaStoreCollection, projection, null, null, sortOrder
@@ -111,17 +116,25 @@ class MediaStoreUtils(private val context: Context) {
         type: String = "",
         uri: Uri = imageStoreCollection
     ): MutableList<MediaStoreFile> {
+        val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.US)
+
         val files = mutableListOf<MediaStoreFile>()
         getMediaStoreImageCursor(uri).use { cursor ->
             val imageDataColumn = cursor?.getColumnIndexOrThrow(imageDataColumnIndex)
             val imageIdColumn = cursor?.getColumnIndexOrThrow(imageIdColumnIndex)
-
+            val imageDateAddedIDColumn = cursor?.getColumnIndexOrThrow(dateAddedColumnIndex)
             if (cursor != null && imageDataColumn != null && imageIdColumn != null) {
                 while (cursor.moveToNext()) {
 
                     if (cursor.getString(imageDataColumn)
                             .contains(type)
                     ) {
+                        val dateTaken = imageDateAddedIDColumn?.let { cursor.getLong(it) } ?: 0L
+                        val calendar = Calendar.getInstance()
+                        calendar.timeInMillis = dateTaken
+
+                        val dateObj = formatter.format(calendar.time)
+                        val date = formatter.parse(dateObj) ?: Date()
                         val id = cursor.getLong(imageIdColumn)
                         val contentUri: Uri = ContentUris.withAppendedId(
                             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
@@ -132,14 +145,13 @@ class MediaStoreUtils(private val context: Context) {
                             MediaStoreFile(
                                 contentUri, contentFile, id,
                                 fileType = if (uri == videoStoreCollection) FILE_TYPE_VIDEO
-                                else FILE_TYPE_IMAGE
+                                else FILE_TYPE_IMAGE, date
                             )
                         )
                     }
                 }
             }
         }
-
         return files
     }
 
@@ -149,6 +161,7 @@ class MediaStoreUtils(private val context: Context) {
         @Suppress("DEPRECATION")
         private const val imageDataColumnIndex = MediaStore.Images.Media.DATA
         private const val imageIdColumnIndex = MediaStore.Images.Media._ID
+        private const val dateAddedColumnIndex = MediaStore.Images.Media.DATE_TAKEN
     }
 }
 
@@ -156,5 +169,5 @@ data class MediaStoreFile(
     val uri: Uri,
     val file: File,
     val id: Long,
-    val fileType: String = FILE_TYPE_IMAGE
+    val fileType: String = FILE_TYPE_IMAGE, val dateTaken: Date = Date()
 )

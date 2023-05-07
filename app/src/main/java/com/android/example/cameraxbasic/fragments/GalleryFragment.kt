@@ -76,8 +76,6 @@ class GalleryFragment internal constructor() : Fragment() {
         }
 
 
-
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -122,7 +120,7 @@ class GalleryFragment internal constructor() : Fragment() {
                                 null,
                                 null
                             )
-                        };
+                        }
                         val intent = Intent()
                         intent.putExtra("source", "retake_picture")
                         intent.putExtra("file_uri", mediaStoreFile)

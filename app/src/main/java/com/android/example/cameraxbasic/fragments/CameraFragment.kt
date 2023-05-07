@@ -71,7 +71,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import kotlin.collections.ArrayList
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -191,21 +190,24 @@ class CameraFragment : Fragment() {
 
     private fun setGalleryThumbnail(filename: Uri) {
         // Run the operations in the view's thread
-        cameraPreview?.photoView?.let { photoViewButton ->
-            photoViewButton.post {
-                // Remove thumbnail padding
-                photoViewButton.setPadding(resources.getDimension(R.dimen.stroke_small).toInt())
+        lifecycleScope.launch(Dispatchers.Main) {
+            cameraPreview.photoViewButton.visibility = View.VISIBLE
+            cameraPreview.photoView.let { photoViewButton ->
+                photoViewButton.post {
+                    // Remove thumbnail padding
+                    photoViewButton.setPadding(resources.getDimension(R.dimen.stroke_small).toInt())
 
-                // Load thumbnail into circular button using Glide
+                    // Load thumbnail into circular button using Glide
 //                photoViewButton.setImageURI(Uri.parse(filename))
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    val bitmap = context?.contentResolver?.loadThumbnail(
-                        filename,
-                        Size(100, 100),
-                        null
-                    )
-                    photoViewButton.setImageBitmap(bitmap)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        val bitmap = context?.contentResolver?.loadThumbnail(
+                            filename,
+                            Size(100, 100),
+                            null
+                        )
+                        photoViewButton.setImageBitmap(bitmap)
+                    }
                 }
             }
         }
@@ -480,7 +482,6 @@ class CameraFragment : Fragment() {
             cameraPreview.saveText.visibility = View.VISIBLE
 
 
-
             val sound = MediaActionSound()
             sound.play(MediaActionSound.SHUTTER_CLICK)
 
@@ -530,37 +531,28 @@ class CameraFragment : Fragment() {
                                     )
                                 }
                             val saveTxt = "Save(${captureViewModel.getSize()})"
-                            lifecycleScope.launch(Dispatchers.Main){
+                            lifecycleScope.launch(Dispatchers.Main) {
                                 cameraPreview.saveText.text = saveTxt
                             }
                             Log.d(TAG, "Photo capture succeeded: $savedUri")
-
+                            savedUri?.let { it1 -> setGalleryThumbnail(it1) }
                             // We can only change the foreground Drawable using API level 23+ API
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                                 // Update the gallery thumbnail with latest picture taken
 
                                 if ("retake_picture" == fromRetakeScreen) {
                                     lifecycleScope.launch {
-                                        if (mediaStoreUtils.getMediaList().isNotEmpty()) {
-                                            val intent =
-                                                Intent(context, GalleryActivity::class.java)
-                                            startForResult.launch(intent)
-                                        }
+                                        val list = captureViewModel.mediaList.map {
+                                            it.uri.toString()
+                                        }.toList()
+                                        val intent = Intent(context, GalleryActivity::class.java)
+                                        intent.putStringArrayListExtra(
+                                            MEDIA_LIST_KEY,
+                                            ArrayList(list)
+                                        )
+                                        startActivity(intent)
                                     }
-                                } else {
-                                    savedUri?.let { it1 -> setGalleryThumbnail(it1) }
                                 }
-
-                            }
-
-                            // Implicit broadcasts will be ignored for devices running API level >= 24
-                            // so if you only target API level 24+ you can remove this statement
-                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                                // Suppress deprecated Camera usage needed for API level 23 and below
-                                @Suppress("DEPRECATION")
-                                requireActivity().sendBroadcast(
-                                    Intent(android.hardware.Camera.ACTION_NEW_PICTURE, savedUri)
-                                )
                             }
                         }
                     })
@@ -764,6 +756,12 @@ class CameraFragment : Fragment() {
             if (result.resultCode == Activity.RESULT_OK) {
                 val intent = result.data
                 fromRetakeScreen = intent?.extras?.getString("source")
+                val fileUri = intent?.extras?.getString("file_uri")
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    val list =
+                        captureViewModel.mediaList.filter { it.uri.toString() == fileUri }.toList()
+                    captureViewModel.mediaList.removeAll(list)
+                }
                 hideRetakeUiControls()
                 // Handle the Intent
             }
@@ -773,7 +771,6 @@ class CameraFragment : Fragment() {
     private fun hideRetakeUiControls() {
         cameraPreview?.saveText?.visibility = View.GONE
         cameraPreview?.photoViewButton?.visibility = View.GONE
-        cameraPreview?.saveText?.visibility = View.GONE
     }
 
     @SuppressLint("ClickableViewAccessibility")
