@@ -59,6 +59,7 @@ import com.android.example.cameraxbasic.save.SaveDialog
 import com.android.example.cameraxbasic.utils.ANIMATION_FAST_MILLIS
 import com.android.example.cameraxbasic.utils.ANIMATION_SLOW_MILLIS
 import com.android.example.cameraxbasic.utils.CapturedMediaDto
+import com.android.example.cameraxbasic.utils.DELETED_LIST_INTENT_KEY
 import com.android.example.cameraxbasic.utils.MEDIA_LIST_KEY
 import com.android.example.cameraxbasic.utils.MediaStoreUtils
 import com.android.example.cameraxbasic.viewmodels.APP_NAME
@@ -767,6 +768,9 @@ class CameraFragment : Fragment() {
                     captureViewModel.mediaList.removeAll(list)
                 }
                 hideRetakeUiControls()
+                val list = intent?.getStringArrayListExtra(DELETED_LIST_INTENT_KEY)
+                if (list != null && list.isNotEmpty())
+                    captureViewModel.deleteList(list, requireContext())
                 // Handle the Intent
             }
         }

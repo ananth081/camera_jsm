@@ -17,6 +17,7 @@
 package com.android.example.cameraxbasic.fragments
 
 import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
@@ -24,7 +25,9 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -32,10 +35,11 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
+import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.android.example.cameraxbasic.R
 import com.android.example.cameraxbasic.databinding.FragmentGalleryBinding
-import com.android.example.cameraxbasic.utils.CapturedMediaDto
+import com.android.example.cameraxbasic.utils.DELETED_LIST_INTENT_KEY
 import com.android.example.cameraxbasic.utils.MEDIA_LIST_KEY
 import com.android.example.cameraxbasic.utils.padWithDisplayCutout
 import com.android.example.cameraxbasic.utils.showImmersive
@@ -45,6 +49,7 @@ import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
+
 
 /** Fragment used to present the user with a gallery of photos taken */
 class GalleryFragment internal constructor() : Fragment() {
@@ -57,14 +62,15 @@ class GalleryFragment internal constructor() : Fragment() {
     /** AndroidX navigation arguments */
     private val args: GalleryFragmentArgs by navArgs()
 
-    private var mediaList: List<String> = arrayListOf()
+    private var mediaList: ArrayList<String> = arrayListOf()
     private var hasMediaItems = CompletableDeferred<Boolean>()
     val captureViewModel: CaptureViewModel by activityViewModels()
+    private var deletedList: ArrayList<String> = arrayListOf()
 
     /** Adapter class used to present a fragment containing one photo or video as a page */
     inner class MediaPagerAdapter(
         fm: FragmentManager,
-        private var uriList: List<String>
+        val uriList: ArrayList<String>
     ) :
         FragmentStateAdapter(fm, lifecycle) {
         override fun getItemCount(): Int = uriList.size
@@ -72,8 +78,12 @@ class GalleryFragment internal constructor() : Fragment() {
             PdftronPhotoFragment.create(uriList[position])
 
         override fun getItemId(position: Int): Long {
-            return position.toLong()
+            return uriList[position].hashCode().toLong()
         }
+        fun getItemPosition(`object`: Any?): Int {
+            return PagerAdapter.POSITION_NONE
+        }
+
 
 
     }
@@ -124,6 +134,7 @@ class GalleryFragment internal constructor() : Fragment() {
                         val intent = Intent()
                         intent.putExtra("source", "retake_picture")
                         intent.putExtra("file_uri", mediaStoreFile)
+                        intent.putStringArrayListExtra(DELETED_LIST_INTENT_KEY, deletedList)
                         activity?.setResult(Activity.RESULT_OK, intent)
                         activity?.finish()
                     }
@@ -227,33 +238,40 @@ class GalleryFragment internal constructor() : Fragment() {
                     .setTitle(getString(R.string.delete_title))
                     .setMessage(getString(R.string.delete_dialog))
                     .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setPositiveButton(android.R.string.ok) { _, _ ->
 
-                        // Delete current photo
-                        mediaStoreFile.let {
-                            context?.contentResolver?.delete(
-                                Uri.parse(it),
-                                null,
-                                null
-                            )
-                        }
+                    .setPositiveButton(android.R.string.ok,
+                        object : DialogInterface.OnClickListener {
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                // Delete current photo
+                                mediaStoreFile.let {
+                                    context?.contentResolver?.delete(
+                                        Uri.parse(it),
+                                        null,
+                                        null
+                                    )
+                                }
 
+                                deletedList.add(mediaStoreFile)
+                                // Notify our view pager
+                                mediaList.remove(mediaStoreFile)
+                                (fragmentGalleryBinding.photoViewPager.adapter as MediaPagerAdapter).uriList.remove(
+                                    mediaStoreFile
+                                )
+                                fragmentGalleryBinding.photoViewPager.adapter?.notifyDataSetChanged()
 
-                        // Send relevant broadcast to notify other apps of deletion
-//                        MediaScannerConnection.scanFile(
-//                            requireContext(), arrayOf(mediaFile.absolutePath), null, null
-//                        )
+                                // If all photos have been deleted, return to camera
+                                if (mediaList.isEmpty()) {
+                                    val intent = Intent()
+                                    intent.putStringArrayListExtra(
+                                        DELETED_LIST_INTENT_KEY,
+                                        deletedList
+                                    )
+                                    activity?.setResult(Activity.RESULT_OK, intent)
+                                    activity?.finish()
+                                }
+                            }
 
-                        // Notify our view pager
-//                        mediaList.removeAt(fragmentGalleryBinding.photoViewPager.currentItem)
-                        fragmentGalleryBinding.photoViewPager.adapter?.notifyDataSetChanged()
-
-                        // If all photos have been deleted, return to camera
-                        if (mediaList.isEmpty()) {
-                            activity?.finish()
-                        }
-
-                    }
+                        })
 
                     .setNegativeButton(android.R.string.cancel, null)
                     .create().showImmersive()
