@@ -1,5 +1,6 @@
 package com.android.example.cameraxbasic.adapter
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.media.ThumbnailUtils
 import android.net.Uri
@@ -9,8 +10,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.android.example.cameraxbasic.R
 import com.android.example.cameraxbasic.databinding.ItemDateBinding
 import com.android.example.cameraxbasic.databinding.ItemImageBinding
+import com.android.example.cameraxbasic.utils.BitmapCacheUtil
 import com.android.example.cameraxbasic.utils.FILE_TYPE_IMAGE
 import com.android.example.cameraxbasic.utils.MediaStoreFile
 
@@ -83,29 +86,73 @@ class ImageRecyclerViewAdapter() :
             }
         }
         if ((files.elementAt(position) as MediaStoreFile).fileType == FILE_TYPE_IMAGE) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val bitmap = context?.contentResolver?.loadThumbnail(
-                    (files.elementAt(position) as MediaStoreFile).uri,
-                    Size(100, 100),
-                    null
-                )
-                mediaBinding.galleryImage.setImageBitmap(bitmap)
-                mediaBinding.videoPlaceHolder.visibility = View.GONE
-            }
+            loadImageThumbNail(context, files, position, mediaBinding)
         } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val bitmap: Bitmap =
-                    ThumbnailUtils.createVideoThumbnail(
-                        (files.elementAt(position) as MediaStoreFile).file,
+            loadVideoThumbNail(files, position, mediaBinding)
+        }
+
+    }
+
+    private fun loadImageThumbNail(
+        context: Context,
+        files: MutableList<Any>,
+        position: Int,
+        mediaBinding: ItemImageBinding
+    ) {
+        try {
+            val uri = (files.elementAt(position) as MediaStoreFile).uri
+            val cachedBitmap = BitmapCacheUtil.getBitmap(uri.toString())
+            if (cachedBitmap == null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    val bitmap = context.contentResolver?.loadThumbnail(
+                        uri,
                         Size(100, 100),
                         null
                     )
-                mediaBinding.galleryImage.setImageBitmap(bitmap)
-                mediaBinding.videoPlaceHolder.visibility = View.VISIBLE
-
+                    if (bitmap != null) {
+                        mediaBinding.galleryImage.setImageBitmap(bitmap)
+                        BitmapCacheUtil.putBitmapInCache(uri.toString(), bitmap)
+                    }
+                    mediaBinding.videoPlaceHolder.visibility = View.GONE
+                }
+            } else {
+                mediaBinding.galleryImage.setImageBitmap(cachedBitmap)
+                mediaBinding.videoPlaceHolder.visibility = View.GONE
             }
+        } catch (ex: Exception) {
+            ex.printStackTrace()
         }
+    }
 
+    private fun loadVideoThumbNail(
+        files: MutableList<Any>,
+        position: Int,
+        mediaBinding: ItemImageBinding
+    ) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            try {
+                val file = (files.elementAt(position) as MediaStoreFile).file
+                val cachedBitmap = BitmapCacheUtil.getBitmap(file.toString())
+                if (cachedBitmap == null) {
+                    val bitmap: Bitmap =
+                        ThumbnailUtils.createVideoThumbnail(
+                            file,
+                            Size(100, 100),
+                            null
+                        )
+                    mediaBinding.galleryImage.setImageBitmap(bitmap)
+                    BitmapCacheUtil.putBitmapInCache(file.toString(), bitmap)
+                } else {
+                    mediaBinding.galleryImage.setImageBitmap(cachedBitmap)
+                }
+                mediaBinding.videoPlaceHolder.visibility = View.VISIBLE
+            } catch (ex: java.lang.Exception) {
+                ex.printStackTrace()
+                mediaBinding.videoPlaceHolder.visibility = View.GONE
+                mediaBinding.galleryImage.setImageResource(R.drawable.baseline_play_circle_filled_24)
+            }
+
+        }
     }
 
     private fun bindDateView(
