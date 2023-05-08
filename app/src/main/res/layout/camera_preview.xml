@@ -52,6 +52,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/ic_white"
+        android:clickable="true"
         app:layout_constraintBottom_toTopOf="@+id/switchCameraLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -62,6 +63,25 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </androidx.camera.view.PreviewView>
+
+    <TextView
+        android:id="@+id/pinchZoomText"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="end"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="12dp"
+        android:background="#00555555"
+        android:foreground="#00555555"
+        android:gravity="center"
+        android:text="2x"
+        android:textAllCaps="false"
+        android:textColor="@color/txWhite"
+        android:textSize="14sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/switchCameraLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <FrameLayout
         android:id="@+id/cameraZoom"
@@ -124,25 +144,24 @@
 
         <TextView
             android:id="@+id/photoBtn"
-            android:background="@drawable/phone_photo_text_bg"
             android:layout_width="76dp"
             android:layout_height="30dp"
+            android:background="@drawable/phone_photo_text_bg"
             android:clickable="true"
+            android:fontFamily="@font/roboto"
             android:gravity="center"
+            android:letterSpacing="-0.0408"
             android:text="@string/photo"
+            android:textAlignment="center"
             android:textAllCaps="true"
             android:textColor="@color/txWhite"
             android:textSize="14sp"
             android:textStyle="normal"
-            tools:ignore="KeyboardInaccessibleWidget"
-            android:fontFamily="@font/roboto"
-            android:textAlignment="center"
-            android:letterSpacing="-0.0408"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            />
+            tools:ignore="KeyboardInaccessibleWidget" />
 
         <TextView
             android:id="@+id/videoBtn"
@@ -150,19 +169,19 @@
             android:layout_height="30dp"
             android:background="@color/black_overlay"
             android:clickable="true"
+            android:fontFamily="@font/roboto"
             android:gravity="center"
+            android:letterSpacing="-0.0408"
             android:text="@string/video"
+            android:textAlignment="center"
             android:textAllCaps="true"
-           android:textAlignment="center"
             android:textColor="@color/txWhite"
             android:textSize="11sp"
             android:textStyle="normal"
-            android:fontFamily="@font/roboto"
-            tools:ignore="KeyboardInaccessibleWidget"
-            android:letterSpacing="-0.0408"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/photoBtn"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="KeyboardInaccessibleWidget" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -178,20 +197,20 @@
             android:id="@+id/photo_view_button"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            app:cardCornerRadius="40dp"
-            tools:ignore="ImageContrastCheck"
             android:layout_marginEnd="44dp"
             android:outlineProvider="background"
+            app:cardCornerRadius="40dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/captureButtonFrame"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ImageContrastCheck">
 
             <ImageView
                 android:id="@+id/photo_view"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:scaleType="centerCrop"
-                android:background="@drawable/ic_placeholder_img" />
+                android:background="@drawable/ic_placeholder_img"
+                android:scaleType="centerCrop" />
 
         </androidx.cardview.widget.CardView>
 
@@ -217,28 +236,28 @@
                 android:layout_gravity="center"
                 android:background="@drawable/ic_shutter_normal"
                 android:contentDescription="@string/capture"
-                tools:ignore="ImageContrastCheck"  />
+                tools:ignore="ImageContrastCheck" />
         </FrameLayout>
 
         <TextView
             android:id="@+id/saveText"
-            android:layout_width="76dp"
+            android:layout_width="wrap_content"
             android:layout_height="30dp"
             android:layout_marginStart="44dp"
             android:background="@drawable/bg_save_text"
+            android:fontFamily="@font/roboto"
             android:gravity="center"
+            android:letterSpacing="-0.0408"
             android:paddingHorizontal="16dp"
             android:text="@string/save"
-            android:textStyle="normal"
             android:textAlignment="center"
-            android:letterSpacing="-0.0408"
             android:textAllCaps="true"
             android:textColor="@color/txWhite"
-            android:fontFamily="@font/roboto"
             android:textSize="14sp"
+            android:textStyle="normal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/captureButtonFrame"
-            app:layout_constraintTop_toTopOf="parent"  />
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout

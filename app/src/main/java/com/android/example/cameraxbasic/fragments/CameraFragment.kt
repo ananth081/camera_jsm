@@ -45,7 +45,6 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.concurrent.futures.await
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
@@ -255,6 +254,8 @@ class CameraFragment : Fragment() {
             lifecycleScope.launch {
                 setUpCamera()
             }
+
+            setScale()
         }
 
 //        cameraPreview?.photoBtn?.setOnTouchListener { v, event ->
@@ -680,6 +681,18 @@ class CameraFragment : Fragment() {
         handleCameraZoomClick()
     }
 
+    fun handlePinchZoomText(zoomRatio: Float) {
+        val format = String.format("%.1f", zoomRatio)
+        if ("0.9" == format || "1.0" == format) {
+            cameraPreview.cameraZoom?.visibility = View.VISIBLE
+            cameraPreview.pinchZoomText?.visibility = View.GONE
+        } else {
+            cameraPreview.pinchZoomText?.visibility = View.VISIBLE
+            cameraPreview.cameraZoom?.visibility = View.GONE
+            cameraPreview.pinchZoomText?.text = "${format}x"
+        }
+    }
+
     private fun handleCameraZoomClick() {
         cameraPreview.cameraZoom?.setOnClickListener {
             cameraPreview.cameraZoom?.post {
@@ -712,6 +725,7 @@ class CameraFragment : Fragment() {
                     duration = 400,
                     onAnimEnded = {
                         if (isAtStart) {
+                            setCameraZoomLevels(0.7f)
                             (cameraPreview.tvZoomTwo as TextView).setTextColor(
                                 resources.getColor(
                                     android.R.color.black,
@@ -725,6 +739,7 @@ class CameraFragment : Fragment() {
                                 )
                             )
                         } else {
+                            setCameraZoomLevels(0.3f)
                             (cameraPreview.tvZoomOne as TextView).setTextColor(
                                 resources.getColor(
                                     android.R.color.black,
@@ -838,12 +853,9 @@ class CameraFragment : Fragment() {
                     val f: ZoomState? = camera?.cameraInfo?.zoomState?.value
                     val scale: Float = scaleGestureDetector.scaleFactor
                     val zoomRatio = scale * f?.zoomRatio!!
-
-
                     camera?.cameraControl?.setZoomRatio(zoomRatio)
-                    if (activity != null && activity is CameraActivity) {
-                        (activity as CameraActivity).updateZoomText(zoomRatio)
-                    }
+                    camera?.cameraControl?.setLinearZoom(zoomRatio)
+                    handlePinchZoomText(zoomRatio)
                     return true
                 }
 
@@ -855,51 +867,49 @@ class CameraFragment : Fragment() {
                 }
 
             }
-        val scaleGestureDetector = ScaleGestureDetector(mContext!!, listener)
+        val scaleGestureDetector = ScaleGestureDetector(requireContext(), listener)
 
         cameraPreview?.viewFinder?.setOnTouchListener { view, motionEvent ->
-            scaleGestureDetector.onTouchEvent(
-                motionEvent
-            )
+            scaleGestureDetector.onTouchEvent(motionEvent)
         }
 
         var rectSize = 100
 
-        cameraPreview?.viewFinder?.setOnTouchListener { view: View, motionEvent: MotionEvent ->
-            when (motionEvent.action) {
-                MotionEvent.ACTION_DOWN -> return@setOnTouchListener true
-                MotionEvent.ACTION_UP -> {
-                    // Get the MeteringPointFactory from PreviewView
-                    val factory = cameraPreview?.viewFinder!!.meteringPointFactory
-
-                    // Create a MeteringPoint from the tap coordinates
-                    val point = factory.createPoint(motionEvent.x, motionEvent.y)
-
-                    // Create a MeteringAction from the MeteringPoint, you can configure it to specify the metering mode
-                    val action = FocusMeteringAction.Builder(point).build()
-
-                    // Trigger the focus and metering. The method returns a ListenableFuture since the operation
-                    // is asynchronous. You can use it get notified when the focus is successful or if it fails.
-                    camera?.cameraControl?.startFocusAndMetering(action)
-                    val focusRects = listOf(
-                        RectF(
-                            motionEvent.x - rectSize,
-                            motionEvent.y - rectSize,
-                            motionEvent.x + rectSize,
-                            motionEvent.y + rectSize
-                        )
-                    )
-                    cameraPreview?.rectOverlayFocus?.let { overlay ->
-                        overlay.post {
-                            overlay.drawRectBounds(focusRects)
-                        }
-                    }
-
-                    return@setOnTouchListener true
-                }
-                else -> return@setOnTouchListener false
-            }
-        }
+//        cameraPreview?.viewFinder?.setOnTouchListener { view: View, motionEvent: MotionEvent ->
+//            when (motionEvent.action) {
+//                MotionEvent.ACTION_DOWN -> return@setOnTouchListener true
+//                MotionEvent.ACTION_UP -> {
+//                    // Get the MeteringPointFactory from PreviewView
+//                    val factory = cameraPreview?.viewFinder!!.meteringPointFactory
+//
+//                    // Create a MeteringPoint from the tap coordinates
+//                    val point = factory.createPoint(motionEvent.x, motionEvent.y)
+//
+//                    // Create a MeteringAction from the MeteringPoint, you can configure it to specify the metering mode
+//                    val action = FocusMeteringAction.Builder(point).build()
+//
+//                    // Trigger the focus and metering. The method returns a ListenableFuture since the operation
+//                    // is asynchronous. You can use it get notified when the focus is successful or if it fails.
+//                    camera?.cameraControl?.startFocusAndMetering(action)
+//                    val focusRects = listOf(
+//                        RectF(
+//                            motionEvent.x - rectSize,
+//                            motionEvent.y - rectSize,
+//                            motionEvent.x + rectSize,
+//                            motionEvent.y + rectSize
+//                        )
+//                    )
+//                    cameraPreview?.rectOverlayFocus?.let { overlay ->
+//                        overlay.post {
+//                            overlay.drawRectBounds(focusRects)
+//                        }
+//                    }
+//
+//                    return@setOnTouchListener true
+//                }
+//                else -> return@setOnTouchListener false
+//            }
+//        }
     }
 
     private var mContext: Context? = context
