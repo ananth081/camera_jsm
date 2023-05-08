@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true">
 
     <RelativeLayout
         android:id="@+id/cancel_layout"
@@ -111,7 +112,7 @@
             android:textSize="12sp" />
     </FrameLayout>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/switchCameraLayout"
         android:layout_width="match_parent"
         android:layout_height="55dp"
@@ -123,102 +124,130 @@
 
         <TextView
             android:id="@+id/photoBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="6dp"
             android:background="@drawable/phone_photo_text_bg"
+            android:layout_width="76dp"
+            android:layout_height="30dp"
             android:clickable="true"
             android:gravity="center"
-            android:paddingHorizontal="20dp"
-            android:paddingVertical="8dp"
             android:text="@string/photo"
             android:textAllCaps="true"
             android:textColor="@color/txWhite"
             android:textSize="14sp"
-            android:textStyle="bold"
-            tools:ignore="KeyboardInaccessibleWidget" />
+            android:textStyle="normal"
+            tools:ignore="KeyboardInaccessibleWidget"
+            android:fontFamily="@font/roboto"
+            android:textAlignment="center"
+            android:letterSpacing="-0.0408"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
 
         <TextView
             android:id="@+id/videoBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
+            android:layout_width="76dp"
+            android:layout_height="30dp"
             android:background="@color/black_overlay"
             android:clickable="true"
             android:gravity="center"
-            android:paddingHorizontal="20dp"
-            android:paddingVertical="8dp"
             android:text="@string/video"
             android:textAllCaps="true"
+           android:textAlignment="center"
             android:textColor="@color/txWhite"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            tools:ignore="KeyboardInaccessibleWidget" />
-    </LinearLayout>
+            android:textSize="11sp"
+            android:textStyle="normal"
+            android:fontFamily="@font/roboto"
+            tools:ignore="KeyboardInaccessibleWidget"
+            android:letterSpacing="-0.0408"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/photoBtn"
+            app:layout_constraintTop_toTopOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/camera_control"
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:background="@color/txBlack"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/photo_view_button"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_alignParentStart="true"
-            android:layout_centerHorizontal="true"
-            android:translationX="18dp"
-            android:translationY="17dp"
             app:cardCornerRadius="40dp"
-            tools:ignore="ImageContrastCheck">
+            tools:ignore="ImageContrastCheck"
+            android:layout_marginEnd="44dp"
+            android:outlineProvider="background"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/captureButtonFrame"
+            app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/photo_view"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_placeholder_img" />
+                android:background="@drawable/ic_placeholder_img" />
 
         </androidx.cardview.widget.CardView>
 
-        <ImageView
-            android:id="@+id/camera_capture_button"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_centerInParent="true"
-            android:layout_toStartOf="@+id/saveText"
-            android:layout_toEndOf="@+id/photo_view_button"
-            android:src="@drawable/ic_shutter_normal"
-            android:translationX="22dp"
-            android:translationY="2dp" />
+        <FrameLayout
+            android:id="@+id/captureButtonFrame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <View
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center"
+                android:background="@drawable/video_capture_gradient_bg" />
+
+            <ImageView
+                android:id="@+id/camera_capture_button"
+                android:layout_width="66dp"
+                android:layout_height="66dp"
+                android:layout_gravity="center"
+                android:background="@drawable/ic_shutter_normal"
+                android:contentDescription="@string/capture"
+                tools:ignore="ImageContrastCheck"  />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/saveText"
-            android:layout_width="wrap_content"
-            android:layout_height="35dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerInParent="true"
-            android:layout_marginEnd="12dp"
+            android:layout_width="76dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="44dp"
             android:background="@drawable/bg_save_text"
             android:gravity="center"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:text="Save"
+            android:paddingHorizontal="16dp"
+            android:text="@string/save"
+            android:textStyle="normal"
+            android:textAlignment="center"
+            android:letterSpacing="-0.0408"
             android:textAllCaps="true"
             android:textColor="@color/txWhite"
-            android:textSize="16sp" />
-    </RelativeLayout>
+            android:fontFamily="@font/roboto"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/captureButtonFrame"
+            app:layout_constraintTop_toTopOf="parent"  />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout
         android:id="@+id/place_holder_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:background="@color/txBlack"
         android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/switchCameraLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
