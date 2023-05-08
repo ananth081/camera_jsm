@@ -200,6 +200,7 @@ class VideoCaptureFragment : Fragment() {
                 }
             }
         }
+        handleCameraZoomClick()
     }
 
     val contentValues = ContentValues()
@@ -410,7 +411,7 @@ class VideoCaptureFragment : Fragment() {
                         intent.putStringArrayListExtra(MEDIA_LIST_KEY, ArrayList(list))
                         startForResult.launch(intent)
                     }
-                   // intent.putExtra("video_uri", it)
+                    // intent.putExtra("video_uri", it)
                     //startActivity(intent)
                 }
                 /*   cameraIndex = (cameraIndex + 1) % cameraCapabilities.size
@@ -548,7 +549,7 @@ class VideoCaptureFragment : Fragment() {
                         captureViewModel.mediaList.filter { it.uri.toString() == fileUri }.toList()
                     captureViewModel.mediaList.removeAll(list)
                 }
-                 hideRetakeUiControls()
+                hideRetakeUiControls()
                 val list = intent?.getStringArrayListExtra(DELETED_LIST_INTENT_KEY)
                 if (list != null && list.isNotEmpty())
                     captureViewModel.deleteList(list, requireContext())
@@ -621,6 +622,7 @@ class VideoCaptureFragment : Fragment() {
             minutes
         ) + " : " + String.format("%02d", seconds)
     }
+
     /**
      * Enable/disable UI:
      *    User could select the capture parameters when recording is not in session
@@ -823,9 +825,6 @@ class VideoCaptureFragment : Fragment() {
                         val zoomRatio = scale * f?.zoomRatio!!
                         camera?.cameraControl?.setZoomRatio(zoomRatio)
                         it.cameraControl.setZoomRatio(zoomRatio)
-                        if (activity != null && activity is CameraActivity) {
-                            (activity as CameraActivity).updateZoomText(zoomRatio)
-                        }
                     }
 
                     return true
@@ -847,31 +846,33 @@ class VideoCaptureFragment : Fragment() {
             )
         }
     }
-//
+
+    //
 //    @SuppressLint("RestrictedApi")
 //    fun setCameraZoomLevels(fl: Float) {
 //        videoCapture.camera?.let {
 //            camera?.cameraControl?.setZoomRatio(fl)
 //        }
 //    }
-private val startForResults =
-    registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val intent = result.data
-            fromRetakeScreen = intent?.extras?.getString("source")
-            val fileUri = intent?.extras?.getString("file_uri")
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                val list =
-                    captureViewModel.mediaList.filter { it.uri.toString() == fileUri }.toList()
-                captureViewModel.mediaList.removeAll(list)
+    private val startForResults =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val intent = result.data
+                fromRetakeScreen = intent?.extras?.getString("source")
+                val fileUri = intent?.extras?.getString("file_uri")
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    val list =
+                        captureViewModel.mediaList.filter { it.uri.toString() == fileUri }.toList()
+                    captureViewModel.mediaList.removeAll(list)
+                }
+                //hideRetakeUiControls()
+                val list = intent?.getStringArrayListExtra(DELETED_LIST_INTENT_KEY)
+                if (list != null && list.isNotEmpty())
+                    captureViewModel.deleteList(list, requireContext())
+                // Handle the Intent
             }
-            //hideRetakeUiControls()
-            val list = intent?.getStringArrayListExtra(DELETED_LIST_INTENT_KEY)
-            if (list != null && list.isNotEmpty())
-                captureViewModel.deleteList(list, requireContext())
-            // Handle the Intent
         }
-    }
+
     @SuppressLint("RestrictedApi")
     fun setLinearZoom(fl: Float) {
         videoCapture.camera?.let {
@@ -1021,8 +1022,10 @@ private val startForResults =
                 val marginHorizontal = 1.toPx(requireContext()).toFloat()
                 var isAtStart = true
 
-                val bgWidth = captureViewBinding.zoomToggleBg?.width?.plus(marginHorizontal) ?: marginHorizontal
-                val translationXEndVal = (captureViewBinding.cameraZoom?.width?.minus(bgWidth)) ?: 0f
+                val bgWidth = captureViewBinding.zoomToggleBg?.width?.plus(marginHorizontal)
+                    ?: marginHorizontal
+                val translationXEndVal =
+                    (captureViewBinding.cameraZoom?.width?.minus(bgWidth)) ?: 0f
 
                 val startValue: Float
                 val endValue: Float
@@ -1078,7 +1081,11 @@ private val startForResults =
         }
     }
 
+    @SuppressLint("RestrictedApi")
     fun setCameraZoomLevels(zoomValue: Float) {
-        camera?.cameraControl?.setLinearZoom(zoomValue)
+        videoCapture.camera?.let {
+            it.cameraControl.setLinearZoom(zoomValue)
+        }
+
     }
 }
