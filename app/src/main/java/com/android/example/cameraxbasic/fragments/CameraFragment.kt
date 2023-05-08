@@ -868,47 +868,48 @@ class CameraFragment : Fragment() {
             }
         val scaleGestureDetector = ScaleGestureDetector(mContext!!, listener)
 
-        cameraPreview?.viewFinder?.setOnTouchListener { view, motionEvent ->
-            scaleGestureDetector.onTouchEvent(motionEvent)
-        }
+//        cameraPreview?.viewFinder?.setOnTouchListener { view, motionEvent ->
+//            scaleGestureDetector.onTouchEvent(motionEvent)
+//        }
 
         var rectSize = 100
 
-//        cameraPreview?.viewFinder?.setOnTouchListener { view: View, motionEvent: MotionEvent ->
-//            when (motionEvent.action) {
-//                MotionEvent.ACTION_DOWN -> return@setOnTouchListener true
-//                MotionEvent.ACTION_UP -> {
-//                    // Get the MeteringPointFactory from PreviewView
-//                    val factory = cameraPreview?.viewFinder!!.meteringPointFactory
-//
-//                    // Create a MeteringPoint from the tap coordinates
-//                    val point = factory.createPoint(motionEvent.x, motionEvent.y)
-//
-//                    // Create a MeteringAction from the MeteringPoint, you can configure it to specify the metering mode
-//                    val action = FocusMeteringAction.Builder(point).build()
-//
-//                    // Trigger the focus and metering. The method returns a ListenableFuture since the operation
-//                    // is asynchronous. You can use it get notified when the focus is successful or if it fails.
-//                    camera?.cameraControl?.startFocusAndMetering(action)
-//                    val focusRects = listOf(
-//                        RectF(
-//                            motionEvent.x - rectSize,
-//                            motionEvent.y - rectSize,
-//                            motionEvent.x + rectSize,
-//                            motionEvent.y + rectSize
-//                        )
-//                    )
-//                    cameraPreview?.rectOverlayFocus?.let { overlay ->
-//                        overlay.post {
-//                            overlay.drawRectBounds(focusRects)
-//                        }
-//                    }
-//
-//                    return@setOnTouchListener true
-//                }
-//                else -> return@setOnTouchListener false
-//            }
-//        }
+        cameraPreview?.viewFinder?.setOnTouchListener { view: View, motionEvent: MotionEvent ->
+            scaleGestureDetector.onTouchEvent(motionEvent)
+            when (motionEvent.action) {
+                MotionEvent.ACTION_DOWN -> return@setOnTouchListener true
+                MotionEvent.ACTION_UP -> {
+                    // Get the MeteringPointFactory from PreviewView
+                    val factory = cameraPreview?.viewFinder!!.meteringPointFactory
+
+                    // Create a MeteringPoint from the tap coordinates
+                    val point = factory.createPoint(motionEvent.x, motionEvent.y)
+
+                    // Create a MeteringAction from the MeteringPoint, you can configure it to specify the metering mode
+                    val action = FocusMeteringAction.Builder(point).build()
+
+                    // Trigger the focus and metering. The method returns a ListenableFuture since the operation
+                    // is asynchronous. You can use it get notified when the focus is successful or if it fails.
+                    camera?.cameraControl?.startFocusAndMetering(action)
+                    val focusRects = listOf(
+                        RectF(
+                            motionEvent.x - rectSize,
+                            motionEvent.y - rectSize,
+                            motionEvent.x + rectSize,
+                            motionEvent.y + rectSize
+                        )
+                    )
+                    cameraPreview?.rectOverlayFocus?.let { overlay ->
+                        overlay.post {
+                            overlay.drawRectBounds(focusRects)
+                        }
+                    }
+
+                    return@setOnTouchListener true
+                }
+                else -> return@setOnTouchListener false
+            }
+        }
     }
 
     private var mContext: Context? = context
