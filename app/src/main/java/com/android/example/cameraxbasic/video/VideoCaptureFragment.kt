@@ -41,6 +41,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
@@ -266,7 +268,8 @@ class VideoCaptureFragment : Fragment() {
         if (event is VideoRecordEvent.Finalize) {
             // display the captured video
             lifecycleScope.launch {
-                captureViewBinding.videoPreviewImage.setBackgroundResource(R.drawable.ic_placeholder_img)
+                captureViewBinding.videoPreviewImage?.setBackgroundResource(R.drawable.ic_placeholder_img)
+                captureViewBinding.videoThumbnailLayout?.visibility = View.VISIBLE
                 captureViewBinding.videoPreviewImage.visibility = View.VISIBLE
                 captureViewBinding.videoPreviewImage.isEnabled = true
 
@@ -492,7 +495,7 @@ class VideoCaptureFragment : Fragment() {
         captureViewBinding.stopButton.apply {
             setOnClickListener {
                 captureViewBinding.saveText.visibility = View.VISIBLE
-
+                captureViewBinding.videoThumbnailLayout?.visibility = View.VISIBLE
                 // stopping: hide it after getting a click before we go to viewing fragment
                 captureViewBinding.recordLayout?.visibility = View.INVISIBLE
                 if (currentRecording == null || recordingState is VideoRecordEvent.Finalize) {
@@ -576,7 +579,7 @@ class VideoCaptureFragment : Fragment() {
 
     private fun hideRetakeUiControls() {
         captureViewBinding.saveText?.visibility = View.GONE
-        captureViewBinding.videoPreviewImage.visibility = View.INVISIBLE
+        captureViewBinding.videoThumbnailLayout?.visibility = View.INVISIBLE
     }
 
 
@@ -657,7 +660,7 @@ class VideoCaptureFragment : Fragment() {
         }
         // disable the camera button if no device to switch
         if (cameraCapabilities.size <= 1) {
-            captureViewBinding.videoPreviewImage.isEnabled = false
+            captureViewBinding.videoThumbnailLayout?.isEnabled = false
         }
         // disable the resolution list if no resolution to switch
         if (cameraCapabilities[cameraIndex].qualities.size <= 1) {
@@ -718,6 +721,7 @@ class VideoCaptureFragment : Fragment() {
     private fun handleCaptureAndRecordLayoutAnimation(isShowCaptureButton: Boolean) {
         if (isShowCaptureButton) {
             captureViewBinding.captureButtonFrame?.animate()?.alpha(1f)?.setDuration(500)?.start()
+            captureViewBinding.videoThumbnailLayout?.animate()?.alpha(1f)?.setDuration(500)?.start()
             captureViewBinding.videoPreviewImage.animate()?.alpha(1f)?.setDuration(500)?.start()
             captureViewBinding.saveText.animate()?.alpha(1f)?.setDuration(500)?.start()
 
@@ -727,7 +731,7 @@ class VideoCaptureFragment : Fragment() {
             captureViewBinding.recordLayout.visibility = View.VISIBLE
 
             captureViewBinding.captureButtonFrame?.animate()?.alpha(0f)?.setDuration(500)?.start()
-            captureViewBinding.videoPreviewImage.animate()?.alpha(0f)?.setDuration(500)?.start()
+            captureViewBinding.videoThumbnailLayout?.animate()?.alpha(0f)?.setDuration(500)?.start()
             captureViewBinding.saveText.animate()?.alpha(0f)?.setDuration(500)?.start()
 
             captureViewBinding.recordLayout.animate()?.alpha(1f)?.setDuration(500)?.start()
@@ -862,6 +866,7 @@ class VideoCaptureFragment : Fragment() {
 //                motionEvent
 //            )
 //        }
+        val handler = Handler(Looper.getMainLooper())
 
         var rectSize = 100
         captureViewBinding.previewView.setOnTouchListener { view: View, motionEvent: MotionEvent ->
@@ -873,8 +878,9 @@ class VideoCaptureFragment : Fragment() {
                 }
                 MotionEvent.ACTION_UP -> {
                     // Get the MeteringPointFactory from PreviewView
-
-                    captureViewBinding.rectOverlayFocus?.visibility = View.GONE
+                    handler.postDelayed({
+                        captureViewBinding.rectOverlayFocus?.visibility = View.GONE
+                    },500)
                     val factory = captureViewBinding.previewView?.meteringPointFactory
 
                     // Create a MeteringPoint from the tap coordinates

@@ -69,7 +69,7 @@
         android:weightSum="3">
 
         <ImageButton
-            android:id="@+id/photo_view_button"
+            android:id="@+id/video_thumbnail_layout"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_gravity="center"

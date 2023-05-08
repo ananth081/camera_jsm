@@ -31,6 +31,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import android.util.Log
 import android.util.Size
@@ -195,7 +197,7 @@ class CameraFragment : Fragment() {
     private fun setGalleryThumbnail(filename: Uri) {
         // Run the operations in the view's thread
         lifecycleScope.launch(Dispatchers.Main) {
-            cameraPreview.photoViewButton.visibility = View.VISIBLE
+            cameraPreview.videoThumbnailLayout.visibility = View.VISIBLE
             cameraPreview.photoView.let { photoViewButton ->
                 photoViewButton.post {
                     // Remove thumbnail padding
@@ -617,7 +619,7 @@ class CameraFragment : Fragment() {
             }
         }
 
-        cameraPreview?.photoViewButton?.setOnClickListener {
+        cameraPreview?.videoThumbnailLayout?.setOnClickListener {
 
             if (captureViewModel.mediaList.isNotEmpty()) {
 
@@ -841,7 +843,7 @@ class CameraFragment : Fragment() {
 
     private fun hideRetakeUiControls() {
         cameraPreview?.saveText?.visibility = View.GONE
-        cameraPreview?.photoViewButton?.visibility = View.GONE
+        cameraPreview?.videoThumbnailLayout?.visibility = View.GONE
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -873,7 +875,7 @@ class CameraFragment : Fragment() {
 //        }
 
         var rectSize = 100
-
+val handler = Handler(Looper.getMainLooper())
         cameraPreview?.viewFinder?.setOnTouchListener { view: View, motionEvent: MotionEvent ->
             scaleGestureDetector.onTouchEvent(motionEvent)
             when (motionEvent.action) {
@@ -899,11 +901,16 @@ class CameraFragment : Fragment() {
                             motionEvent.y + rectSize
                         )
                     )
+                    cameraPreview?.rectOverlayFocus?.visibility = View.VISIBLE
+
                     cameraPreview?.rectOverlayFocus?.let { overlay ->
                         overlay.post {
                             overlay.drawRectBounds(focusRects)
                         }
                     }
+                    handler.postDelayed({
+                        cameraPreview?.rectOverlayFocus?.visibility = View.GONE
+                    },1000)
 
                     return@setOnTouchListener true
                 }

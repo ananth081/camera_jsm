@@ -49,7 +49,7 @@
             android:scaleType="fitXY" />
 
         <ImageButton
-            android:id="@id/photo_view_button"
+            android:id="@id/video_thumbnail_layout"
             android:layout_width="@dimen/round_button_medium"
             android:layout_height="@dimen/round_button_medium"
             android:layout_marginTop="@dimen/margin_small"
