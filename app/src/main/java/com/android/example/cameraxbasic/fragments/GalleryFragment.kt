@@ -163,7 +163,7 @@ class GalleryFragment internal constructor() : Fragment() {
             fragmentGalleryBinding.photoViewPager
         ) { tab, position ->
             //Some implementation
-            fragmentGalleryBinding.toolbarText.text = "${position}of${mediaList.size}"
+            fragmentGalleryBinding.toolbarText.text = "${position+1} of ${mediaList.size}"
         }.attach()
 
         fragmentGalleryBinding.tabLayout.addOnTabSelectedListener(object : OnTabSelectedListener {

@@ -8,6 +8,8 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
@@ -70,6 +72,8 @@ class VideoListActivity : AppCompatActivity() {
         Log.d("PRS", "list " + mediaList)
         binding = ActivityVideoBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
+        binding.toolbar.overflowIcon?.colorFilter =
+            PorterDuffColorFilter(resources.getColor(R.color.ic_white), PorterDuff.Mode.SRC_ATOP)
 
         binding.toolbar.inflateMenu(R.menu.main_menu)
         binding?.toolbar?.background =
