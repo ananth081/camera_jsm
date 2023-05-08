@@ -330,6 +330,16 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.50" />
 
+    <com.android.example.cameraxbasic.utils.RectOverlay
+        android:id="@+id/rect_overlay_focus"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/switchCameraLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
     <FrameLayout
         android:id="@+id/place_holder_layout"
         android:layout_width="match_parent"

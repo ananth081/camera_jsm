@@ -16,8 +16,8 @@ class RectOverlay constructor(context: Context?, attributeSet: AttributeSet?) :
     private val rectBounds: MutableList<RectF> = mutableListOf()
     private val paint = Paint().apply {
         style = Paint.Style.STROKE
-        color = ContextCompat.getColor(context!!, android.R.color.holo_green_light)
-        strokeWidth = 5f
+        color = ContextCompat.getColor(context!!, android.R.color.white)
+        strokeWidth = 3f
     }
 
     override fun onDraw(canvas: Canvas) {

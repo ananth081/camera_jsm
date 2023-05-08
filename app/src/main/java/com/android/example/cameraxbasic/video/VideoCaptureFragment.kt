@@ -35,6 +35,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.graphics.RectF
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
@@ -43,8 +44,10 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
+import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.result.ActivityResult
@@ -854,10 +857,54 @@ class VideoCaptureFragment : Fragment() {
             }
         val scaleGestureDetector = ScaleGestureDetector(requireContext(), listener)
 
-        captureViewBinding.previewView.setOnTouchListener { view, motionEvent ->
-            scaleGestureDetector.onTouchEvent(
-                motionEvent
-            )
+//        captureViewBinding.previewView.setOnTouchListener { view, motionEvent ->
+//            scaleGestureDetector.onTouchEvent(
+//                motionEvent
+//            )
+//        }
+
+        var rectSize = 100
+        captureViewBinding.previewView.setOnTouchListener { view: View, motionEvent: MotionEvent ->
+            scaleGestureDetector.onTouchEvent(motionEvent)
+            when (motionEvent.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    captureViewBinding.rectOverlayFocus?.visibility = View.VISIBLE
+                    return@setOnTouchListener true
+                }
+                MotionEvent.ACTION_UP -> {
+                    // Get the MeteringPointFactory from PreviewView
+
+                    captureViewBinding.rectOverlayFocus?.visibility = View.GONE
+                    val factory = captureViewBinding.previewView?.meteringPointFactory
+
+                    // Create a MeteringPoint from the tap coordinates
+                    val point = factory?.createPoint(motionEvent.x, motionEvent.y)
+
+                    // Create a MeteringAction from the MeteringPoint, you can configure it to specify the metering mode
+                    val action = point?.let { FocusMeteringAction.Builder(it).build() }
+
+                    // Trigger the focus and metering. The method returns a ListenableFuture since the operation
+                    // is asynchronous. You can use it get notified when the focus is successful or if it fails.
+                    action?.let { camera?.cameraControl?.startFocusAndMetering(it) }
+                    val focusRects = listOf(
+                        RectF(
+                            motionEvent.x - rectSize,
+                            motionEvent.y - rectSize,
+                            motionEvent.x + rectSize,
+                            motionEvent.y + rectSize
+                        )
+                    )
+                    captureViewBinding.rectOverlayFocus?.let { overlay ->
+                        overlay.post {
+                            overlay.drawRectBounds(focusRects)
+                        }
+                    }
+
+                    return@setOnTouchListener true
+                }
+
+                else -> return@setOnTouchListener false
+            }
         }
     }
 
