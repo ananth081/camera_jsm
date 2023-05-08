@@ -157,13 +157,16 @@ class GalleryFragment internal constructor() : Fragment() {
             fragmentGalleryBinding.photoViewPager.adapter = adapter
         }
 
-
+        var isFirst = true
         TabLayoutMediator(
             fragmentGalleryBinding.tabLayout,
             fragmentGalleryBinding.photoViewPager
         ) { tab, position ->
             //Some implementation
-            fragmentGalleryBinding.toolbarText.text = "${position+1} of ${mediaList.size}"
+            if(isFirst){
+                fragmentGalleryBinding.toolbarText.text = "${position+1} of ${mediaList.size}"
+                isFirst = false
+            }
         }.attach()
 
         fragmentGalleryBinding.tabLayout.addOnTabSelectedListener(object : OnTabSelectedListener {

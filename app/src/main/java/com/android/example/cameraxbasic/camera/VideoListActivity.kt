@@ -83,13 +83,17 @@ class VideoListActivity : AppCompatActivity() {
             offscreenPageLimit = 2
             adapter = mediaList?.let { MediaPagerAdapter(supportFragmentManager, it) }
         }
-
+        var isFirst = true
         TabLayoutMediator(
             binding.tabLayout,
             binding.videoViewPager
         ) { tab, position ->
             //Some implementation
-            binding.toolbarText.text = "${position + 1} of ${mediaList?.size}"
+
+            if(isFirst){
+                binding.toolbarText.text = "${position + 1} of ${mediaList?.size}"
+                isFirst = false
+            }
         }.attach()
 
         binding.tabLayout.addOnTabSelectedListener(object :
