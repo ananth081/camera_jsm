@@ -9,21 +9,24 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import com.android.example.cameraxbasic.R
 import com.android.example.cameraxbasic.databinding.GalleryViewBinding
+import com.android.example.cameraxbasic.utils.SELECTED_FILTER_OPTION_KEY
+import com.android.example.cameraxbasic.viewmodels.DAY_FILTER
+import com.android.example.cameraxbasic.viewmodels.GalleryViewModel
 
-class GalleryViewDailogFragment: DialogFragment() {
-    interface selectedView{
+class GalleryViewDailogFragment : DialogFragment() {
+    interface selectedView {
         fun getSelectedView(selectedView: String)
     }
 
     var viewSelected = ""
-    lateinit var binding:GalleryViewBinding
-    var listener:selectedView? = null
+    lateinit var binding: GalleryViewBinding
+    var listener: selectedView? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = GalleryViewBinding.inflate(inflater,container,false)
+        binding = GalleryViewBinding.inflate(inflater, container, false)
         binding.toolbar.navigationIcon = resources.getDrawable(R.drawable.ic_back_arrow)
         binding.toolbar.title = "Views"
         return binding.root
@@ -37,6 +40,7 @@ class GalleryViewDailogFragment: DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        extractArguments()
         binding.checkbox1.setOnClickListener {
             viewSelected = "Day"
             binding.checkbox3.isChecked = false
@@ -59,7 +63,7 @@ class GalleryViewDailogFragment: DialogFragment() {
         }
 
         binding.save.setOnClickListener {
-            if(viewSelected.isNotEmpty()){
+            if (viewSelected.isNotEmpty()) {
                 listener?.getSelectedView(viewSelected)
                 dismiss()
             }
@@ -67,9 +71,21 @@ class GalleryViewDailogFragment: DialogFragment() {
         binding.toolbar.setNavigationOnClickListener {
             dismiss()
         }
+
+        if (selectedFilterType == DAY_FILTER) {
+            binding.checkbox1.isChecked = true
+        } else {
+            binding.checkbox3.isChecked = true
+
+        }
     }
 
-    fun initialiseObject(obj:selectedView){
+    var selectedFilterType = DAY_FILTER
+    private fun extractArguments() {
+        selectedFilterType = arguments?.getInt(SELECTED_FILTER_OPTION_KEY) ?: DAY_FILTER
+    }
+
+    fun initialiseObject(obj: selectedView) {
         this.listener = obj
     }
 

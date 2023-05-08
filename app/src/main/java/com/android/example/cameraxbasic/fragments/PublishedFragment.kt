@@ -18,6 +18,7 @@ import com.android.example.cameraxbasic.camera.VideoActivity
 import com.android.example.cameraxbasic.databinding.FragmentPublishedBinding
 import com.android.example.cameraxbasic.utils.IMAGE_URI_STRING_KEY
 import com.android.example.cameraxbasic.utils.MEDIA_TYPE_KEY
+import com.android.example.cameraxbasic.utils.MediaStoreFile
 import com.android.example.cameraxbasic.viewmodels.DRAFT
 import com.android.example.cameraxbasic.viewmodels.GalleryViewModel
 import java.io.File
@@ -62,8 +63,11 @@ class PublishedFragment : Fragment(), ImageRecyclerViewAdapter.ItemClickListenr 
         extractArguments()
         readImageFileFromStorage()
         dataViewModel.communicator.observe(viewLifecycleOwner) { list ->
-            if (type == DRAFT)
-                (activity as JsmGalleryActivity).updateText(list.size)
+            if (type == DRAFT) {
+                val draftItemSize = list.filterIsInstance<MediaStoreFile>().toList().size
+                (activity as JsmGalleryActivity).updateText(draftItemSize)
+            }
+
             adapter = ImageRecyclerViewAdapter()
             adapter?.setClickListner(this)
             val displayMetrics = resources.displayMetrics
@@ -80,7 +84,6 @@ class PublishedFragment : Fragment(), ImageRecyclerViewAdapter.ItemClickListenr 
                 }
             }
             binding.galleryImage.layoutManager = glm
-            adapter?.dataList?.add("March 26, 2023")
             adapter?.dataList?.addAll(list!!)
 //            adapter?.dataList?.add("March 28, 2023")
 //            adapter?.dataList?.addAll(list)
@@ -100,15 +103,19 @@ class PublishedFragment : Fragment(), ImageRecyclerViewAdapter.ItemClickListenr 
     }
 
     override fun onImageItemClick(uri: String) {
-        val intent = Intent(requireContext(),ImageDetailActivity::class.java)
-        intent.putExtra(IMAGE_URI_STRING_KEY,uri)
+        val intent = Intent(requireContext(), ImageDetailActivity::class.java)
+        intent.putExtra(IMAGE_URI_STRING_KEY, uri)
         startActivity(intent)
     }
 
     override fun onVideoItemClick(uri: String) {
-        val intent = Intent(requireContext(),VideoActivity::class.java)
+        val intent = Intent(requireContext(), VideoActivity::class.java)
         intent.putExtra("video_uri", Uri.parse(uri))
         startActivity(intent)
+    }
+
+    fun refresh(filterType: Int) {
+        dataViewModel.loadImages(requireContext(), type, filterType)
     }
 
 //    fun onMediaViewSelected(viewSelected: String) {

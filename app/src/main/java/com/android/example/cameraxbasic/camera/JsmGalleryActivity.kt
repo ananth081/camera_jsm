@@ -5,19 +5,18 @@ import android.os.Handler
 import android.os.Looper
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.get
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.FragmentManager
 import androidx.viewpager2.widget.ViewPager2
 import com.android.example.cameraxbasic.R
 import com.android.example.cameraxbasic.adapter.ViewPagerAdapter
 import com.android.example.cameraxbasic.databinding.ActivityJsmGalleryBinding
 import com.android.example.cameraxbasic.fragments.GalleryViewDailogFragment
 import com.android.example.cameraxbasic.fragments.PublishedFragment
-import com.android.example.cameraxbasic.viewmodels.CaptureViewModel
-import com.android.example.cameraxbasic.viewmodels.DRAFT
+import com.android.example.cameraxbasic.utils.SELECTED_FILTER_OPTION_KEY
+import com.android.example.cameraxbasic.viewmodels.DAY_FILTER
 import com.android.example.cameraxbasic.viewmodels.GalleryViewModel
-import com.android.example.cameraxbasic.viewmodels.PUBLISHED
+import com.android.example.cameraxbasic.viewmodels.MONTH_FILTER
 import com.google.android.material.tabs.TabLayoutMediator
 
 class JsmGalleryActivity : AppCompatActivity(), GalleryViewDailogFragment.selectedView {
@@ -25,6 +24,7 @@ class JsmGalleryActivity : AppCompatActivity(), GalleryViewDailogFragment.select
     private var adapter: ViewPagerAdapter? = null
     private lateinit var mViewPager: ViewPager2
     var source = false
+    val galleryViewModel: GalleryViewModel by viewModels()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,6 +42,10 @@ class JsmGalleryActivity : AppCompatActivity(), GalleryViewDailogFragment.select
 
         binding.menu.setOnClickListener {
             var fragment = GalleryViewDailogFragment()
+            val bundle = Bundle()
+            bundle.putInt(SELECTED_FILTER_OPTION_KEY, galleryViewModel.filterType)
+
+            fragment.arguments = bundle
             fragment.show(supportFragmentManager, "GalleryViewDailogFragment")
             fragment.initialiseObject(this)
 
@@ -78,10 +82,23 @@ class JsmGalleryActivity : AppCompatActivity(), GalleryViewDailogFragment.select
     }
 
     override fun getSelectedView(selectedView: String) {
-//        val fragment = adapter?.fragments?.get(0)
+        val type = if (selectedView == "Day") DAY_FILTER else MONTH_FILTER
+        galleryViewModel.filterType = type
+        val fragment0 = binding.viewPager.findFragmentAtPosition(supportFragmentManager, 0)
+        val fragment1 = binding.viewPager.findFragmentAtPosition(supportFragmentManager, 1)
+        (fragment0 as PublishedFragment).refresh(type)
+        (fragment1 as PublishedFragment).refresh(type)
 //        (fragment as PublishedFragment).onMediaViewSelected(selectedView)
 //        adapter?.refreshFragment(0,PublishedFragment())
 
+
+    }
+
+    fun ViewPager2.findFragmentAtPosition(
+        fragmentManager: FragmentManager,
+        position: Int
+    ): Fragment? {
+        return fragmentManager.findFragmentByTag("f$position")
     }
 
     fun updateText(value: Int) {

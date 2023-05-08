@@ -46,6 +46,8 @@ import java.util.Locale
  * guide for more: https://developer.android.com/training/data-storage.
  */
 class MediaStoreUtils(private val context: Context) {
+    val monthFormatter = SimpleDateFormat("MM-yyyy", Locale.US)
+    val dayFormatter = SimpleDateFormat("dd-MM-yyyy", Locale.US)
 
     val imageStoreCollection: Uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
@@ -116,7 +118,7 @@ class MediaStoreUtils(private val context: Context) {
         type: String = "",
         uri: Uri = imageStoreCollection
     ): MutableList<MediaStoreFile> {
-        val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.US)
+
 
         val files = mutableListOf<MediaStoreFile>()
         getMediaStoreImageCursor(uri).use { cursor ->
@@ -130,11 +132,10 @@ class MediaStoreUtils(private val context: Context) {
                             .contains(type)
                     ) {
                         val dateTaken = imageDateAddedIDColumn?.let { cursor.getLong(it) } ?: 0L
-                        val calendar = Calendar.getInstance()
-                        calendar.timeInMillis = dateTaken
+                        val dayDate = getDayDate(dateTaken)
+                        val monthDate = getMonthDate(dateTaken)
 
-                        val dateObj = formatter.format(calendar.time)
-                        val date = formatter.parse(dateObj) ?: Date()
+
                         val id = cursor.getLong(imageIdColumn)
                         val contentUri: Uri = ContentUris.withAppendedId(
                             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
@@ -145,7 +146,7 @@ class MediaStoreUtils(private val context: Context) {
                             MediaStoreFile(
                                 contentUri, contentFile, id,
                                 fileType = if (uri == videoStoreCollection) FILE_TYPE_VIDEO
-                                else FILE_TYPE_IMAGE, date
+                                else FILE_TYPE_IMAGE, dayDate, monthDate
                             )
                         )
                     }
@@ -153,6 +154,29 @@ class MediaStoreUtils(private val context: Context) {
             }
         }
         return files
+    }
+
+    private fun getMonthDate(
+        milliseconds: Long
+    ): Date {
+
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = milliseconds
+
+        val dateObj = monthFormatter.format(calendar.time)
+        val monthDate = monthFormatter.parse(dateObj) ?: Date()
+        return monthDate
+    }
+
+    private fun getDayDate(
+        milliseconds: Long
+    ): Date {
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = milliseconds
+
+        val dateObj = dayFormatter.format(calendar.time)
+        val monthDate = dayFormatter.parse(dateObj) ?: Date()
+        return monthDate
     }
 
 
@@ -169,5 +193,6 @@ data class MediaStoreFile(
     val uri: Uri,
     val file: File,
     val id: Long,
-    val fileType: String = FILE_TYPE_IMAGE, val dateTaken: Date = Date()
+    val fileType: String = FILE_TYPE_IMAGE, val dayTaken: Date = Date(),
+    val monthTaken: Date = Date()
 )

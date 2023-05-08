@@ -23,6 +23,8 @@ class ViewPagerAdapter(
             PublishedFragment.newInstance(DRAFT)
     }
 
+
+
 //    override fun getItemViewType(position: Int): Int {
 //        return super.getItemViewType(position)
 //    }

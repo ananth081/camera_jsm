@@ -42,8 +42,8 @@
     </style>
 
     <style name="FontRoboto">
-        <item name="android:fontFamily">@font/robotomedium</item>
-        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">@font/roboto</item>
+        <item name="android:textSize">17sp</item>
     </style>
 
     <style name="FontRobotoMedium">

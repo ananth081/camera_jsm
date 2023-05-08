@@ -67,8 +67,6 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.example.cameraxbasic.R
 import com.android.example.cameraxbasic.camera.CameraActivity
-import com.android.example.cameraxbasic.camera.GalleryActivity
-import com.android.example.cameraxbasic.camera.VideoActivity
 import com.android.example.cameraxbasic.camera.VideoListActivity
 import com.android.example.cameraxbasic.databinding.FragmentVideoCaptureBinding
 import com.android.example.cameraxbasic.fragments.CameraFragment
@@ -83,10 +81,10 @@ import com.android.example.cameraxbasic.viewmodels.APP_NAME
 import com.android.example.cameraxbasic.viewmodels.CaptureViewModel
 import com.android.example.cameraxbasic.viewmodels.PUBLISHED
 import com.example.android.camera.utils.GenericListAdapter
+import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlinx.coroutines.*
 
 class VideoCaptureFragment : Fragment() {
 
