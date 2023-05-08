@@ -254,8 +254,6 @@ class CameraFragment : Fragment() {
             lifecycleScope.launch {
                 setUpCamera()
             }
-
-            setScale()
         }
 
 //        cameraPreview?.photoBtn?.setOnTouchListener { v, event ->
@@ -867,7 +865,7 @@ class CameraFragment : Fragment() {
                 }
 
             }
-        val scaleGestureDetector = ScaleGestureDetector(requireContext(), listener)
+        val scaleGestureDetector = ScaleGestureDetector(mContext!!, listener)
 
         cameraPreview?.viewFinder?.setOnTouchListener { view, motionEvent ->
             scaleGestureDetector.onTouchEvent(motionEvent)
