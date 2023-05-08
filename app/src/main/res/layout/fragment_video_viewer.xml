@@ -70,7 +70,7 @@
         android:id="@+id/video_viewer"
         android:layout_width="match_parent"
         app:controller_layout_id="@layout/custom_exo_player_control_view"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="center|center"
         android:layout_marginTop="35dp"
         android:fitsSystemWindows="true" />

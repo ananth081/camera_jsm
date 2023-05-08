@@ -16,6 +16,7 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
@@ -84,7 +85,7 @@ class VideoListActivity : AppCompatActivity() {
             binding.videoViewPager
         ) { tab, position ->
             //Some implementation
-            binding.toolbarText.text = "${position+1} of ${mediaList?.size}"
+            binding.toolbarText.text = "${position + 1} of ${mediaList?.size}"
         }.attach()
 
         binding.tabLayout.addOnTabSelectedListener(object :
@@ -107,6 +108,7 @@ class VideoListActivity : AppCompatActivity() {
         binding.galleryBackButton.setOnClickListener {
             finish()
         }
+
 
         binding.toolbar.setOnMenuItemClickListener {
             if (it.itemId == R.id.actionRetake) {
@@ -139,50 +141,103 @@ class VideoListActivity : AppCompatActivity() {
         mediaList?.getOrNull(binding.videoViewPager.currentItem)
             ?.let { mediaStoreFile ->
 
-                AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog)
-                    .setTitle(getString(R.string.delete_title))
-                    .setMessage(getString(R.string.delete_dialog_video))
-                    .setIcon(android.R.drawable.ic_dialog_alert)
 
-                    .setPositiveButton(android.R.string.ok,
-                        object : DialogInterface.OnClickListener {
-                            override fun onClick(p0: DialogInterface?, p1: Int) {
-                                // Delete current photo
-                                mediaStoreFile.let {
-                                    applicationContext.contentResolver?.delete(
-                                        Uri.parse(it),
-                                        null,
-                                        null
-                                    )
-                                }
+                val dialogBuilder = AlertDialog.Builder(this)
 
-                                deletedList.add(mediaStoreFile)
-                                // Notify our view pager
-                                mediaList?.remove(mediaStoreFile)
-                                (binding.videoViewPager.adapter as MediaPagerAdapter).uriList.remove(
-                                    mediaStoreFile
-                                )
-                                binding.videoViewPager.adapter?.notifyDataSetChanged()
+                // ...Irrelevant code for customizing the buttons and title
 
-                                // If all photos have been deleted, return to camera
-                                if (mediaList!!.isEmpty()) {
-                                    val intent = Intent()
-                                    intent.putStringArrayListExtra(
-                                        DELETED_LIST_INTENT_KEY,
-                                        deletedList
-                                    )
-                                    setResult(Activity.RESULT_OK, intent)
-                                    finish()
-                                }
-                            }
 
-                        })
+                // ...Irrelevant code for customizing the buttons and title
+                val inflater = this.layoutInflater
 
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .create().showImmersive()
+                val dialogView: View = inflater.inflate(R.layout.delete_image_dialog_item, null)
+                dialogBuilder.setView(dialogView)
+
+                val alertText: TextView = dialogView.findViewById<View>(R.id.alertText) as TextView
+                val deleteBtn: TextView = dialogView.findViewById<View>(R.id.deleteBtn) as TextView
+                val cancelBtn: TextView = dialogView.findViewById<View>(R.id.cancelBtn) as TextView
+                alertText.text = resources.getString(R.string.delete_dialog_video)
+                deleteBtn.setOnClickListener {
+
+                    mediaStoreFile.let {
+                        applicationContext.contentResolver?.delete(
+                            Uri.parse(it),
+                            null,
+                            null
+                        )
+                    }
+
+                    deletedList.add(mediaStoreFile)
+                    // Notify our view pager
+                    mediaList?.remove(mediaStoreFile)
+                    ( binding.videoViewPager.adapter as MediaPagerAdapter).uriList.remove(
+                        mediaStoreFile
+                    )
+                    binding.videoViewPager.adapter?.notifyDataSetChanged()
+
+                    // If all photos have been deleted, return to camera
+                    if (mediaList!!.isEmpty()) {
+                        val intent = Intent()
+                        intent.putStringArrayListExtra(
+                            DELETED_LIST_INTENT_KEY,
+                            deletedList
+                        )
+                        setResult(Activity.RESULT_OK, intent)
+                        finish()
+                    }
+                }
+
+                cancelBtn.setOnClickListener {
+                    dialogBuilder.create().dismiss()
+                }
+
+
+                dialogBuilder.create().show()
+
+
+//                AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog)
+//                    .setTitle(getString(R.string.delete_title))
+//                    .setMessage(getString(R.string.delete_dialog_video))
+//                    .setIcon(android.R.drawable.ic_dialog_alert)
+//
+//                    .setPositiveButton(android.R.string.ok,
+//                        object : DialogInterface.OnClickListener {
+//                            override fun onClick(p0: DialogInterface?, p1: Int) {
+//                                // Delete current photo
+//                                mediaStoreFile.let {
+//                                    applicationContext.contentResolver?.delete(
+//                                        Uri.parse(it),
+//                                        null,
+//                                        null
+//                                    )
+//                                }
+//
+//                                deletedList.add(mediaStoreFile)
+//                                // Notify our view pager
+//                                mediaList?.remove(mediaStoreFile)
+//                                (binding.videoViewPager.adapter as MediaPagerAdapter).uriList.remove(
+//                                    mediaStoreFile
+//                                )
+//                                binding.videoViewPager.adapter?.notifyDataSetChanged()
+//
+//                                // If all photos have been deleted, return to camera
+//                                if (mediaList!!.isEmpty()) {
+//                                    val intent = Intent()
+//                                    intent.putStringArrayListExtra(
+//                                        DELETED_LIST_INTENT_KEY,
+//                                        deletedList
+//                                    )
+//                                    setResult(Activity.RESULT_OK, intent)
+//                                    finish()
+//                                }
+//                            }
+//
+//                        })
+//
+//                    .setNegativeButton(android.R.string.cancel, null)
+//                    .create().showImmersive()
             }
     }
-
 
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
@@ -217,15 +272,14 @@ class VideoListActivity : AppCompatActivity() {
 
     @Suppress("DEPRECATION")
     fun enterPIPMode() {
-        val fragment = supportFragmentManager.findFragmentById(R.id.galleryFragmentContainer)
-        if (fragment is VideoViewerFragment)
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
                 && packageManager
                     .hasSystemFeature(
                         PackageManager.FEATURE_PICTURE_IN_PICTURE
                     )
             ) {
-                fragment.binding.videoViewer.useController = false
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     val params = PictureInPictureParams.Builder()
                     this.enterPictureInPictureMode(params.build())
@@ -241,21 +295,18 @@ class VideoListActivity : AppCompatActivity() {
         newConfig: Configuration
     ) {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
-        val fragment = supportFragmentManager.findFragmentById(R.id.galleryFragmentContainer)
+        binding.toolbar.visibility = View.GONE
+        binding.tabLayout.visibility = View.GONE
 //        if (fragment is VideoViewerFragment) {
 //            fragment.binding.videoViewer.useController = !isInPictureInPictureMode
 //            if (isInPictureInPictureMode) {
-//               // fragment.binding.toolbar.visibility = View.GONE
+//                fragment.binding.toolbar.visibility = View.GONE
 //            }
 //            else
-//              //  fragment.binding.toolbar.visibility = View.VISIBLE
+//                fragment.binding.toolbar.visibility = View.VISIBLE
 //        }
-        if (isInPictureInPictureMode) {
-            binding.toolbar.visibility = View.GONE
-            }
-            else
-            binding.toolbar.visibility = View.VISIBLE
-        }
+
     }
 
+}
 
