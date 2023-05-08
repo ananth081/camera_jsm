@@ -6,13 +6,22 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.AttributeSet
+import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.viewpager.widget.PagerAdapter
+import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.android.example.cameraxbasic.R
 import com.android.example.cameraxbasic.video.VideoViewerFragment
 
@@ -88,14 +97,14 @@ class VideoActivity : AppCompatActivity() {
     ) {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
         val fragment = supportFragmentManager.findFragmentById(R.id.galleryFragmentContainer)
-        if (fragment is VideoViewerFragment) {
-            fragment.binding.videoViewer.useController = !isInPictureInPictureMode
-            if (isInPictureInPictureMode) {
-                fragment.binding.toolbar.visibility = View.GONE
-            }
-            else
-                fragment.binding.toolbar.visibility = View.VISIBLE
-        }
+//        if (fragment is VideoViewerFragment) {
+//            fragment.binding.videoViewer.useController = !isInPictureInPictureMode
+//            if (isInPictureInPictureMode) {
+//                fragment.binding.toolbar.visibility = View.GONE
+//            }
+//            else
+//                fragment.binding.toolbar.visibility = View.VISIBLE
+//        }
 
     }
 

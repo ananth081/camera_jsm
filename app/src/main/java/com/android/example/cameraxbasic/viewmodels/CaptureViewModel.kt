@@ -76,7 +76,6 @@ class CaptureViewModel : ViewModel() {
                     contentValues
                 )
 
-
                 val inputStream = context.contentResolver?.openInputStream(it.uri)
                 val outputStream = context.contentResolver?.openOutputStream(destinationUri!!)
                 inputStream?.let { it1 ->
@@ -84,7 +83,11 @@ class CaptureViewModel : ViewModel() {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                             FileUtils.copy(it1, it2)
                         }
-                        context.contentResolver?.delete(it.uri, null, null)
+                        try{
+                            context.contentResolver?.delete(it.uri, null, null)
+                        }catch (ex:java.lang.Exception){
+                            ex.printStackTrace()
+                        }
                     }
                 }
 //                }

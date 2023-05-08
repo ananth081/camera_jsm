@@ -115,10 +115,10 @@ class VideoViewerFragment() : androidx.fragment.app.Fragment(), Player.Listener 
         }
 
         // Handle back button press
-        binding.videoBackButton.setOnClickListener {
-//            Navigation.findNavController(requireActivity(), R.id.fragment_container).navigateUp()
-            activity?.finish()
-        }
+//        binding.videoBackButton.setOnClickListener {
+////            Navigation.findNavController(requireActivity(), R.id.fragment_container).navigateUp()
+//            activity?.finish()
+//        }
         if (player != null)
             currentVolume = player?.volume ?: 0F
         Log.d("tag", "initial Volume $currentVolume")
@@ -233,6 +233,7 @@ class VideoViewerFragment() : androidx.fragment.app.Fragment(), Player.Listener 
     var forceStop = false
     override fun onStop() {
         super.onStop()
+        Log.d("PRS","on stop video viewer fragment")
         forceStop = true
         player?.pause()
     }

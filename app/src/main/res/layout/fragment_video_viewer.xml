@@ -20,43 +20,43 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:background="@color/colorPrimary"
-        android:theme="@style/AppTheme">
+<!--    <com.google.android.material.appbar.AppBarLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="top"-->
+<!--        android:background="@color/colorPrimary"-->
+<!--        android:theme="@style/AppTheme">-->
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:layout_gravity="top"
-            android:background="@color/colorPrimary"
-            app:background="@color/colorPrimary">
+<!--        <androidx.appcompat.widget.Toolbar-->
+<!--            android:id="@+id/toolbar"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="?attr/actionBarSize"-->
+<!--            android:layout_gravity="top"-->
+<!--            android:background="@color/colorPrimary"-->
+<!--            app:background="@color/colorPrimary">-->
 
-            <ImageButton
-                android:id="@+id/videoBackButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/colorPrimary"
-                android:contentDescription="Back button"
-                android:padding="12dp"
-                app:srcCompat="@drawable/ic_back" />
+<!--            <ImageButton-->
+<!--                android:id="@+id/videoBackButton"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:background="@color/colorPrimary"-->
+<!--                android:contentDescription="Back button"-->
+<!--                android:padding="12dp"-->
+<!--                app:srcCompat="@drawable/ic_back" />-->
 
-            <TextView
-                android:id="@+id/toolbarText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginEnd="12dp"
-                android:gravity="start"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-        </androidx.appcompat.widget.Toolbar>
+<!--            <TextView-->
+<!--                android:id="@+id/toolbarText"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="12dp"-->
+<!--                android:layout_marginEnd="12dp"-->
+<!--                android:gravity="start"-->
+<!--                android:textColor="#FFFFFF"-->
+<!--                android:textSize="16sp"-->
+<!--                android:textStyle="bold" />-->
+<!--        </androidx.appcompat.widget.Toolbar>-->
 
-    </com.google.android.material.appbar.AppBarLayout>
+<!--    </com.google.android.material.appbar.AppBarLayout>-->
 
     <!--    <VideoView-->
     <!--        android:id="@+id/video_viewer"-->

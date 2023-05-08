@@ -154,7 +154,9 @@ class GalleryFragment internal constructor() : Fragment() {
         fragmentGalleryBinding.photoViewPager.apply {
             offscreenPageLimit = 2
             adapter = MediaPagerAdapter(childFragmentManager, mediaList)
+            fragmentGalleryBinding.photoViewPager.adapter = adapter
         }
+
 
         TabLayoutMediator(
             fragmentGalleryBinding.tabLayout,

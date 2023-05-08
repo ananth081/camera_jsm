@@ -29,6 +29,7 @@
 package com.android.example.cameraxbasic.video
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -46,6 +47,8 @@ import android.view.ScaleGestureDetector
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.video.*
@@ -64,11 +67,15 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.example.cameraxbasic.R
 import com.android.example.cameraxbasic.camera.CameraActivity
+import com.android.example.cameraxbasic.camera.GalleryActivity
 import com.android.example.cameraxbasic.camera.VideoActivity
+import com.android.example.cameraxbasic.camera.VideoListActivity
 import com.android.example.cameraxbasic.databinding.FragmentVideoCaptureBinding
 import com.android.example.cameraxbasic.fragments.CameraFragment
 import com.android.example.cameraxbasic.save.SaveDialog
 import com.android.example.cameraxbasic.utils.CapturedMediaDto
+import com.android.example.cameraxbasic.utils.DELETED_LIST_INTENT_KEY
+import com.android.example.cameraxbasic.utils.MEDIA_LIST_KEY
 import com.android.example.cameraxbasic.video.extensions.getAspectRatio
 import com.android.example.cameraxbasic.video.extensions.getAspectRatioString
 import com.android.example.cameraxbasic.video.extensions.getNameString
@@ -102,6 +109,8 @@ class VideoCaptureFragment : Fragment() {
     private lateinit var recordingState: VideoRecordEvent
     private var outputUri: Uri? = null
     private var camera: Camera? = null
+    private var fromRetakeScreen: String? = null
+
 
     // Camera UI  states and inputs
     enum class UiState {
@@ -390,9 +399,17 @@ class VideoCaptureFragment : Fragment() {
         captureViewBinding.videoPreviewImage.apply {
             setOnClickListener {
                 outputUri?.let {
-                    val intent = Intent(context, VideoActivity::class.java)
-                    intent.putExtra("video_uri", it)
-                    startActivity(intent)
+                    val intent = Intent(context, VideoListActivity::class.java)
+                    if (captureViewModel.mediaList.isNotEmpty()) {
+
+                        val list = captureViewModel.mediaList.map {
+                            it.uri.toString()
+                        }.toList()
+                        intent.putStringArrayListExtra(MEDIA_LIST_KEY, ArrayList(list))
+                        startForResult.launch(intent)
+                    }
+                   // intent.putExtra("video_uri", it)
+                    //startActivity(intent)
                 }
                 /*   cameraIndex = (cameraIndex + 1) % cameraCapabilities.size
                    // camera device change is in effect instantly:
@@ -517,6 +534,31 @@ class VideoCaptureFragment : Fragment() {
             true
         }
     }
+
+    private val startForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val intent = result.data
+                fromRetakeScreen = intent?.extras?.getString("source")
+                val fileUri = intent?.extras?.getString("file_uri")
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    val list =
+                        captureViewModel.mediaList.filter { it.uri.toString() == fileUri }.toList()
+                    captureViewModel.mediaList.removeAll(list)
+                }
+                 hideRetakeUiControls()
+                val list = intent?.getStringArrayListExtra(DELETED_LIST_INTENT_KEY)
+                if (list != null && list.isNotEmpty())
+                    captureViewModel.deleteList(list, requireContext())
+                // Handle the Intent
+            }
+        }
+
+    private fun hideRetakeUiControls() {
+        captureViewBinding.saveText?.visibility = View.GONE
+        captureViewBinding.videoPreviewImage.visibility = View.INVISIBLE
+    }
+
 
     private fun handleCancelClicked() {
         captureViewModel.reset()
@@ -805,7 +847,24 @@ class VideoCaptureFragment : Fragment() {
 //            camera?.cameraControl?.setZoomRatio(fl)
 //        }
 //    }
-
+private val startForResults =
+    registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val intent = result.data
+            fromRetakeScreen = intent?.extras?.getString("source")
+            val fileUri = intent?.extras?.getString("file_uri")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                val list =
+                    captureViewModel.mediaList.filter { it.uri.toString() == fileUri }.toList()
+                captureViewModel.mediaList.removeAll(list)
+            }
+            //hideRetakeUiControls()
+            val list = intent?.getStringArrayListExtra(DELETED_LIST_INTENT_KEY)
+            if (list != null && list.isNotEmpty())
+                captureViewModel.deleteList(list, requireContext())
+            // Handle the Intent
+        }
+    }
     @SuppressLint("RestrictedApi")
     fun setLinearZoom(fl: Float) {
         videoCapture.camera?.let {
