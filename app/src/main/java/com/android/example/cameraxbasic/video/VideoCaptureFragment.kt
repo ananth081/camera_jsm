@@ -56,6 +56,7 @@ import androidx.concurrent.futures.await
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.util.Consumer
+import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -94,6 +95,7 @@ class VideoCaptureFragment : Fragment() {
 
     // UI with ViewBinding
     lateinit var captureViewBinding: FragmentVideoCaptureBinding
+    private var lensFacing: Int = CameraSelector.LENS_FACING_BACK
 
     //private val captureViewBinding get() = _captureViewBinding
     private val captureLiveStatus = MutableLiveData<String>()
@@ -141,6 +143,7 @@ class VideoCaptureFragment : Fragment() {
 
         val cameraSelector = getCameraSelector(cameraIndex)
 
+        lensFacing = cameraSelector.lensFacing ?: 0
         // create the user required QualitySelector (video resolution): we know this is
         // supported, a valid qualitySelector will be created.
         val quality = cameraCapabilities[cameraIndex].qualities[qualityIndex]
@@ -439,6 +442,17 @@ class VideoCaptureFragment : Fragment() {
                 enableUI(false)
                 viewLifecycleOwner.lifecycleScope.launch {
                     bindCaptureUsecase()
+                }
+
+                if (lensFacing == CameraSelector.LENS_FACING_FRONT) {
+                    captureViewBinding?.flashLight?.isEnabled = false
+                    captureViewBinding?.flashLight?.visibility = View.INVISIBLE
+                    captureViewBinding?.cameraZoom?.visibility = View.GONE
+                } else if (lensFacing == CameraSelector.LENS_FACING_BACK) {
+                    captureViewBinding?.flashLight?.isEnabled = true
+                    captureViewBinding?.flashLight?.isVisible = true
+                    captureViewBinding?.flashLight?.visibility = View.VISIBLE
+                    captureViewBinding?.cameraZoom?.visibility = View.VISIBLE
                 }
             }
         }

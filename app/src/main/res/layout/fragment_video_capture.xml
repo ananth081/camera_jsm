@@ -41,21 +41,21 @@
             android:translationY="19dp" />
 
         <ImageView
-            android:id="@+id/dualCamera"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:layout_gravity="center_vertical|right"
-            android:layout_toStartOf="@+id/flashLight"
-            android:background="@drawable/ic_switch_camera"
-            android:translationY="3dp" />
-
-        <ImageView
             android:id="@+id/flashLight"
             android:layout_width="52dp"
             android:layout_height="52dp"
-            android:layout_alignParentEnd="true"
             android:layout_marginTop="2dp"
-            android:background="@drawable/flash_circle_1" />
+            android:background="@drawable/flash_circle_1"
+            android:layout_toStartOf="@+id/dualCamera"/>
+
+        <ImageView
+            android:id="@+id/dualCamera"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="center_vertical|right"
+            android:background="@drawable/ic_switch_camera"
+            android:translationY="3dp" />
 
     </RelativeLayout>
 
