@@ -97,22 +97,22 @@ class VideoViewerFragment() : androidx.fragment.app.Fragment(), Player.Listener 
         binding.videoViewer.setShowPreviousButton(false)
         binding.videoViewer.setShowNextButton(false)
         binding.videoViewer.setShowSubtitleButton(false)
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-            showVideo(uri!!)
-        } else {
-            // force MediaScanner to re-scan the media file.
-            val path = getAbsolutePathFromUri(uri!!) ?: return
-            MediaScannerConnection.scanFile(
-                context, arrayOf(path), null
-            ) { _, uri ->
-                // playback video on main thread with VideoView
-                if (uri != null) {
-                    lifecycleScope.launch {
-                        showVideo(uri)
-                    }
-                }
-            }
-        }
+//        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+//            showVideo(uri!!)
+//        } else {
+//            // force MediaScanner to re-scan the media file.
+//            val path = getAbsolutePathFromUri(uri!!) ?: return
+//            MediaScannerConnection.scanFile(
+//                context, arrayOf(path), null
+//            ) { _, uri ->
+//                // playback video on main thread with VideoView
+//                if (uri != null) {
+//                    lifecycleScope.launch {
+//                        showVideo(uri)
+//                    }
+//                }
+//            }
+//        }
 
         // Handle back button press
 //        binding.videoBackButton.setOnClickListener {
@@ -140,12 +140,38 @@ class VideoViewerFragment() : androidx.fragment.app.Fragment(), Player.Listener 
 
     var volumeState = true
     var currentVolume: Float = 0F
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("PRS","onPause")
+        releasePlayer()
+    }
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
         releasePlayer()
     }
 
+    override fun onResume() {
+        super.onResume()
+        val uri: Uri? = arguments?.getParcelable("video_uri")!!
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+            showVideo(uri!!)
+        } else {
+            // force MediaScanner to re-scan the media file.
+            val path = getAbsolutePathFromUri(uri!!) ?: return
+            MediaScannerConnection.scanFile(
+                context, arrayOf(path), null
+            ) { _, uri ->
+                // playback video on main thread with VideoView
+                if (uri != null) {
+                    lifecycleScope.launch {
+                        showVideo(uri)
+                    }
+                }
+            }
+        }
+    }
     /**
      * A helper function to play the recorded video. Note that VideoView/MediaController auto-hides
      * the play control menus, touch on the video area would bring it back for 3 second.
@@ -172,8 +198,8 @@ class VideoViewerFragment() : androidx.fragment.app.Fragment(), Player.Listener 
                 binding.videoViewer.player = exoPlayer
                 val mediaItem = MediaItem.fromUri(uri)
                 exoPlayer.setMediaItem(mediaItem)
-                exoPlayer.playWhenReady = playWhenReady
-                exoPlayer.seekTo(currentItem, playbackPosition)
+                //exoPlayer.playWhenReady = playWhenReady
+                //exoPlayer.seekTo(currentItem, playbackPosition)
                 exoPlayer.prepare()
             }
 
