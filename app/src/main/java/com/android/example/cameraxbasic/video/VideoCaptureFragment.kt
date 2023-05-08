@@ -67,8 +67,6 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.example.cameraxbasic.R
 import com.android.example.cameraxbasic.camera.CameraActivity
-import com.android.example.cameraxbasic.camera.GalleryActivity
-import com.android.example.cameraxbasic.camera.VideoActivity
 import com.android.example.cameraxbasic.camera.VideoListActivity
 import com.android.example.cameraxbasic.databinding.FragmentVideoCaptureBinding
 import com.android.example.cameraxbasic.fragments.CameraFragment
@@ -83,6 +81,8 @@ import com.android.example.cameraxbasic.viewmodels.APP_NAME
 import com.android.example.cameraxbasic.viewmodels.CaptureViewModel
 import com.android.example.cameraxbasic.viewmodels.PUBLISHED
 import com.example.android.camera.utils.GenericListAdapter
+import java.text.DecimalFormat
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -597,23 +597,28 @@ class VideoCaptureFragment : Fragment() {
             }
         }
 
-        val stats = event.recordingStats
-        val size = stats.numBytesRecorded / 1000
-        val time = TimeUnit.NANOSECONDS.toSeconds(stats.recordedDurationNanos)
-        val hour = TimeUnit.HOURS.toHours(stats.recordedDurationNanos)
-        //val mins = TimeUnit.MINUTES.toMinutes(stats.recordedDurationNanos)
-        val minutes = time / 1000 / 60
-        val hrs = time / 60
-
-
-        var text = "${state}: recorded ${size}KB, in ${time}second"
-        if (event is VideoRecordEvent.Finalize)
-            text = "${text}\nFile saved to: ${event.outputResults.outputUri}"
-
-        captureLiveStatus.value = "$hrs:$minutes:$time"
-        Log.i(TAG, "recording event: $text")
+        setVideoRecordingStatus(event)
+        Log.i(TAG, "recording event: ${captureLiveStatus.value}")
     }
 
+    private fun setVideoRecordingStatus(event: VideoRecordEvent) {
+        val stats = event.recordingStats
+        stats.recordedDurationNanos
+        val size = stats.numBytesRecorded / 1000
+        val seconds = TimeUnit.NANOSECONDS.toSeconds(stats.recordedDurationNanos)
+        val f: NumberFormat = DecimalFormat("00")
+        val hours = (seconds / 3600)
+        val minutes = (seconds % 3600 / 60)
+        val sec = (seconds % 60)
+        captureLiveStatus.value = formatTime(sec, minutes, hours)
+    }
+
+    private fun formatTime(seconds: Long, minutes: Long, hours: Long): String? {
+        return String.format("%02d", hours) + " : " + String.format(
+            "%02d",
+            minutes
+        ) + " : " + String.format("%02d", seconds)
+    }
     /**
      * Enable/disable UI:
      *    User could select the capture parameters when recording is not in session
