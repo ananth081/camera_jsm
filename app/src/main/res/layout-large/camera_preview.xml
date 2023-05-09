@@ -46,56 +46,69 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cancel_layout" />
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/zoomControls"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical"
+        android:layout_width="32dp"
+        android:layout_height="75dp"
+        android:layout_marginBottom="50dp"
         android:translationX="45dp"
         android:background="@drawable/zoom_button_corners"
         app:layout_constraintBottom_toTopOf="@+id/switchCameraLayout"
         app:layout_constraintEnd_toStartOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cancel_layout">
+        app:layout_constraintTop_toBottomOf="@+id/cancel_layout"
+        android:visibility="gone">
 
-        <Button
-            android:id="@+id/tvZoomTwo"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:background="#00555555"
-            android:layout_marginBottom="5dp"
-            android:gravity="center"
-            android:foreground="#00555555"
-            android:text="2x"
-            android:padding="2dp"
-            android:textColor="@color/txWhite"
-            android:textSize="14sp" />
+        <View
+            android:id="@+id/zoomToggleBg"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="bottom"
+            android:layout_marginHorizontal="1dp"
+            android:background="@drawable/zoom_button_bg" />
 
-        <Button
+        <TextView
             android:id="@+id/tvZoomOne"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:background="@drawable/zoom_button_bg"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="start"
+            android:layout_marginStart="1dp"
             android:foreground="#00555555"
             android:gravity="center"
             android:text="1x"
-            android:padding="2dp"
+            android:textAllCaps="false"
             android:textColor="@color/txBlack"
-            android:textSize="14sp" />
+            android:textSize="12sp" />
 
-        <Button
-            android:id="@+id/cameraZoomText1"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+        <TextView
+            android:id="@+id/tvZoomTwo"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:background="#00555555"
             android:foreground="#00555555"
             android:gravity="center"
-            android:visibility="gone"
-            android:padding="12dp"
-            android:text="2.0x"
-            android:textSize="16sp" />
-    </LinearLayout>
+            android:layout_gravity="center|bottom"
+            android:text="2x"
+            android:textAllCaps="false"
+            android:textColor="@color/txBlack"
+            android:textSize="12sp" />
+
+    </FrameLayout>
+
+    <androidx.appcompat.widget.AppCompatSeekBar
+        android:id="@+id/zoomSlider"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/switchCameraLayout"
+        app:layout_constraintEnd_toStartOf="parent"
+        android:translationX="45dp"
+        android:textAlignment="center"
+        android:rotation="270"
+        android:thumbTint="@color/txWhite"
+        android:progressTint="@color/txWhite"
+        android:background="@drawable/zoom_slider_bg"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cancel_layout"/>
 
     <LinearLayout
         android:id="@+id/switchCameraLayout"

@@ -78,6 +78,7 @@ import com.android.example.cameraxbasic.databinding.FragmentVideoCaptureBinding
 import com.android.example.cameraxbasic.extensions.animateXTranslation
 import com.android.example.cameraxbasic.extensions.toPx
 import com.android.example.cameraxbasic.fragments.CameraFragment
+import com.android.example.cameraxbasic.isTablet
 import com.android.example.cameraxbasic.save.SaveDialog
 import com.android.example.cameraxbasic.utils.CapturedMediaDto
 import com.android.example.cameraxbasic.utils.DELETED_LIST_INTENT_KEY
@@ -88,6 +89,7 @@ import com.android.example.cameraxbasic.video.extensions.getNameString
 import com.android.example.cameraxbasic.viewmodels.APP_NAME
 import com.android.example.cameraxbasic.viewmodels.CaptureViewModel
 import com.android.example.cameraxbasic.viewmodels.PUBLISHED
+import com.android.example.cameraxbasic.viewmodels.isTablet
 import com.example.android.camera.utils.GenericListAdapter
 import java.text.DecimalFormat
 import java.text.NumberFormat
@@ -821,6 +823,7 @@ class VideoCaptureFragment : Fragment() {
         captureViewModel.cancelCommunicator.observe(viewLifecycleOwner) {
             handleCancelClicked()
         }
+
     }
 
     override fun onDestroyView() {
@@ -1083,67 +1086,79 @@ class VideoCaptureFragment : Fragment() {
     }
 
     private fun handleCameraZoomClick() {
-        captureViewBinding.cameraZoom?.setOnClickListener {
-            captureViewBinding.cameraZoom?.post {
-
-                val marginHorizontal = 1.toPx(requireContext()).toFloat()
-                var isAtStart = true
-
-                val bgWidth = captureViewBinding.zoomToggleBg?.width?.plus(marginHorizontal)
-                    ?: marginHorizontal
-                val translationXEndVal =
-                    (captureViewBinding.cameraZoom?.width?.minus(bgWidth)) ?: 0f
-
-                val startValue: Float
-                val endValue: Float
-
-                if ((captureViewBinding.zoomToggleBg?.translationX ?: 0f) > marginHorizontal) {
-                    // translated to end
-                    startValue = translationXEndVal
-                    endValue = marginHorizontal
-                    isAtStart = false
-                } else {
-                    // is at start
-                    startValue = marginHorizontal
-                    endValue = translationXEndVal
-                    isAtStart = true
+        if(isTablet()){
+            captureViewBinding.zoomSlider?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                    camera?.cameraControl?.setLinearZoom(progress / 100.toFloat())
                 }
 
-                captureViewBinding.zoomToggleBg?.animateXTranslation(
-                    startValue,
-                    endValue,
-                    duration = 400,
-                    onAnimEnded = {
-                        if (isAtStart) {
-                            setCameraZoomLevels(0.7f)
-                            (captureViewBinding.tvZoomTwo as TextView).setTextColor(
-                                resources.getColor(
-                                    android.R.color.black,
-                                    null
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+            })
+        }else {
+            captureViewBinding.cameraZoom?.setOnClickListener {
+                captureViewBinding.cameraZoom?.post {
+
+                    val marginHorizontal = 1.toPx(requireContext()).toFloat()
+                    var isAtStart = true
+
+                    val bgWidth = captureViewBinding.zoomToggleBg?.width?.plus(marginHorizontal)
+                        ?: marginHorizontal
+                    val translationXEndVal =
+                        (captureViewBinding.cameraZoom?.width?.minus(bgWidth)) ?: 0f
+
+                    val startValue: Float
+                    val endValue: Float
+
+                    if ((captureViewBinding.zoomToggleBg?.translationX ?: 0f) > marginHorizontal) {
+                        // translated to end
+                        startValue = translationXEndVal
+                        endValue = marginHorizontal
+                        isAtStart = false
+                    } else {
+                        // is at start
+                        startValue = marginHorizontal
+                        endValue = translationXEndVal
+                        isAtStart = true
+                    }
+
+                    captureViewBinding.zoomToggleBg?.animateXTranslation(
+                        startValue,
+                        endValue,
+                        duration = 400,
+                        onAnimEnded = {
+                            if (isAtStart) {
+                                setCameraZoomLevels(0.7f)
+                                (captureViewBinding.tvZoomTwo as TextView).setTextColor(
+                                    resources.getColor(
+                                        android.R.color.black,
+                                        null
+                                    )
                                 )
-                            )
-                            (captureViewBinding.tvZoomOne as TextView).setTextColor(
-                                resources.getColor(
-                                    android.R.color.white,
-                                    null
+                                (captureViewBinding.tvZoomOne as TextView).setTextColor(
+                                    resources.getColor(
+                                        android.R.color.white,
+                                        null
+                                    )
                                 )
-                            )
-                        } else {
-                            setCameraZoomLevels(0.3f)
-                            (captureViewBinding.tvZoomOne as TextView).setTextColor(
-                                resources.getColor(
-                                    android.R.color.black,
-                                    null
+                            } else {
+                                setCameraZoomLevels(0.3f)
+                                (captureViewBinding.tvZoomOne as TextView).setTextColor(
+                                    resources.getColor(
+                                        android.R.color.black,
+                                        null
+                                    )
                                 )
-                            )
-                            (captureViewBinding.tvZoomTwo as TextView).setTextColor(
-                                resources.getColor(
-                                    android.R.color.white,
-                                    null
+                                (captureViewBinding.tvZoomTwo as TextView).setTextColor(
+                                    resources.getColor(
+                                        android.R.color.white,
+                                        null
+                                    )
                                 )
-                            )
-                        }
-                    })
+                            }
+                        })
+                }
             }
         }
     }

@@ -265,6 +265,7 @@
         android:gravity="center"
         android:orientation="vertical"
         android:translationX="45dp"
+        android:visibility="gone"
         android:background="@drawable/zoom_button_corners"
         app:layout_constraintBottom_toTopOf="@+id/switchCameraLayout"
         app:layout_constraintEnd_toStartOf="parent"
@@ -308,5 +309,20 @@
             android:text="2.0x"
             android:textSize="16sp" />
     </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatSeekBar
+        android:id="@+id/zoomSlider"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/switchCameraLayout"
+        app:layout_constraintEnd_toStartOf="parent"
+        android:translationX="45dp"
+        android:textAlignment="center"
+        android:rotation="270"
+        android:thumbTint="@color/txWhite"
+        android:progressTint="@color/txWhite"
+        android:background="@drawable/zoom_slider_bg"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cancel_layout"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

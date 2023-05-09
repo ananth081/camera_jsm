@@ -39,7 +39,9 @@ import android.util.Size
 import android.view.*
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.SeekBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.*
@@ -66,9 +68,11 @@ import com.android.example.cameraxbasic.utils.CapturedMediaDto
 import com.android.example.cameraxbasic.utils.DELETED_LIST_INTENT_KEY
 import com.android.example.cameraxbasic.utils.MEDIA_LIST_KEY
 import com.android.example.cameraxbasic.utils.MediaStoreUtils
+import com.android.example.cameraxbasic.video.VideoCaptureFragment
 import com.android.example.cameraxbasic.viewmodels.APP_NAME
 import com.android.example.cameraxbasic.viewmodels.CaptureViewModel
 import com.android.example.cameraxbasic.viewmodels.PUBLISHED
+import com.android.example.cameraxbasic.viewmodels.isTablet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.*
@@ -695,66 +699,104 @@ class CameraFragment : Fragment() {
     }
 
     private fun handleCameraZoomClick() {
-        cameraPreview.cameraZoom?.setOnClickListener {
-            cameraPreview.cameraZoom?.post {
+        if (isTablet()) {
 
-                val marginHorizontal = 1.toPx(requireContext()).toFloat()
-                var isAtStart = true
-
-                val bgWidth =
-                    cameraPreview.zoomToggleBg?.width?.plus(marginHorizontal) ?: marginHorizontal
-                val translationXEndVal = (cameraPreview.cameraZoom?.width?.minus(bgWidth)) ?: 0f
-
-                val startValue: Float
-                val endValue: Float
-
-                if ((cameraPreview.zoomToggleBg?.translationX ?: 0f) > marginHorizontal) {
-                    // translated to end
-                    startValue = translationXEndVal
-                    endValue = marginHorizontal
-                    isAtStart = false
-                } else {
-                    // is at start
-                    startValue = marginHorizontal
-                    endValue = translationXEndVal
-                    isAtStart = true
+            cameraPreview.zoomSlider?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                    camera?.cameraControl?.setLinearZoom(progress / 100.toFloat())
                 }
 
-                cameraPreview.zoomToggleBg?.animateXTranslation(
-                    startValue,
-                    endValue,
-                    duration = 400,
-                    onAnimEnded = {
-                        if (isAtStart) {
-                            setCameraZoomLevels(0.7f)
-                            (cameraPreview.tvZoomTwo as TextView).setTextColor(
-                                resources.getColor(
-                                    android.R.color.black,
-                                    null
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+            })
+//            cameraPreview.tvZoomOne.setOnClickListener {
+//                cameraPreview?.zoomToggleBg?.visibility = View.GONE
+//                camera?.cameraControl?.setLinearZoom(0.02f)
+//                it.setBackgroundResource(R.drawable.zoom_button_bg)
+//                cameraPreview?.tvZoomOne?.text = "1x"
+//                cameraPreview?.tvZoomTwo?.setBackgroundResource(R.drawable.zoom_button_bg_inactive)
+//                context?.getColor(R.color.txBlack)?.let { it1 -> cameraPreview?.tvZoomOne?.setTextColor(it1) }
+//                context?.resources?.getColor(R.color.ic_white)?.let { it1 -> cameraPreview?.tvZoomTwo?.setTextColor(it1) }
+//
+//                Toast.makeText(context, "test==tvZoomTwo", Toast.LENGTH_SHORT).show()
+//            }
+//            cameraPreview.tvZoomTwo?.setOnClickListener {
+//                cameraPreview?.zoomToggleBg?.visibility = View.GONE
+//                cameraPreview.tvZoomOne.setBackgroundResource(R.drawable.zoom_button_bg_inactive)
+//                it?.setBackgroundResource(R.drawable.zoom_button_bg)
+//                camera?.cameraControl?.setLinearZoom(0.7f)
+//                cameraPreview?.tvZoomTwo?.text = "2x"
+//                cameraPreview?.tvZoomOne?.setBackgroundResource(R.drawable.zoom_button_bg_inactive)
+//                context?.getColor(R.color.ic_white)?.let { it1 -> cameraPreview?.tvZoomOne?.setTextColor(it1) }
+//                context?.getColor(R.color.txBlack)?.let { it1 -> cameraPreview?.tvZoomTwo?.setTextColor(it1) }
+//
+//                Toast.makeText(context, "test==tvZoomOne", Toast.LENGTH_SHORT).show()
+//            }
+            Log.d(VideoCaptureFragment.TAG, "handleCameraZoomClick: isTablet" + true)
+        } else {
+            cameraPreview.cameraZoom?.setOnClickListener {
+                Log.d(VideoCaptureFragment.TAG, "handleCameraZoomClick: isTablet" + false)
+                cameraPreview.cameraZoom?.post {
+                    val marginHorizontal = 1.toPx(requireContext()).toFloat()
+                    var isAtStart = true
+
+                    val bgWidth =
+                        cameraPreview.zoomToggleBg?.width?.plus(marginHorizontal)
+                            ?: marginHorizontal
+                    val translationXEndVal = (cameraPreview.cameraZoom?.width?.minus(bgWidth)) ?: 0f
+
+                    val startValue: Float
+                    val endValue: Float
+
+                    if ((cameraPreview.zoomToggleBg?.translationX ?: 0f) > marginHorizontal) {
+                        // translated to end
+                        startValue = translationXEndVal
+                        endValue = marginHorizontal
+                        isAtStart = false
+                    } else {
+                        // is at start
+                        startValue = marginHorizontal
+                        endValue = translationXEndVal
+                        isAtStart = true
+                    }
+
+                    cameraPreview.zoomToggleBg?.animateXTranslation(
+                        startValue,
+                        endValue,
+                        duration = 400,
+                        onAnimEnded = {
+                            if (isAtStart) {
+                                setCameraZoomLevels(0.7f)
+                                (cameraPreview.tvZoomTwo as TextView).setTextColor(
+                                    resources.getColor(
+                                        android.R.color.black,
+                                        null
+                                    )
                                 )
-                            )
-                            (cameraPreview.tvZoomOne as TextView).setTextColor(
-                                resources.getColor(
-                                    android.R.color.white,
-                                    null
+                                (cameraPreview.tvZoomOne as TextView).setTextColor(
+                                    resources.getColor(
+                                        android.R.color.white,
+                                        null
+                                    )
                                 )
-                            )
-                        } else {
-                            setCameraZoomLevels(0.3f)
-                            (cameraPreview.tvZoomOne as TextView).setTextColor(
-                                resources.getColor(
-                                    android.R.color.black,
-                                    null
+                            } else {
+                                setCameraZoomLevels(0.3f)
+                                (cameraPreview.tvZoomOne as TextView).setTextColor(
+                                    resources.getColor(
+                                        android.R.color.black,
+                                        null
+                                    )
                                 )
-                            )
-                            (cameraPreview.tvZoomTwo as TextView).setTextColor(
-                                resources.getColor(
-                                    android.R.color.white,
-                                    null
+                                (cameraPreview.tvZoomTwo as TextView).setTextColor(
+                                    resources.getColor(
+                                        android.R.color.white,
+                                        null
+                                    )
                                 )
-                            )
-                        }
-                    })
+                            }
+                        })
+                }
             }
         }
     }
@@ -776,6 +818,8 @@ class CameraFragment : Fragment() {
 //        }
         }
     }
+
+
 
     override fun onDetach() {
         super.onDetach()
@@ -875,7 +919,7 @@ class CameraFragment : Fragment() {
 //        }
 
         var rectSize = 100
-val handler = Handler(Looper.getMainLooper())
+        val handler = Handler(Looper.getMainLooper())
         cameraPreview?.viewFinder?.setOnTouchListener { view: View, motionEvent: MotionEvent ->
             scaleGestureDetector.onTouchEvent(motionEvent)
             when (motionEvent.action) {
@@ -910,7 +954,7 @@ val handler = Handler(Looper.getMainLooper())
                     }
                     handler.postDelayed({
                         cameraPreview?.rectOverlayFocus?.visibility = View.GONE
-                    },1000)
+                    }, 1000)
 
                     return@setOnTouchListener true
                 }
