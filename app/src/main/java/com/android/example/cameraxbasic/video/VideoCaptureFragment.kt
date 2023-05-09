@@ -691,6 +691,8 @@ class VideoCaptureFragment : Fragment() {
                     it.qualitySelection.visibility = View.INVISIBLE
                     // it.saveText.visibility = View.GONE
                     it.dualCamera.visibility = View.GONE
+                    it.flashLight.visibility = View.GONE
+                    it.cancel.visibility = View.GONE
                     it.pauseButton.setImageResource(R.drawable.baseline_pause_24)
                     // it.captureButton.setImageResource(R.drawable.ic_pause)
                     // it.captureButtonFrame?.visibility = View.INVISIBLE
@@ -706,6 +708,9 @@ class VideoCaptureFragment : Fragment() {
                     it.captureButton.setImageResource(R.drawable.ic_record)
                     // it.saveText.visibility = View.VISIBLE
                     it.dualCamera.visibility = View.VISIBLE
+                    it.flashLight.visibility = View.VISIBLE
+                    it.cancel.visibility = View.VISIBLE
+
                     // it.recordLayout.visibility = View.INVISIBLE
                     it.captureStatus.visibility = View.GONE
                     handleCaptureAndRecordLayoutAnimation(true)
