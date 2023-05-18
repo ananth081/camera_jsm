@@ -684,6 +684,8 @@ class VideoCaptureFragment : Fragment() {
                     it.videoPreviewImage.visibility = View.VISIBLE
                     it.audioSelection.visibility = View.VISIBLE
                     it.qualitySelection.visibility = View.VISIBLE
+                    it.photoBtn.visibility = View.VISIBLE
+                    it.videoBtn.visibility = View.VISIBLE
                 }
                 UiState.RECORDING -> {
                     it.videoPreviewImage.visibility = View.INVISIBLE
@@ -699,7 +701,6 @@ class VideoCaptureFragment : Fragment() {
                     // it.recordLayout.visibility = View.VISIBLE
                     it.stopButton.isEnabled = true
                     it.captureStatus.visibility = View.VISIBLE
-
                     handleCaptureAndRecordLayoutAnimation(false)
                 }
                 UiState.FINALIZED -> {
@@ -731,17 +732,18 @@ class VideoCaptureFragment : Fragment() {
             captureViewBinding.videoThumbnailLayout?.animate()?.alpha(1f)?.setDuration(500)?.start()
             captureViewBinding.videoPreviewImage.animate()?.alpha(1f)?.setDuration(500)?.start()
             captureViewBinding.saveText.animate()?.alpha(1f)?.setDuration(500)?.start()
-
             captureViewBinding.recordLayout.animate()?.alpha(0f)?.setDuration(500)?.start()
+            captureViewBinding.photoBtn.animate()?.alpha(1f)?.setDuration(500)?.start()
+            captureViewBinding.videoBtn.animate()?.alpha(1f)?.setDuration(500)?.start()
         } else {
             captureViewBinding.recordLayout.alpha = 0f
             captureViewBinding.recordLayout.visibility = View.VISIBLE
-
             captureViewBinding.captureButtonFrame?.animate()?.alpha(0f)?.setDuration(500)?.start()
             captureViewBinding.videoThumbnailLayout?.animate()?.alpha(0f)?.setDuration(500)?.start()
             captureViewBinding.saveText.animate()?.alpha(0f)?.setDuration(500)?.start()
-
             captureViewBinding.recordLayout.animate()?.alpha(1f)?.setDuration(500)?.start()
+            captureViewBinding.photoBtn.animate()?.alpha(0f)?.setDuration(500)?.start()
+            captureViewBinding.videoBtn.animate()?.alpha(0f)?.setDuration(500)?.start()
         }
     }
 
