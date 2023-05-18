@@ -41,7 +41,6 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.SeekBar
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.*
@@ -598,23 +597,23 @@ class CameraFragment : Fragment() {
                 bindCameraUseCases()
 
                 if (lensFacing == CameraSelector.LENS_FACING_FRONT) {
-                    cameraPreview?.flashLight?.isEnabled = false
-                    cameraPreview?.flashLight?.visibility = View.INVISIBLE
+                    cameraPreview?.cancelLayout?.flashLight?.isEnabled = false
+                    cameraPreview?.cancelLayout?.flashLight?.visibility = View.INVISIBLE
                     cameraPreview?.cameraZoom?.visibility = View.GONE
                 } else if (lensFacing == CameraSelector.LENS_FACING_BACK) {
-                    cameraPreview?.flashLight?.isEnabled = true
-                    cameraPreview?.flashLight?.isVisible = true
+                    cameraPreview?.cancelLayout?.flashLight?.isEnabled = true
+                    cameraPreview?.cancelLayout?.flashLight?.isVisible = true
                     cameraPreview?.cameraZoom?.visibility = View.VISIBLE
                 }
             }
         }
-        cameraPreview?.flashLight?.let { flashLightImg ->
+        cameraPreview?.cancelLayout?.flashLight?.let { flashLightImg ->
             flashLightImg.isEnabled = true
             var torchState: Boolean
             flashLightImg.setOnClickListener {
                 torchState = TorchState.ON == camera?.cameraInfo?.torchState?.value
                 if (torchState) {
-                    flashLightImg.background = resources.getDrawable(R.drawable.flash_circle_1)
+                    flashLightImg.background = resources.getDrawable(R.drawable.flash_circle_off)
                     camera?.cameraControl?.enableTorch(false)
                 } else {
                     flashLightImg.background = resources.getDrawable(R.drawable.flash_circle_on)
@@ -637,13 +636,14 @@ class CameraFragment : Fragment() {
 
         }
 
-        cameraPreview?.cancel?.setOnClickListener {
-            if (captureViewModel.mediaList.isNotEmpty()) {
-                captureViewModel.deleteUnsavedMedia(requireContext())
-            } else {
-                handleCancelClicked()
-            }
-        }
+        //todo move this logic to on Back pressed
+//        cameraPreview?.cancel?.setOnClickListener {
+//            if (captureViewModel.mediaList.isNotEmpty()) {
+//                captureViewModel.deleteUnsavedMedia(requireContext())
+//            } else {
+//                handleCancelClicked()
+//            }
+//        }
 
         cameraPreview?.saveText?.setOnClickListener {
 

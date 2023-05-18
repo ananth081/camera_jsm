@@ -6,46 +6,12 @@
     android:layout_height="match_parent"
     android:animateLayoutChanges="true">
 
-    <RelativeLayout
+    <include
         android:id="@+id/cancel_layout"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:background="@color/txBlack"
-        android:gravity="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/cancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Cancel"
-            android:textColor="@color/ic_white"
-            android:textSize="14sp"
-            android:translationX="14dp"
-            android:translationY="19dp" />
-
-
-        <ImageView
-            android:id="@+id/flashLight"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:layout_alignStart="@+id/dualCamera"
-            android:layout_marginTop="2dp"
-            android:background="@drawable/flash_circle_1"
-            android:translationX="-60dp"
-            android:visibility="visible" />
-
-        <ImageView
-            android:id="@+id/dualCamera"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:layout_alignParentEnd="true"
-            android:background="@drawable/ic_switch_camera"
-            android:translationX="-10dp"
-            android:translationY="3dp" />
-
-    </RelativeLayout>
+        android:layout_height="70dp"
+        layout="@layout/camera_cancel_layout">
+    </include>
 
     <androidx.camera.view.PreviewView
         android:id="@+id/view_finder"
@@ -269,7 +235,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/txBlack"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/switchCameraLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

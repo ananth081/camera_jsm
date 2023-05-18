@@ -45,7 +45,6 @@ class GalleryViewDailogFragment : DialogFragment() {
             viewSelected = "Day"
             binding.checkbox3.isChecked = false
             binding.checkbox2.isChecked = false
-
         }
 
         binding.checkbox2.setOnClickListener {
@@ -59,7 +58,18 @@ class GalleryViewDailogFragment : DialogFragment() {
             viewSelected = "Month"
             binding.checkbox1.isChecked = false
             binding.checkbox2.isChecked = false
+        }
 
+        binding.gridViewChkBox.setOnClickListener {
+            viewSelected = "GridView"
+            binding.checkbox1.isChecked = false
+            binding.checkbox2.isChecked = false
+        }
+
+        binding.listViewChkBox.setOnClickListener {
+            viewSelected = "ListView"
+            binding.checkbox1.isChecked = false
+            binding.checkbox2.isChecked = false
         }
 
         binding.save.setOnClickListener {
@@ -76,7 +86,6 @@ class GalleryViewDailogFragment : DialogFragment() {
             binding.checkbox1.isChecked = true
         } else {
             binding.checkbox3.isChecked = true
-
         }
     }
 
@@ -88,6 +97,4 @@ class GalleryViewDailogFragment : DialogFragment() {
     fun initialiseObject(obj: selectedView) {
         this.listener = obj
     }
-
-
 }

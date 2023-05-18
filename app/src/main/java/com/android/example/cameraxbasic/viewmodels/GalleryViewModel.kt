@@ -17,6 +17,8 @@ import java.util.Locale
 
 const val DAY_FILTER = 1
 const val MONTH_FILTER = 2
+const val GRID_VIEW = 3
+const val LIST_VIEW = 4
 
 class GalleryViewModel : ViewModel() {
     var filterType = DAY_FILTER

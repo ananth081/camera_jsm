@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="80dp"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="@color/txBlack"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintLeft_toLeftOf="parent"
+    android:layout_gravity="start">
+
+    <ImageView
+        android:id="@+id/flashLight"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:background="@drawable/flash_circle_off"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="24dp"
+        android:padding="12dp"
+        android:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/dualCamera"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:background="@drawable/ic_switch_camera"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="24dp"
+        android:padding="12dp" />
+
+    <TextView
+        android:id="@+id/cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/dualCamera"
+        android:layout_centerInParent="true"
+        android:text="Cancel"
+        android:textColor="@color/ic_white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:textSize="14sp"
+        android:visibility="gone"
+        android:translationY="-80dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>

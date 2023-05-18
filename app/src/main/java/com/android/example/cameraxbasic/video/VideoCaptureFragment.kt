@@ -49,7 +49,6 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
-import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.result.ActivityResult
@@ -78,7 +77,6 @@ import com.android.example.cameraxbasic.databinding.FragmentVideoCaptureBinding
 import com.android.example.cameraxbasic.extensions.animateXTranslation
 import com.android.example.cameraxbasic.extensions.toPx
 import com.android.example.cameraxbasic.fragments.CameraFragment
-import com.android.example.cameraxbasic.isTablet
 import com.android.example.cameraxbasic.save.SaveDialog
 import com.android.example.cameraxbasic.utils.CapturedMediaDto
 import com.android.example.cameraxbasic.utils.DELETED_LIST_INTENT_KEY
@@ -196,16 +194,16 @@ class VideoCaptureFragment : Fragment() {
         enableUI(true)
         setScale()
 
-        captureViewBinding.flashLight.let { flashLightImg ->
+        captureViewBinding.cancelLayout.flashLight.let { flashLightImg ->
             flashLightImg.isEnabled = true
             var torchState = false
             flashLightImg.setOnClickListener {
                 torchState = TorchState.ON == getTorchState()
                 if (torchState) {
-                    flashLightImg.setImageResource(R.drawable.flash_circle_1)
+                    flashLightImg.background = resources.getDrawable(R.drawable.flash_circle_off)
                     setTorchState(false)
                 } else {
-                    flashLightImg.setImageResource(R.drawable.flash_circle_on)
+                    flashLightImg.background = resources.getDrawable(R.drawable.flash_circle_on)
                     setTorchState(true)
                 }
             }
@@ -453,13 +451,13 @@ class VideoCaptureFragment : Fragment() {
                 }
 
                 if (lensFacing == CameraSelector.LENS_FACING_FRONT) {
-                    captureViewBinding?.flashLight?.isEnabled = false
-                    captureViewBinding?.flashLight?.visibility = View.INVISIBLE
+                    captureViewBinding.cancelLayout?.flashLight?.isEnabled = false
+                    captureViewBinding.cancelLayout?.flashLight?.visibility = View.INVISIBLE
                     captureViewBinding?.cameraZoom?.visibility = View.GONE
                 } else if (lensFacing == CameraSelector.LENS_FACING_BACK) {
-                    captureViewBinding?.flashLight?.isEnabled = true
-                    captureViewBinding?.flashLight?.isVisible = true
-                    captureViewBinding?.flashLight?.visibility = View.VISIBLE
+                    captureViewBinding.cancelLayout?.flashLight?.isEnabled = true
+                    captureViewBinding.cancelLayout?.flashLight?.isVisible = true
+                    captureViewBinding.cancelLayout?.flashLight?.visibility = View.VISIBLE
                     captureViewBinding?.cameraZoom?.visibility = View.VISIBLE
                 }
             }
@@ -538,15 +536,14 @@ class VideoCaptureFragment : Fragment() {
             }
         }
 
-        captureViewBinding.cancel.setOnClickListener {
-
-            if (captureViewModel.mediaList.isNotEmpty()) {
-                captureViewModel.deleteUnsavedMedia(requireContext())
-            } else {
-                handleCancelClicked()
-            }
-
-        }
+        //todo handle cancel click to onBackPress
+//        captureViewBinding.cancel.setOnClickListener {
+//            if (captureViewModel.mediaList.isNotEmpty()) {
+//                captureViewModel.deleteUnsavedMedia(requireContext())
+//            } else {
+//                handleCancelClicked()
+//            }
+//        }
 
         captureViewBinding.photoBtn?.setOnTouchListener { v, event ->
             captureViewModel.deleteUnsavedMediaWithoutNotify(requireContext())
@@ -690,9 +687,9 @@ class VideoCaptureFragment : Fragment() {
                     it.audioSelection.visibility = View.INVISIBLE
                     it.qualitySelection.visibility = View.INVISIBLE
                     // it.saveText.visibility = View.GONE
-                    it.dualCamera.visibility = View.GONE
-                    it.flashLight.visibility = View.GONE
-                    it.cancel.visibility = View.GONE
+                    it.dualCamera?.visibility = View.GONE
+                    it.cancelLayout.flashLight.visibility = View.GONE
+                    it.cancelLayout.cancel.visibility = View.GONE
                     it.pauseButton.setImageResource(R.drawable.baseline_pause_24)
                     // it.captureButton.setImageResource(R.drawable.ic_pause)
                     // it.captureButtonFrame?.visibility = View.INVISIBLE
@@ -707,9 +704,9 @@ class VideoCaptureFragment : Fragment() {
                     it.captureButton.isEnabled = true
                     it.captureButton.setImageResource(R.drawable.ic_record)
                     // it.saveText.visibility = View.VISIBLE
-                    it.dualCamera.visibility = View.VISIBLE
-                    it.flashLight.visibility = View.VISIBLE
-                    it.cancel.visibility = View.VISIBLE
+                    it.dualCamera?.visibility = View.VISIBLE
+                    it.cancelLayout.flashLight.visibility = View.VISIBLE
+                    it.cancelLayout.cancel.visibility = View.VISIBLE
 
                     // it.recordLayout.visibility = View.INVISIBLE
                     it.captureStatus.visibility = View.GONE

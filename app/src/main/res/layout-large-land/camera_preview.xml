@@ -4,36 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
+    <include
         android:id="@+id/cancel_layout"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="70dp"
         android:visibility="gone"
-        android:background="@color/txBlack"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/cancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="8dp"
-            android:gravity="bottom"
-            android:text="Cancel"
-            android:textColor="@color/ic_white"
-            android:textSize="18sp" />
-
-        <ImageView
-            android:id="@+id/flashLight"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="12dp"
-            android:src="@drawable/flash_circle_1" />
-
-
-    </RelativeLayout>
+        layout="@layout/camera_cancel_layout">
+    </include>
 
     <androidx.camera.view.PreviewView
         android:id="@+id/view_finder"
@@ -218,4 +195,15 @@
             android:layout_gravity="center"
             android:src="@drawable/outline_camera_alt_24" />
     </FrameLayout>
+
+    <com.android.example.cameraxbasic.utils.RectOverlay
+        android:id="@+id/rect_overlay_focus"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toStartOf="@id/camera_control"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/switchCameraLayout"
+        android:layout_marginBottom="50dp"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

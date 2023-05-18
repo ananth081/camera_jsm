@@ -15,7 +15,9 @@ import com.android.example.cameraxbasic.fragments.GalleryViewDailogFragment
 import com.android.example.cameraxbasic.fragments.PublishedFragment
 import com.android.example.cameraxbasic.utils.SELECTED_FILTER_OPTION_KEY
 import com.android.example.cameraxbasic.viewmodels.DAY_FILTER
+import com.android.example.cameraxbasic.viewmodels.GRID_VIEW
 import com.android.example.cameraxbasic.viewmodels.GalleryViewModel
+import com.android.example.cameraxbasic.viewmodels.LIST_VIEW
 import com.android.example.cameraxbasic.viewmodels.MONTH_FILTER
 import com.google.android.material.tabs.TabLayoutMediator
 
@@ -50,20 +52,17 @@ class JsmGalleryActivity : AppCompatActivity(), GalleryViewDailogFragment.select
             fragment.initialiseObject(this)
 
         }
-
     }
 
 
     private fun initialiseView(viewPager: ViewPager2) {
         viewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
         mViewPager = viewPager
-
-
         adapter = ViewPagerAdapter(supportFragmentManager, lifecycle)
         mViewPager.adapter = adapter
 
         TabLayoutMediator(binding.tabLayout, viewPager) { tab, position ->
-            tab.text = if (position == 0) "Published" else "Needs Review"
+            tab.text = if (position == 0) "Published" else "Drafts"
         }.attach()
 
         if (source) {
@@ -76,22 +75,46 @@ class JsmGalleryActivity : AppCompatActivity(), GalleryViewDailogFragment.select
                 binding.tabLayout.getTabAt(1)?.select()
                 binding.tabLayout.setScrollPosition(1, 0f, true)
             }, 500L)
-
-
         }
     }
 
     override fun getSelectedView(selectedView: String) {
-        val type = if (selectedView == "Day") DAY_FILTER else MONTH_FILTER
+        var type = 0
+
+        when (selectedView) {
+            "Day" -> {
+                type = DAY_FILTER
+            }
+
+            "Month" -> {
+                type = MONTH_FILTER
+            }
+
+            "GridView" -> {
+                type = GRID_VIEW
+            }
+
+            "ListView" -> {
+                type = LIST_VIEW
+            }
+        }
         galleryViewModel.filterType = type
         val fragment0 = binding.viewPager.findFragmentAtPosition(supportFragmentManager, 0)
         val fragment1 = binding.viewPager.findFragmentAtPosition(supportFragmentManager, 1)
-        (fragment0 as PublishedFragment).refresh(type)
-        (fragment1 as PublishedFragment).refresh(type)
-//        (fragment as PublishedFragment).onMediaViewSelected(selectedView)
-//        adapter?.refreshFragment(0,PublishedFragment())
+        when (type) {
+            GRID_VIEW -> {
+                (fragment0 as PublishedFragment).setGridView(type)
+            }
 
+            LIST_VIEW -> {
+                (fragment0 as PublishedFragment).setListView(type)
+            }
 
+            DAY_FILTER, MONTH_FILTER -> {
+                (fragment0 as PublishedFragment).refresh(type)
+                (fragment1 as PublishedFragment).refresh(type)
+            }
+        }
     }
 
     fun ViewPager2.findFragmentAtPosition(
@@ -102,7 +125,7 @@ class JsmGalleryActivity : AppCompatActivity(), GalleryViewDailogFragment.select
     }
 
     fun updateText(value: Int) {
-        val txt = "Needs Review ($value)"
+        val txt = "Drafts ($value)"
         binding.tabLayout.getTabAt(1)?.text = txt
     }
 }

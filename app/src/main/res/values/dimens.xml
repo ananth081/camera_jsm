@@ -39,4 +39,7 @@
     <dimen name="fab_margin">16dp</dimen>
     <bool name="isTablet">false</bool>
     <bool name="isw600dp">false</bool>
+
+    <integer name="dialog_width">80</integer>
+    <integer name="dialog_height">100</integer>
 </resources>

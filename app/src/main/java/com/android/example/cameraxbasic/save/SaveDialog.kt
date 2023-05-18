@@ -8,6 +8,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
+import android.widget.CompoundButton.OnCheckedChangeListener
+import android.widget.RadioGroup
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
@@ -15,7 +19,12 @@ import com.android.example.cameraxbasic.R
 import com.android.example.cameraxbasic.camera.HomeScreenActivity
 import com.android.example.cameraxbasic.camera.JsmGalleryActivity
 import com.android.example.cameraxbasic.databinding.SaveDialogItemBinding
+import com.android.example.cameraxbasic.getHeightInPixel
+import com.android.example.cameraxbasic.getWidthInPixel
 import com.android.example.cameraxbasic.viewmodels.CaptureViewModel
+import com.android.example.cameraxbasic.viewmodels.isTablet
+import com.google.android.material.radiobutton.MaterialRadioButton
+import com.pdftron.pdf.annots.RadioButtonGroup
 
 class SaveDialog : DialogFragment() {
     lateinit var binding: SaveDialogItemBinding
@@ -46,7 +55,7 @@ class SaveDialog : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val alertOption = arrayOf("Publish Now", "Needs review")
+        val alertOption = arrayOf("Publish Now", "Save to Drafts")
         return activity?.let {
             intent = Intent(requireContext(), JsmGalleryActivity::class.java)
             val builder = AlertDialog.Builder(it, R.style.AlertDialogTheme)
@@ -55,8 +64,48 @@ class SaveDialog : DialogFragment() {
 
             // Inflate and set the layout for the dialog
             // Pass null as the parent view because its going in the dialog layout
-            // builder.setView(inflater.inflate(R.layout.save_dialog_item, null))
-            builder.setTitle("Do you want to publish this media now, or does it need to be reviewed")
+            val view: View = inflater.inflate(R.layout.save_dialog_item, null)
+            builder.setView(view)
+            // val publishRadioBt: MaterialRadioButton = view.findViewById<View>(R.id.publishRadioBt) as MaterialRadioButton
+            // val needsReviewRadioBt: MaterialRadioButton = view.findViewById<View>(R.id.needsReviewRadioBt) as MaterialRadioButton
+
+            val radioGroup: RadioGroup = view.findViewById(R.id.saveRadioButtonGrp) as RadioGroup
+            val cancel: TextView = view.findViewById(R.id.cancelText) as TextView
+            val saveText: TextView = view.findViewById(R.id.saveText) as TextView
+
+            val publishRadioBt =
+                radioGroup?.findViewById<MaterialRadioButton>(R.id.publishRadioBt)
+            val needsReviewRadioBt =
+                radioGroup?.findViewById<MaterialRadioButton>(R.id.needsReviewRadioBt)
+
+            radioGroup.setOnCheckedChangeListener(object : RadioGroup.OnCheckedChangeListener {
+                override fun onCheckedChanged(group: RadioGroup?, checkedId: Int) {
+                    if (checkedId == publishRadioBt?.id) {
+                        publishRadioBt?.isChecked = true
+                    }
+                    if (checkedId == needsReviewRadioBt?.id) {
+                        needsReviewRadioBt?.isChecked = true
+                    }
+                }
+            })
+
+            cancel.setOnClickListener {
+                dialog?.dismiss()
+            }
+
+            saveText.setOnClickListener {
+                dialog?.dismiss()
+                if (publishRadioBt?.isChecked!!) {
+                    intent.putExtra("IS_PUBLISHED_SCREEN", true)
+                    launchNextScreen()
+                } else {
+                    intent.putExtra("IS_PUBLISHED_SCREEN", false)
+                    captureViewModel.moveFileToDraftFolder(requireContext())
+                    launchNextScreen()
+                }
+            }
+
+            //builder.setTitle("Do you want to publish this media now, or does it need to be reviewed")
 
             // Add action buttons
 //                .setPositiveButton("Cancel"
@@ -67,46 +116,43 @@ class SaveDialog : DialogFragment() {
 //                    getDialog()?.cancel()
 //                }
 
-            builder.setSingleChoiceItems(
-                alertOption,
-                0
-            ) { dialogInterface: DialogInterface, i: Int ->
-                if (i == 0) {
-                    binding.needsReviewRadioBt.isChecked = false
-                } else {
-                    binding.publishRadioBt.isChecked = false
-                }
+//            builder.setSingleChoiceItems(
+//                alertOption,
+//                0
+//            ) { dialogInterface: DialogInterface, i: Int ->
+//                if (i == 0) {
+//                    binding.needsReviewRadioBt.isChecked = false
+//                } else {
+//                    binding.publishRadioBt.isChecked = false
+//                }
+//            }
 
-            }
-
-            builder.setPositiveButton(
-                "Save"
-            ) { dialog, id ->
-
-                Log.d(
-                    "PRS",
-                    "id" + id + " binding.publishRadioBt.isChecked" + binding.publishRadioBt.isChecked
-                )
-                if (binding.publishRadioBt.isChecked) {
-                    intent.putExtra("IS_PUBLISHED_SCREEN", true)
-                    launchNextScreen()
-                } else {
-                    intent.putExtra("IS_PUBLISHED_SCREEN", false)
-                    captureViewModel.moveFileToDraftFolder(requireContext())
-                    launchNextScreen()
-                }
-
-            }.setNegativeButton("Cancel") { dialog, id ->
-                getDialog()?.cancel()
-//                    intent.putExtra("IS_PUBLISHED_SCREEN",true)
-//                    startActivity(intent)
-            }
+//            builder.setPositiveButton(
+//                "Save"
+//            ) { dialog, id ->
+//
+//                Log.d(
+//                    "PRS",
+//                    "id" + id + " binding.publishRadioBt.isChecked" + binding.publishRadioBt.isChecked
+//                )
+//                if (binding.publishRadioBt.isChecked) {
+//                    intent.putExtra("IS_PUBLISHED_SCREEN", true)
+//                    launchNextScreen()
+//                } else {
+//                    intent.putExtra("IS_PUBLISHED_SCREEN", false)
+//                    captureViewModel.moveFileToDraftFolder(requireContext())
+//                    launchNextScreen()
+//                }
+//
+//            }.setNegativeButton("Cancel") { dialog, id ->
+//                getDialog()?.cancel()
+//            }
             builder.create()
         } ?: throw IllegalStateException("Activity cannot be null")
     }
 
     private fun launchNextScreen() {
-        if(activity is HomeScreenActivity) {
+        if (activity is HomeScreenActivity) {
             (activity as HomeScreenActivity).clearStack()
         }
         activity?.finish()
@@ -126,9 +172,8 @@ class SaveDialog : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        val dialog = dialog
-
-
+//        val dialog = dialog
+//
 //        if (dialog != null) {
 //            val width = getWidth()
 //            val height = getHeight()
@@ -137,22 +182,21 @@ class SaveDialog : DialogFragment() {
     }
 
 
-//    override fun getWidth(): Int {
+    private fun getWidth(): Int {
+
+        return activity?.getWidthInPixel(resources.getInteger(R.integer.dialog_width))
+            ?: ViewGroup.LayoutParams.MATCH_PARENT
+    }
+
+    private fun getHeight(): Int {
 //        return if (!isTablet()) {
 //            ViewGroup.LayoutParams.MATCH_PARENT
 //        } else {
-//            activity?.getWidthInPixel(resources.getInteger(R.integer.dialog_width))
-//                ?: ViewGroup.LayoutParams.MATCH_PARENT
-//        }
-//    }
 //
-//    override fun getHeight(): Int {
-//        return if (!isTablet()) {
-//            ViewGroup.LayoutParams.MATCH_PARENT
-//        } else {
-//            return activity?.getHeightInPixel(resources.getInteger(R.integer.dialog_height))
-//                ?: ViewGroup.LayoutParams.MATCH_PARENT
 //        }
-//    }
+
+        return activity?.getHeightInPixel(resources.getInteger(R.integer.dialog_height))
+            ?: ViewGroup.LayoutParams.MATCH_PARENT
+    }
 
 }

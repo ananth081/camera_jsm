@@ -7,10 +7,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.example.cameraxbasic.ImageDetailActivity
 import com.android.example.cameraxbasic.adapter.ImageRecyclerViewAdapter
 import com.android.example.cameraxbasic.camera.JsmGalleryActivity
@@ -20,6 +21,7 @@ import com.android.example.cameraxbasic.utils.IMAGE_URI_STRING_KEY
 import com.android.example.cameraxbasic.utils.MEDIA_TYPE_KEY
 import com.android.example.cameraxbasic.utils.MediaStoreFile
 import com.android.example.cameraxbasic.viewmodels.DRAFT
+import com.android.example.cameraxbasic.viewmodels.GRID_VIEW
 import com.android.example.cameraxbasic.viewmodels.GalleryViewModel
 import java.io.File
 import kotlin.math.roundToInt
@@ -33,7 +35,7 @@ class PublishedFragment : Fragment(), ImageRecyclerViewAdapter.ItemClickListenr 
     val typeDate = 100
     val typeMedia = 101
     val dataViewModel: GalleryViewModel by viewModels()
-
+    var viewType = GRID_VIEW
     companion object {
         fun newInstance(type: String): Fragment {
             val fragment = PublishedFragment()
@@ -62,31 +64,23 @@ class PublishedFragment : Fragment(), ImageRecyclerViewAdapter.ItemClickListenr 
         super.onViewCreated(view, savedInstanceState)
         extractArguments()
         readImageFileFromStorage()
+        setImageData()
+    }
+
+    private fun setImageData() {
         dataViewModel.communicator.observe(viewLifecycleOwner) { list ->
             if (type == DRAFT) {
                 val draftItemSize = list.filterIsInstance<MediaStoreFile>().toList().size
                 (activity as JsmGalleryActivity).updateText(draftItemSize)
             }
-
             adapter = ImageRecyclerViewAdapter()
             adapter?.setClickListner(this)
-            val displayMetrics = resources.displayMetrics
-            val screenWidth = displayMetrics.widthPixels / displayMetrics.density
-            val noOfColumns = (screenWidth / 100 + 0.9).roundToInt() - 1
-            val glm = GridLayoutManager(
-                context, noOfColumns
-            )
-            glm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-                override fun getSpanSize(position: Int): Int {
-                    return if (adapter?.getItemViewType(position) == typeDate) {
-                        noOfColumns
-                    } else 1
-                }
+            if (GRID_VIEW == viewType) {
+                binding.galleryImage.layoutManager = getGridLayoutManager()
+            } else {
+                binding.galleryImage.layoutManager = getLinearLayoutManager()
             }
-            binding.galleryImage.layoutManager = glm
             adapter?.dataList?.addAll(list!!)
-//            adapter?.dataList?.add("March 28, 2023")
-//            adapter?.dataList?.addAll(list)
             binding.galleryImage.adapter = adapter
         }
     }
@@ -116,6 +110,40 @@ class PublishedFragment : Fragment(), ImageRecyclerViewAdapter.ItemClickListenr 
 
     fun refresh(filterType: Int) {
         dataViewModel.loadImages(requireContext(), type, filterType)
+    }
+
+
+    fun setGridView(viewType: Int) {
+        this.viewType = viewType
+        Toast.makeText(requireContext(), "" + "gridView", Toast.LENGTH_SHORT).show()
+        setImageData()
+    }
+
+    fun setListView(viewType: Int) {
+        this.viewType = viewType
+        Toast.makeText(requireContext(), "" + "listView", Toast.LENGTH_SHORT).show()
+        setImageData()
+    }
+
+    private fun getGridLayoutManager(): GridLayoutManager {
+        val displayMetrics = resources.displayMetrics
+        val screenWidth = displayMetrics.widthPixels / displayMetrics.density
+        val noOfColumns = (screenWidth / 100 + 0.9).roundToInt() - 1
+        val glm = GridLayoutManager(
+            context, noOfColumns
+        )
+        glm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                return if (adapter?.getItemViewType(position) == typeDate) {
+                    noOfColumns
+                } else 1
+            }
+        }
+        return glm
+    }
+
+    private fun getLinearLayoutManager(): LinearLayoutManager {
+        return LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
     }
 
 //    fun onMediaViewSelected(viewSelected: String) {

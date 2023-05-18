@@ -17,13 +17,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:layout_marginEnd="12dp"
-            android:src="@drawable/ic_save_tick"
-            />
-
-
+            android:src="@drawable/ic_save_tick" />
 
     </androidx.appcompat.widget.Toolbar>
-
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -117,64 +113,64 @@
             android:buttonTint="@color/colorAccent" />
     </RelativeLayout>
 
-
-
-
-
-
-    <!--
-        <RelativeLayout
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/gridViewText"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="9dp"
+            style="@style/FontRoboto"
+            android:textColor="@color/txBlack"
+            android:layout_marginLeft="22dp"
+            android:text="Grid View"
+            android:layout_marginBottom="9dp"
+            android:layout_toLeftOf="@+id/gridViewChkBox">
 
-            <TextView
-                android:id="@+id/textview2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="22dp"
-                android:layout_marginTop="9dp"
-                android:layout_marginBottom="9dp"
-                android:layout_toLeftOf="@+id/checkbox2">
+        </TextView>
 
-            </TextView>
+        <CheckBox
+            android:id="@+id/gridViewChkBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:buttonTint="@color/colorAccent" />
+    </RelativeLayout>
 
-            <CheckBox
-                android:id="@+id/checkbox2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                android:buttonTint="@color/colorAccent" />
-        </RelativeLayout>
-
-        <RelativeLayout
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/listViewText"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="9dp"
+            style="@style/FontRoboto"
+            android:textColor="@color/txBlack"
+            android:layout_marginLeft="22dp"
+            android:text="List View"
+            android:layout_marginBottom="9dp"
+            android:layout_toLeftOf="@+id/listViewChkBox">
 
-            <TextView
-                android:id="@+id/textview3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="22dp"
-                android:layout_marginTop="9dp"
-                android:layout_marginBottom="9dp"
-                android:layout_toLeftOf="@+id/checkbox3">
+        </TextView>
 
-            </TextView>
+        <CheckBox
+            android:id="@+id/listViewChkBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:buttonTint="@color/colorAccent" />
+    </RelativeLayout>
 
-            <CheckBox
-                android:id="@+id/checkbox3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                android:buttonTint="@color/colorAccent" />
-        </RelativeLayout>
-    -->
 
 
 

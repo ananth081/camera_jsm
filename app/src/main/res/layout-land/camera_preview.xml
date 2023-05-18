@@ -5,43 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
+    <include
         android:id="@+id/cancel_layout"
         android:layout_width="80dp"
         android:layout_height="match_parent"
-        android:background="@color/txBlack"
+        layout="@layout/camera_cancel_layout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/cancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/dualCamera"
-            android:layout_centerInParent="true"
-            android:translationY="-80dp"
-            android:text="Cancel"
-            android:textColor="@color/ic_white"
-            android:textSize="14sp" />
-
-        <ImageView
-            android:id="@+id/dualCamera"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:layout_centerInParent="true"
-            android:background="@drawable/ic_switch_camera" />
-
-        <ImageView
-            android:id="@+id/flashLight"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:layout_below="@id/dualCamera"
-            android:layout_centerInParent="true"
-            android:layout_marginStart="12dp"
-            android:background="@drawable/flash_circle_1"
-            android:translationY="70dp" />
-
-    </RelativeLayout>
+    </include>
 
     <androidx.camera.view.PreviewView
         android:id="@+id/view_finder"
@@ -200,7 +171,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/txBlack"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -213,4 +184,13 @@
             android:layout_gravity="center"
             android:src="@drawable/outline_camera_alt_24" />
     </FrameLayout>
+
+    <com.android.example.cameraxbasic.utils.RectOverlay
+        android:id="@+id/rect_overlay_focus"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/switchCameraLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
